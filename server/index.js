@@ -31,7 +31,7 @@ io.on('connection', (socket) => {
     })
 
     socket.on('sendMessage', message => {
-        console.log('Got a message', message)
+        console.log('Got a message:', message)
         const player = getPlayer(socket.id);
         if (player) {
             // Placeholder for now

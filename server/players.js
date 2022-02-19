@@ -6,6 +6,7 @@
 //  dice: Number
 // }
 
+// List of current connected players
 const players = []
 
 const addPlayer = (id, name, room) => {
@@ -17,10 +18,9 @@ const addPlayer = (id, name, room) => {
     if (!name) return { error: 'Username is required' }
     if (!room) return { error: 'Room is required' }
 
+    // Creating new player
     const newPlayer = { id: id, name: name, room: room, dice: 5 }
     players.push(newPlayer);
-
-    console.log(newPlayer)
 
     return { newPlayer }
 }
