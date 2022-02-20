@@ -1,39 +1,108 @@
-// Format for players:
-// {
-//  id: String,
-//  name: String,
-//  room: String,
-//  dice: Number
-// }
+class Player {
+    id;         // Number
+    playerName; // String
+    dice = 5;   // Number
 
-// List of current connected players
-const players = []
+    constructor(id, playerName) {
+        this.id = id;
+        this.playerName = playerName;
+    }
+}
 
-const addPlayer = (id, name, room) => {
-    // Checking if there is a player with the same name in the same room
-    const existingPlayer = getPlayers(room).find(player => player.name.trim().toLowerCase() === name.trim().toLowerCase());
+class Room {
+    players; // Array of Player class
+    roomCode; // String
+    prevBid;  // {player: Player, action: String, amount: Number, dice: Number}
 
-    if (existingPlayer) return { error: 'Username already exists' }
-    if (!name && !room) return { error: 'Username and room are required' }
+    constructor(roomCode) {
+        this.roomCode = roomCode;
+        this.players = [];
+        this.prevBid = null;
+    }
+
+    addPlayer(player) {
+        this.players.push(player);
+    }
+
+    getPlayer(playerId) {
+        return this.players.find(p => p.id === playerId);
+    }
+
+    playerExists(playerName) {
+        return this.players.filter(p => p.name === playerName);
+    }
+
+    removePlayer(player) {
+        const index = this.players.findIndex((p) => p.id === player.id);
+        if (index !== -1) {
+            return players.splice(index, 1)[0];
+        }
+    }
+
+    bid(player, action, amount, dice) {
+        switch (action) {
+            case 'raise':
+                break;
+            case 'aces':
+                break;
+            case 'call':
+                break;
+            case 'spot':
+                break;
+            default:
+                // error
+                break;
+        }
+    }
+
+}
+
+const rooms = [] // Array of Room class
+
+
+const addPlayer = (id, name, roomCode) => {
+    if (!name && !roomCode) return { error: 'Username and room are required' }
     if (!name) return { error: 'Username is required' }
-    if (!room) return { error: 'Room is required' }
+    if (!roomCode) return { error: 'Room is required' }
 
-    // Creating new player
-    const newPlayer = { id: id, name: name, room: room, dice: 5 }
-    players.push(newPlayer);
+    let room = rooms.find(room => room.roomCode === roomCode);
+    if (room) {
+        // Checking if there is a player with the same name in the same room
+        const existingPlayer = rooms.find(room => room.roomCode === room && room.playerExists(name));
+        if (existingPlayer) return { error: 'Username already exists' }
+    } else {
+        room = new Room(roomCode);
+        rooms.push(room)
+    }
 
-    return { newPlayer }
+    const newPlayer = new Player(id, name);
+    room.addPlayer(newPlayer);
+    return { newPlayer };
 }
 
 const getPlayer = (id) => {
-    return players.find(player => player.id === id);
+    const room = getRoom(id);
+    if (room) {
+        return room.getPlayer(id);
+    }
 }
 
 const removePlayer = (id) => {
-    const index = players.findIndex((player) => player.id === id);
-    if (index !== -1) return players.splice(index, 1)[0];
+    const room = getRoom(id);
+    if (room) {
+        return room.removePlayer(id)
+    }
 }
 
-const getPlayers = (room) => players.filter(player => player.room === room);
+// Returns the players in the room;
+const getPlayers = (roomCode) => {
+    const room = rooms.find(room => room.roomCode === roomCode);
+    if (room) {
+        return room.players;
+    }
+}
 
-module.exports = { addPlayer, getPlayer, removePlayer, getPlayers }
+// Returns the room based on playerId
+const getRoom = (playerId) => rooms.find(r => r.getPlayer(playerId));
+
+module.exports = { addPlayer, getPlayer, removePlayer, getPlayers, getRoom }

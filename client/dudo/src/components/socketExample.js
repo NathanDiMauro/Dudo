@@ -48,7 +48,6 @@ const SocketExample = () => {
         socket.emit('sendMessage', 'Message');
     }
 
-
     return (
         <div>
             <button onClick={handleClick}>Join</button>
