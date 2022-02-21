@@ -1,0 +1,16 @@
+#header {
+    background-color: #004c8c;
+    margin-bottom: 2%;
+    font-family: 'Bitter', serif;
+}
+
+#brand {
+    color: #ffffff;
+    font-size: 200%;
+    text-decoration: none;
+}
+
+.links, .links:visited {
+    color: #ffffff;
+    padding-right: 10%;
+}

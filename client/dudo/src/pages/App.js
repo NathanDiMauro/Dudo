@@ -1,8 +1,7 @@
-import './App.css';
+import '../styles/App.css';
 import React from 'react';
-import SocketExample from './components/socketExample';
-import { SocketProvider } from './socketContext';
-
+import SocketExample from '../components/socketExample';
+import { SocketProvider } from '../components/socketContext';
 
 function App() {
   return (
