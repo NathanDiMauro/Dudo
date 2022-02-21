@@ -8,9 +8,10 @@
     color: #ffffff;
     font-size: 200%;
     text-decoration: none;
+    margin-left: 10%;
 }
 
 .links, .links:visited {
     color: #ffffff;
-    padding-right: 10%;
+    margin-left: 15%;
 }
