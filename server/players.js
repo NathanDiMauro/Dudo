@@ -1,7 +1,7 @@
 class Player {
     id;         // Number
     playerName; // String
-    dice = 5;   // Number
+    dice = [];   // Number
 
     constructor(id, playerName) {
         this.id = id;
@@ -12,7 +12,12 @@ class Player {
 class Room {
     players; // Array of Player class
     roomCode; // String
-    prevBid;  // {player: Player, action: String, amount: Number, dice: Number}
+    prevBid = {
+        player: null,
+        action:null,
+        amount: null, 
+        dice: null
+    };  // {player: Player, action: String, amount: Number, dice: Number}
 
     constructor(roomCode) {
         this.roomCode = roomCode;
@@ -38,6 +43,19 @@ class Room {
             return players.splice(index, 1)[0];
         }
     }
+    generateDice() {
+        dice = [];
+        for(let i = 0; i <= 5; i++) {
+            dice[i] = Math.floor(Math.random() * 7);
+        }
+        return dice;
+    }
+    populatePlayerDice(player) {
+        this.players.forEach(player =>
+            player.dice = this.generateDice()
+        );
+        console.log(players.dice);
+    }
 
     bid(player, action, amount, dice) {
         switch (action) {
@@ -54,9 +72,7 @@ class Room {
                 break;
         }
     }
-
 }
-
 const rooms = [] // Array of Room class
 
 
