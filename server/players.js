@@ -10,12 +10,13 @@ class Player {
 }
 
 class Room {
+    static validBidActions = ['raise, aces, call, spot'];
     players; // Array of Player class
     roomCode; // String
     prevBid = {
-        player: null,
-        action:null,
-        amount: null, 
+        playerId: null,
+        action: null,
+        amount: null,
         dice: null
     };  // {player: Player, action: String, amount: Number, dice: Number}
 
@@ -43,9 +44,14 @@ class Room {
             return players.splice(index, 1)[0];
         }
     }
+
+    countOfDice() {
+        return this.players.reduce((prev, curr) => prev + curr.dice.length, 0)
+    }
+
     generateDice() {
         dice = [];
-        for(let i = 0; i <= 5; i++) {
+        for (let i = 0; i <= 5; i++) {
             dice[i] = Math.floor(Math.random() * 7);
         }
         return dice;
@@ -57,16 +63,88 @@ class Room {
         console.log(players.dice);
     }
 
-    bid(player, action, amount, dice) {
-        switch (action) {
+    validateBid(bid) {
+        // Checking if player exists
+        if (!this.playerExists(bid.playerId)) {
+            return { error: `Player with id of ${bid.playerId} does not exist` };
+        }
+        // Checking if it is a valid bid action
+        if (!Room.validBidActions.includes(bid.action)) {
+            return { error: `Invalid bid action: ${bid.action}` };
+        }
+        // Checking if the amount if dice is actually in the game
+        if (bid.amount > this.countOfDice()) {
+            return { error: `There are only ${this.countOfDice()} left in the game. ${bid.amount} is too high` }
+        }
+        // Checking if the dice # if valid (1-6)
+        if (0 > bid.dice || bid.dice > 7) {
+            return { error: `Dice must be 1, 2, 3, 4, 5 , or 6. Not ${bid.dice}` };
+        }
+        // Aces rule
+        if (this.prevBid.dice == 1) {
+            // If the new bid is not 1s (aces)
+            if (bid.dice !== 1 && bid.amount <= this.prevBid.amount * 2 + 1) {
+                // Bid amount has to be >= this.prevBid.amount * 2 + 1
+                // If the new bid amount is not valid
+                return { error: `Since the last bid was ${this.prevBid.amount} ${this.prevBid.dice}s, the next bid must be ${this.prevBid.amount * 2 + 1} of any dice` }
+            } else if (bid.amount <= this.prevBid.amount) {
+                // New bid is 1s, but is not the correct amount
+                return { error: 'Cannot bid same amount or less of ones' };
+            }
+        }
+
+        return { bid };
+    }
+
+
+    bidRaise(bid) {
+        if (bid.amount > this.prevBid.amount) {
+            this.prevBid = { playerId: bid.player, action: bid.action, amount: bid.amount, dice: bid.dice }
+            return { bid: this.prevBid }
+        }
+        if (bid.dice > this.prevBid.dice) {
+            this.prevBid = { playerId: bid.player, action: bid.action, amount: bid.amount, dice: bid.dice }
+            return { bid: this.prevBid }
+        }
+        return { error: 'Raise must raise the amount of dice or the dice' };
+    }
+
+    bidAces(bid) {
+
+    }
+
+    bidCall(bid) {
+
+    }
+
+    bidSpot(bid) {
+
+    }
+
+
+    bid(bid) {
+        const { bid, error } = this.validateBid(bid);
+        if (error) {
+            return { error };
+        }
+        // initial round bet
+        if (this.prevBid == null) {
+            if (bid.action == 'call' || bid.action == 'spot') {
+                return { error: 'Cannot call spot of call on initial bet' };
+            }
+            this.prevBid = { playerId: bid.player, action: bid.action, amount: bid.amount, dice: bid.dice }
+            return { bid: this.prevBid }
+        }
+
+        switch (bid.action) {
             case 'raise':
-                break;
+                return this.bidRaise(bid);
             case 'aces':
-                break;
+                return this.bidAces(bid);
             case 'call':
-                break;
+                return this.bidCall(bid);
             case 'spot':
-                break;
+                return this.bidSpot(bid);
             default:
                 // error
                 break;
