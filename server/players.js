@@ -30,42 +30,55 @@ class Room {
         this.players.push(player);
     }
 
+    // Get a plyer based on their id
     getPlayer(playerId) {
         return this.players.find(p => p.id === playerId);
     }
 
-    playerExists(playerName) {
-        return this.players.filter(p => p.name === playerName);
+    // Checking if a plyer exists based on player name
+    playerExistsByName(playerName) {
+        return this.players.filter(p => p.playerName === playerName);
+    }
+    
+    // Checking if a plyer exists based on player id
+    playerExistsById(playerId) {
+        return this.players.filter(p => p.id === playerId);
     }
 
-    removePlayer(player) {
-        const index = this.players.findIndex((p) => p.id === player.id);
+    // Removing player based on id
+    removePlayer(playerId) {
+        const index = this.players.findIndex((p) => p.id === playerId);
         if (index !== -1) {
             return players.splice(index, 1)[0];
         }
     }
 
+    // Utility function for getting the total amount if dice in play
     countOfDice() {
         return this.players.reduce((prev, curr) => prev + curr.dice.length, 0)
     }
 
-    generateDice() {
+    // Utility function for generating dice for a player
+    generateDice(size) {
         dice = [];
-        for (let i = 0; i <= 5; i++) {
+        for (let i = 0; i <= size; i++) {
             dice[i] = Math.floor(Math.random() * 7);
         }
         return dice;
     }
+
+    // Generating dice for each player
     populatePlayerDice(player) {
         this.players.forEach(player =>
-            player.dice = this.generateDice()
+            player.dice = this.generateDice(player.dice.length - 1)
         );
-        console.log(players.dice);
     }
 
+    // Validating that the bid sent from the client is valid
+    // Checking the playerId, action, amount, and dice
     validateBid(bid) {
         // Checking if player exists
-        if (!this.playerExists(bid.playerId)) {
+        if (!this.playerExistsById(bid.playerId)) {
             return { error: `Player with id of ${bid.playerId} does not exist` };
         }
         // Checking if it is a valid bid action
@@ -80,6 +93,14 @@ class Room {
         if (0 > bid.dice || bid.dice > 7) {
             return { error: `Dice must be 1, 2, 3, 4, 5 , or 6. Not ${bid.dice}` };
         }
+
+        return { bid };
+    }
+
+    // Checking for aces rule
+    // If the prev. bid was aces, then we have to make sure the new bid is valid
+    // This function should be called before raises and aces
+    checkAces(bid) {
         // Aces rule
         if (this.prevBid.dice == 1) {
             // If the new bid is not 1s (aces)
@@ -98,8 +119,14 @@ class Room {
 
 
     bidRaise(bid) {
+        // Checking for aces rule
+        const { bid, error } = this.checkAces();
+        if (error) {
+            return { error }
+        }
         if (bid.amount > this.prevBid.amount) {
             this.prevBid = { playerId: bid.player, action: bid.action, amount: bid.amount, dice: bid.dice }
+            // this.prevBid = bid // We could also do this I think?? I'm not sure
             return { bid: this.prevBid }
         }
         if (bid.dice > this.prevBid.dice) {
@@ -110,6 +137,11 @@ class Room {
     }
 
     bidAces(bid) {
+        const { bid, error } = this.checkAces();
+        if (error) {
+            return { error }
+        }
+
 
     }
 
@@ -146,52 +178,67 @@ class Room {
             case 'spot':
                 return this.bidSpot(bid);
             default:
-                // error
-                break;
+                return { error: 'Invalid bid action' };
         }
     }
 }
 const rooms = [] // Array of Room class
 
 
+// Adds a plyer to the room with roomCode
 const addPlayer = (id, name, roomCode) => {
+    // Validating the name and roomCode were provided
     if (!name && !roomCode) return { error: 'Username and room are required' }
     if (!name) return { error: 'Username is required' }
     if (!roomCode) return { error: 'Room is required' }
 
+    // Getting the room associated with roomCode
     let room = rooms.find(room => room.roomCode === roomCode);
+    
     if (room) {
         // Checking if there is a player with the same name in the same room
-        const existingPlayer = rooms.find(room => room.roomCode === room && room.playerExists(name));
+        const existingPlayer = rooms.find(room => room.roomCode === room && room.playerExistsByName(name));
         if (existingPlayer) return { error: 'Username already exists' }
     } else {
+        // Creating new room
         room = new Room(roomCode);
         rooms.push(room)
     }
 
+    // Creating new player
     const newPlayer = new Player(id, name);
+    // Adding newPlayer to the room
     room.addPlayer(newPlayer);
+    
     return { newPlayer };
 }
 
+// Get a player based on their id
 const getPlayer = (id) => {
+    // First we have to get the room
     const room = getRoom(id);
     if (room) {
+        // Then we can get the player
         return room.getPlayer(id);
     }
 }
 
+// Remove a player based on their id
 const removePlayer = (id) => {
+    // First we have to get the room
     const room = getRoom(id);
     if (room) {
+        // Then we cna remove the player
         return room.removePlayer(id)
     }
 }
 
-// Returns the players in the room;
+// Returns an array of players in the room;
 const getPlayers = (roomCode) => {
+    // Getting room that matches roomCode
     const room = rooms.find(room => room.roomCode === roomCode);
     if (room) {
+        // Returning the array of players
         return room.players;
     }
 }
