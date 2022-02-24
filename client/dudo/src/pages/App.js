@@ -1,12 +1,12 @@
 import '../styles/App.css';
 import React from 'react';
-import AddPlayer from '../components/addPlayer';
+import JoinGame from '../components/join';
 import { SocketProvider } from '../components/socketContext';
 
 function App() {
   return (
     <SocketProvider>
-        <AddPlayer />
+        <JoinGame />
         {/* <header className="App-header">
         <img src={logo} className="App-logo" alt="logo" />
         <p>

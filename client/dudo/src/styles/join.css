@@ -1,0 +1,31 @@
+#join {
+    background-color: #0277bd;
+    color: white;
+    padding-left: 5%;
+    padding-top: 3%;
+    padding-bottom: 5%;
+    min-height: 744px;
+}
+
+#jInput {
+    display: flex;
+}
+
+#jInput h4 {
+    margin-left: 1%;
+}
+
+#jInput input {
+    float: left;
+    margin-left: 10px;
+}
+
+#jInput button {
+    margin-top: 3px;
+    height: 30px;
+    margin-left: 5px;
+}
+
+#pLog {
+    margin-top: 10px;
+}
