@@ -70,9 +70,10 @@ class Room {
 
     // Generating dice for each player
     populatePlayerDice(player) {
-        this.players.forEach(player =>
+        this.players.forEach(player => {
             player.dice = this.generateDice(player.diceCount)
-        );
+            player.dieCount = (player.dice).length
+        });
     }
 
     // Validating that the bid sent from the client is valid
@@ -157,6 +158,10 @@ class Room {
     bidCall(bid) {
         // person thinks last bid is fake (this is just so I remember what needed to be made)
         // getting all the dice 
+        const { bid, error } = this.checkAces();
+        if (error) {
+            return { error }
+        }
         dieCount = 0;
         this.players.forEach(player =>
             player.dice.forEach(die => {
@@ -167,18 +172,35 @@ class Room {
         );
         //if the guess is not correct, the previous player (the player who made the bid) loses a die.
         if(dieCount <= this.prevBid.amount) {
-            // subtract a die from the player
-            return ''
+            getPlayer(bid.playerId).diceCount--;
+            return bid;
         } else {
-            // subtract a die from the player
+            getPlayer(this.prevBid.playerId).diceCount--;
+            return bid;
         }
+        // these returns will probably need to return a value instead of text 
     }
 
     bidSpot(bid) {
-
+        //player claims that the previous bidder's bid is exactly right
+        //f the number is higher or lower, the claimant loses the round; otherwise, 
+        //the bidder loses the round.
+        dieCount = 0;
+        this.players.forEach(player =>
+            player.dice.forEach(die => {
+                if(die == this.prevBid.dice || die == 1) {
+                    dieCount++;
+                }
+            })
+        );
+        if(dieCount == this.prevBid.amount) {
+            getPlayer(bid.playerId).diceCount--;
+            return bid;
+        } else {
+            getPlayer(this.prevBid.playerId).diceCount--;
+            return bid;
+        }
     }
-
-
 
     bid(bid) {
         const { bid, error } = this.validateBid(bid);
