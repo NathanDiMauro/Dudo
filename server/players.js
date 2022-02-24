@@ -2,6 +2,7 @@ class Player {
     id;         // Number
     playerName; // String
     dice = [];   // Number
+    diceCount; // amount of dice 
 
     constructor(id, playerName) {
         this.id = id;
@@ -16,8 +17,8 @@ class Room {
     prevBid = {
         playerId: null,
         action: null,
-        amount: null,
-        dice: null
+        amount: null, // amount of dice ie. (4) two's 4 being the amount
+        dice: null // dice num 4 (two's) two's being the nice num
     };  // {player: Player, action: String, amount: Number, dice: Number}
 
     constructor(roomCode) {
@@ -113,7 +114,6 @@ class Room {
                 return { error: 'Cannot bid same amount or less of ones' };
             }
         }
-
         return { bid };
     }
 
@@ -126,7 +126,9 @@ class Room {
         }
         if (bid.amount > this.prevBid.amount) {
             this.prevBid = { playerId: bid.player, action: bid.action, amount: bid.amount, dice: bid.dice }
-            // this.prevBid = bid // We could also do this I think?? I'm not sure
+            // this.prevBid = bid 
+            // We could also do this I think?? I'm not sure
+            // i think we can? - Liam
             return { bid: this.prevBid }
         }
         if (bid.dice > this.prevBid.dice) {
@@ -135,23 +137,47 @@ class Room {
         }
         return { error: 'Raise must raise the amount of dice or the dice' };
     }
-
+    // IF YOU HAVE TIME CAN YOU Take a look through these
     bidAces(bid) {
         const { bid, error } = this.checkAces();
         if (error) {
             return { error }
         }
-
-
+        // check if bid is at least half of the last bid
+        // ceil just rounds up the division to the next num
+        if(bid.amount >= (Math.ceil(this.prevBid/2))) {
+            return { error : 'Your bid needs to be at least half(rounded up) of the last bid'};
+        } else {
+            this.prevBid = { playerId: bid.player, action: bid.action, amount: bid.amount, dice: bid.dice }
+            // this.prevBid = bid
+            return { bid: this.prevBid }
+        } 
     }
 
     bidCall(bid) {
-
+        // person thinks last bid is fake (this is just so I remember what needed to be made)
+        // getting all the dice 
+        dieCount = 0;
+        this.players.forEach(player =>
+            player.dice.forEach(die => {
+                if(die == this.prevBid.dice || die == 1) {
+                    dieCount++;
+                }
+            })
+        );
+        //if the guess is not correct, the previous player (the player who made the bid) loses a die.
+        if(dieCount <= this.prevBid.amount) {
+            // subtract a die from the player
+            return ''
+        } else {
+            // subtract a die from the player
+        }
     }
 
     bidSpot(bid) {
 
     }
+
 
 
     bid(bid) {
