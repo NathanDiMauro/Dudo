@@ -8,6 +8,11 @@
 .fLink {
     color: #ffffff;   
     margin-right: 1%;
+    text-decoration: none;
+}
+
+.fLink:hover {
+    color: #004c8c;
 }
 
 #first{
