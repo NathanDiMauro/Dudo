@@ -21,9 +21,19 @@
 }
 
 #jInput button {
-    margin-top: 3px;
-    height: 30px;
+    margin-top: 5px;
+    height: 28px;
+    width: 55px;
     margin-left: 5px;
+    background-color: #004c8c;
+    color: white;
+    transition-duration: 0.4s;
+    border: none;
+}
+
+#jInput button:hover {
+    background-color: #58a5f0;
+    color: white;
 }
 
 #pLog {

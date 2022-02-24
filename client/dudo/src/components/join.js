@@ -7,6 +7,7 @@ const JoinGame = () => {
 
     const [name, setName] = useState(null);
     const [room, setRoom] = useState(null);
+    const [title, setTitle] = useState(null);
     const [players, setPlayers] = useState([]);
 
     useEffect(() => {
@@ -29,6 +30,7 @@ const JoinGame = () => {
                     console.log(name, room, socket)
                 }
             })
+            setTitle(<h4>Room: {room}</h4>)
         }
     }, [room, name])
 
@@ -49,6 +51,7 @@ const JoinGame = () => {
                 <br />
             </div>
             <div id="pLog">
+                {title}
                 {players.map((player, key) => <p key={key}>{player.name} has {player.dice} dice left</p>)}
             </div>
         </div>
