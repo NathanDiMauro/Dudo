@@ -71,7 +71,7 @@ class Room {
     // Generating dice for each player
     populatePlayerDice(player) {
         this.players.forEach(player =>
-            player.dice = this.generateDice(player.dice.length - 1)
+            player.dice = this.generateDice(player.diceCount)
         );
     }
 
