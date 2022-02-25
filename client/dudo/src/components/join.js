@@ -35,8 +35,8 @@ const JoinGame = () => {
     }, [room, name])
 
     const addPlayer = () => {
-        setName(document.getElementById("nameInput").value);
-        setRoom(document.getElementById("roomInput").value)
+        setName(document.getElementById("joinNameInput").value);
+        setRoom(document.getElementById("joinRoomInput").value)
     }
     
     return (
@@ -44,9 +44,9 @@ const JoinGame = () => {
             <h2>Join Game</h2>
             <div id="jInput">
                 <h4>Name:</h4>
-                <input type="text" id="nameInput"></input>
+                <input type="text" id="joinNameInput"></input>
                 <h4>Room code:</h4>
-                <input type="text" id="roomInput"></input> 
+                <input type="text" id="joinRoomInput"></input> 
                 <button onClick={addPlayer}>Join</button>
                 <br />
             </div>
