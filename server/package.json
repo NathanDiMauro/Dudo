@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "jest",
+    "test": "jest && ava",
     "start": "node index.js"
   },
   "keywords": [],
@@ -13,8 +13,9 @@
   "dependencies": {
     "cors": "^2.8.5",
     "express": "^4.17.3",
-    "socket.io": "^4.4.1",
-    "ava": "^1.0.0"
+    "socket.io": "^4.4.1"
+  },
+  "devDependencies": {
+    "ava": "^4.0.1"
   }
-  
 }
