@@ -40,12 +40,12 @@ class Room {
 
     // Checking if a plyer exists based on player name
     playerExistsByName(playerName) {
-        return this.players.filter(p => p.playerName === playerName).length > 0;
+        return this.players.find(p => p.playerName === playerName) !== undefined;
     }
 
     // Checking if a plyer exists based on player id
     playerExistsById(playerId) {
-        return this.players.filter(p => p.id === playerId).length > 0;
+        return this.players.find(p => p.id === playerId) !== undefined;
     }
 
     // Removing player based on id

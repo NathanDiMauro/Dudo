@@ -5,6 +5,14 @@ const Room = require('./players').Room;
 const rooms = [] // Array of Room class
 
 
+const createRoom = (roomCode) => {
+    if (rooms.find(room => room.roomCode === roomCode)) {
+        return { error: 'Room already exists' };
+    }
+    rooms.push(new Room(roomCode));
+    return {};
+}
+
 // Adds a plyer to the room with roomCode
 const addPlayer = (id, name, roomCode) => {
     // Validating the name and roomCode were provided
@@ -15,15 +23,13 @@ const addPlayer = (id, name, roomCode) => {
     // Getting the room associated with roomCode
     let room = rooms.find(room => room.roomCode === roomCode);
 
-    if (room) {
-        // Checking if there is a player with the same name in the same room
-        const existingPlayer = rooms.find(room => room.roomCode === room && room.playerExistsByName(name));
-        if (existingPlayer) return { error: 'Username already exists' }
-    } else {
-        // Creating new room
-        room = new Room(roomCode);
-        rooms.push(room)
+    if (!room) {
+        return { error: 'Room does not exist' };
     }
+
+    // Checking if there is a player with the same name in the same room
+    const existingPlayer = rooms.find(room => room.roomCode === roomCode && room.playerExistsByName(name));
+    if (existingPlayer) return { error: 'Username already exists' }
 
     // Creating new player
     const newPlayer = new Player(id, name);
@@ -66,4 +72,4 @@ const getPlayers = (roomCode) => {
 // Returns the room based on playerId
 const getRoom = (playerId) => rooms.find(r => r.getPlayer(playerId));
 
-module.exports = { addPlayer, getPlayer, removePlayer, getPlayers, getRoom }
+module.exports = { addPlayer, getPlayer, removePlayer, getPlayers, getRoom, createRoom }
