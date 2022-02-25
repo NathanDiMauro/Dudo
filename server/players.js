@@ -8,11 +8,12 @@ class Player {
         this.id = id;
         this.playerName = playerName;
         this.dice = [1, 1, 1, 1, 1];
+        this.diceCount = 5;
     }
 }
 
 class Room {
-    static validBidActions = ['raise, aces, call, spot'];
+    static validBidActions = ['raise', 'aces', 'call', 'spot'];
     players; // Array of Player class
     roomCode; // String
     prevBid = {
@@ -39,19 +40,19 @@ class Room {
 
     // Checking if a plyer exists based on player name
     playerExistsByName(playerName) {
-        return this.players.filter(p => p.playerName === playerName);
+        return this.players.filter(p => p.playerName === playerName).length > 0;
     }
 
     // Checking if a plyer exists based on player id
     playerExistsById(playerId) {
-        return this.players.filter(p => p.id === playerId);
+        return this.players.filter(p => p.id === playerId).length > 0;
     }
 
     // Removing player based on id
     removePlayer(playerId) {
         const index = this.players.findIndex((p) => p.id === playerId);
         if (index !== -1) {
-            return players.splice(index, 1)[0];
+            return this.players.splice(index, 1)[0];
         }
     }
 
@@ -62,15 +63,15 @@ class Room {
 
     // Utility function for generating dice for a player
     generateDice(size) {
-        dice = [];
+        let dice = [];
         for (let i = 0; i <= size; i++) {
-            dice[i] = Math.floor(Math.random() * 7);
+            dice[i] = Math.ceil(Math.random() * 6);
         }
         return dice;
     }
 
     // Generating dice for each player
-    populatePlayerDice(player) {
+    populatePlayerDice() {
         this.players.forEach(player => {
             player.dice = this.generateDice(player.diceCount)
             player.dieCount = (player.dice).length
@@ -80,6 +81,10 @@ class Room {
     // Validating that the bid sent from the client is valid
     // Checking the playerId, action, amount, and dice
     validateBid(bid) {
+        if (this.prevBid?.playerId == bid.playerId) {
+            return { error: 'Player cannot bid 2 times in a row' };
+        }
+
         // Checking if player exists
         if (!this.playerExistsById(bid.playerId)) {
             return { error: `Player with id of ${bid.playerId} does not exist` };
@@ -90,10 +95,10 @@ class Room {
         }
         // Checking if the amount if dice is actually in the game
         if (bid.amount > this.countOfDice()) {
-            return { error: `There are only ${this.countOfDice()} left in the game. ${bid.amount} is too high` }
+            return { error: `There are only ${this.countOfDice()} dice left in the game. ${bid.amount} is too high` }
         }
         // Checking if the dice # if valid (1-6)
-        if (0 > bid.dice || bid.dice > 7) {
+        if (1 > bid.dice || bid.dice > 7) {
             return { error: `Dice must be 1, 2, 3, 4, 5 , or 6. Not ${bid.dice}` };
         }
     }
@@ -103,18 +108,17 @@ class Room {
     // This function should be called before raises and aces
     checkAces(bid) {
         // Aces rule
-        if (this.prevBid.dice == 1) {
+        if (this.prevBid.dice == 1 && this.prevBid.action == 'aces') {
             // If the new bid is not 1s (aces)
-            if (bid.dice !== 1 && bid.amount <= this.prevBid.amount * 2 + 1) {
+            if (bid.dice !== 1 && bid.amount < this.prevBid.amount * 2 + 1) {
                 // Bid amount has to be >= this.prevBid.amount * 2 + 1
                 // If the new bid amount is not valid
-                return { error: `Since the last bid was ${this.prevBid.amount} ${this.prevBid.dice}s, the next bid must be ${this.prevBid.amount * 2 + 1} of any dice` }
+                return { error: `Since the last bid was ${this.prevBid.amount} ${this.prevBid.dice}s, the next bid must be at least ${this.prevBid.amount * 2 + 1} of any dice` }
             } else if (bid.amount <= this.prevBid.amount) {
                 // New bid is 1s, but is not the correct amount
                 return { error: 'Cannot bid same amount or less of ones' };
             }
         }
-        return { bid };
     }
 
 
