@@ -5,7 +5,7 @@ const io = require('socket.io')(http);
 const cors = require('cors');
 
 const PORT = process.env.PORT || 5000
-const { addPlayer, getPlayer, getPlayers, removePlayer, getRoom } = require('./players');
+const { addPlayer, getPlayer, getPlayers, removePlayer, getRoom } = require('./state');
 
 app.use(cors);
 

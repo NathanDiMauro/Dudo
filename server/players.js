@@ -7,6 +7,7 @@ class Player {
     constructor(id, playerName) {
         this.id = id;
         this.playerName = playerName;
+        this.dice = [1, 1, 1, 1, 1];
     }
 }
 
@@ -40,7 +41,7 @@ class Room {
     playerExistsByName(playerName) {
         return this.players.filter(p => p.playerName === playerName);
     }
-    
+
     // Checking if a plyer exists based on player id
     playerExistsById(playerId) {
         return this.players.filter(p => p.id === playerId);
@@ -95,8 +96,6 @@ class Room {
         if (0 > bid.dice || bid.dice > 7) {
             return { error: `Dice must be 1, 2, 3, 4, 5 , or 6. Not ${bid.dice}` };
         }
-
-        return { bid };
     }
 
     // Checking for aces rule
@@ -121,7 +120,7 @@ class Room {
 
     bidRaise(bid) {
         // Checking for aces rule
-        const { bid, error } = this.checkAces();
+        const { error } = this.checkAces();
         if (error) {
             return { error }
         }
@@ -140,38 +139,38 @@ class Room {
     }
     // IF YOU HAVE TIME CAN YOU Take a look through these
     bidAces(bid) {
-        const { bid, error } = this.checkAces();
+        const { error } = this.checkAces();
         if (error) {
             return { error }
         }
         // check if bid is at least half of the last bid
         // ceil just rounds up the division to the next num
-        if(bid.amount >= (Math.ceil(this.prevBid/2))) {
-            return { error : 'Your bid needs to be at least half(rounded up) of the last bid'};
+        if (bid.amount >= (Math.ceil(this.prevBid / 2))) {
+            return { error: 'Your bid needs to be at least half(rounded up) of the last bid' };
         } else {
             this.prevBid = { playerId: bid.player, action: bid.action, amount: bid.amount, dice: bid.dice }
             // this.prevBid = bid
             return { bid: this.prevBid }
-        } 
+        }
     }
 
     bidCall(bid) {
         // person thinks last bid is fake (this is just so I remember what needed to be made)
         // getting all the dice 
-        const { bid, error } = this.checkAces();
+        const { error } = this.checkAces();
         if (error) {
             return { error }
         }
         dieCount = 0;
         this.players.forEach(player =>
             player.dice.forEach(die => {
-                if(die == this.prevBid.dice || die == 1) {
+                if (die == this.prevBid.dice || die == 1) {
                     dieCount++;
                 }
             })
         );
         //if the guess is not correct, the previous player (the player who made the bid) loses a die.
-        if(dieCount <= this.prevBid.amount) {
+        if (dieCount <= this.prevBid.amount) {
             getPlayer(bid.playerId).diceCount--;
             return bid;
         } else {
@@ -188,12 +187,12 @@ class Room {
         dieCount = 0;
         this.players.forEach(player =>
             player.dice.forEach(die => {
-                if(die == this.prevBid.dice || die == 1) {
+                if (die == this.prevBid.dice || die == 1) {
                     dieCount++;
                 }
             })
         );
-        if(dieCount == this.prevBid.amount) {
+        if (dieCount == this.prevBid.amount) {
             getPlayer(bid.playerId).diceCount--;
             return bid;
         } else {
@@ -203,7 +202,7 @@ class Room {
     }
 
     bid(bid) {
-        const { bid, error } = this.validateBid(bid);
+        const { error } = this.validateBid(bid);
         if (error) {
             return { error };
         }
@@ -230,68 +229,4 @@ class Room {
         }
     }
 }
-const rooms = [] // Array of Room class
-
-
-// Adds a plyer to the room with roomCode
-const addPlayer = (id, name, roomCode) => {
-    // Validating the name and roomCode were provided
-    if (!name && !roomCode) return { error: 'Username and room are required' }
-    if (!name) return { error: 'Username is required' }
-    if (!roomCode) return { error: 'Room is required' }
-
-    // Getting the room associated with roomCode
-    let room = rooms.find(room => room.roomCode === roomCode);
-    
-    if (room) {
-        // Checking if there is a player with the same name in the same room
-        const existingPlayer = rooms.find(room => room.roomCode === room && room.playerExistsByName(name));
-        if (existingPlayer) return { error: 'Username already exists' }
-    } else {
-        // Creating new room
-        room = new Room(roomCode);
-        rooms.push(room)
-    }
-
-    // Creating new player
-    const newPlayer = new Player(id, name);
-    // Adding newPlayer to the room
-    room.addPlayer(newPlayer);
-    
-    return { newPlayer };
-}
-
-// Get a player based on their id
-const getPlayer = (id) => {
-    // First we have to get the room
-    const room = getRoom(id);
-    if (room) {
-        // Then we can get the player
-        return room.getPlayer(id);
-    }
-}
-
-// Remove a player based on their id
-const removePlayer = (id) => {
-    // First we have to get the room
-    const room = getRoom(id);
-    if (room) {
-        // Then we cna remove the player
-        return room.removePlayer(id)
-    }
-}
-
-// Returns an array of players in the room;
-const getPlayers = (roomCode) => {
-    // Getting room that matches roomCode
-    const room = rooms.find(room => room.roomCode === roomCode);
-    if (room) {
-        // Returning the array of players
-        return room.players;
-    }
-}
-
-// Returns the room based on playerId
-const getRoom = (playerId) => rooms.find(r => r.getPlayer(playerId));
-
-module.exports = { addPlayer, getPlayer, removePlayer, getPlayers, getRoom }
+module.exports = { Player, Room }

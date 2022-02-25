@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "jest && ava",
+    "test": "jest",
     "start": "node index.js"
   },
   "keywords": [],
@@ -16,6 +16,7 @@
     "socket.io": "^4.4.1"
   },
   "devDependencies": {
-    "ava": "^4.0.1"
+    "ava": "^4.0.1",
+    "jest": "^27.5.1"
   }
 }
