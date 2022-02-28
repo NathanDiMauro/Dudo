@@ -10,7 +10,6 @@ import '../styles/player.css'
 const Player = (props) => {
     const [dice, setDice] = useState([dice1, dice2, dice3, dice4, dice5, dice6]);
 
-
     const shuffle = () => {
         console.log("Shuffling dice")
         const shuffDice = [dice2, dice1, dice3, dice4, dice5, dice6];
@@ -27,7 +26,7 @@ const Player = (props) => {
 
     return (
         <div id="player">
-            <h2>{props.name}</h2>
+            <h2>{props.name}:</h2>
             {dice.map((die, key) => <img src={die} key={key} />)}
             <button onClick={shuffle}>Shuffle</button>
         </div>

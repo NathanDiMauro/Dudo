@@ -2,30 +2,30 @@ import React, { useContext, useState, useEffect } from 'react';
 import { SocketContext } from './socketContext'; 
 import '../styles/join.css'
 
-const HostGame = () => {
+const HostGame = (props) => {
     const socket = useContext(SocketContext);
 
-    const [name, setName] = useState(null);
     const [room, setRoom] = useState(null);
 
     //when room or name changes add players to socket
     useEffect(() => {
-        if (name && room){
+        if (props.name && room){
             console.log('trying to create room', room)
 
-            console.log('trying to join', name, "to room", room)
+            console.log('trying to join', props.name, "to room", room)
+            const name = props.name;
             socket.emit('join', { name, room }, error => {
                 if (error) {
                     console.log(error);
                 } else {
-                    console.log(name, room, socket)
+                    console.log(props.name, room, socket)
                 }
             })
         }
-    }, [room, name])
+    }, [room, props.name])
 
     const addRoom = () => {
-        setName(document.getElementById("nameInput").value);
+        props.setName(document.getElementById("nameInput").value);
         setRoom(document.getElementById("roomInput").value)
     }
     
