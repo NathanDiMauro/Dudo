@@ -25,7 +25,7 @@ describe('add player', () => {
         const { newPlayer } = addPlayer(player1.id, player1.playerName, roomCode);
         expect(newPlayer.id).toBe(player1.id);
         expect(newPlayer.playerName).toBe(player1.playerName);
-        expect(getPlayers(roomCode)).toStrictEqual([newPlayer])
+        expect(getPlayers(roomCode)).toStrictEqual([{playerName: player1.playerName, diceCount: 5}])
     })
 
     test('add player duplicate', () => {
