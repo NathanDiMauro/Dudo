@@ -7,7 +7,7 @@ const SocketExample = () => {
 
     const [name, setName] = useState('Player');
     const [players, setPlayers] = useState([]);
-    const [room, setRoom] = useState('Room');
+    const [roomCode, setRoomCode] = useState('Room');
     const [messages, setMessages] = useState([])
     const [notifications, setNotifications] = useState([]);
 
@@ -35,11 +35,11 @@ const SocketExample = () => {
     const handleClick = () => {
         console.log('trying to join')
         // Login to the socket
-        socket.emit('join', { name, room }, error => {
+        socket.emit('join', { name, roomCode }, error => {
             if (error) {
                 console.log(error);
             } else {
-                console.log(name, room, socket)
+                console.log(name, roomCode, socket)
             }
         })
     }
@@ -47,6 +47,8 @@ const SocketExample = () => {
     const sendMessage = () => {
         socket.emit('sendMessage', 'Message');
     }
+
+    console.log(players)
 
 
     return (
