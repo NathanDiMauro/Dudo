@@ -65,7 +65,7 @@ const getPlayers = (roomCode) => {
     const room = rooms.find(room => room.roomCode === roomCode);
     if (room) {
         // Returning the array of players
-        return room.players;
+        return room.getPlayersBrief();
     }
 }
 

@@ -21,7 +21,7 @@ class Room {
         action: null,
         amount: null, // amount of dice ie. (4) two's 4 being the amount
         dice: null // dice num 4 (two's) two's being the nice num
-    };  // {player: Player, action: String, amount: Number, dice: Number}
+    };  // {playerID: Player, action: String, amount: Number, dice: Number}
     betsInRound;
 
     constructor(roomCode) {
@@ -56,6 +56,10 @@ class Room {
         if (index !== -1) {
             return this.players.splice(index, 1)[0];
         }
+    }
+
+    getPlayersBrief() {
+        return this.players.map((player) => ({ playerName: player.playerName, diceCount: player.dice.length }))
     }
 
     // Utility function for getting the total amount if dice in play
