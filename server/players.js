@@ -96,6 +96,10 @@ class Room {
         });
     }
 
+    newRound() {
+        this.populatePlayerDice();
+    }
+
     // Validating that the bid sent from the client is valid
     // Checking the playerId, action, amount, and dice
     validateBid(bid) {
@@ -190,12 +194,14 @@ class Room {
         // Player who called loses a dice
         if (dieCount >= this.prevBid.amount) {
             this.getPlayer(bid.playerId).diceCount--;
+            this.newRound();
             return {
                 endOfRound: `${return_str} ${this.getPlayer(bid.playerId).playerName} loses a dice.`
             };
         } else {
             // Player who got called (prevBid) loses a dice
             this.getPlayer(this.prevBid.playerId).diceCount--;
+            this.newRound();
             return {
                 endOfRound: `${return_str} ${this.getPlayer(this.prevBid.playerId).playerName} loses a dice.`
             };
@@ -213,15 +219,18 @@ class Room {
         if (dieCount == this.prevBid.amount) {
             if (this.getPlayer(bid.playerId).dice.length < 5) {
                 this.getPlayer(bid.playerId).diceCount++;
+                this.newRound()
                 return {
                     endOfRound: `${return_str} called spot correctly and gets 1 dice back.`
                 }
             }
+            this.newRound()
             return {
                 endOfRound: `${return_str} called spot correctly, however, they already have 5 dice.`
             }
         } else {
             this.getPlayer(this.prevBid.playerId).diceCount--;
+            this.newRound()
             return {
                 endOfRound: `${return_str} called spot incorrectly and loses 1 dice.`
             }
