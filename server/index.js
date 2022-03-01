@@ -41,7 +41,7 @@ io.on('connection', (socket) => {
         const { newPlayer, error } = addPlayer(socket.id, name, roomCode);
 
         console.log('Player is joining', newPlayer, error);
-    
+
         // If there is an error, return it
         if (error) return callback(error);
         // Adding the new player to the room
@@ -54,16 +54,24 @@ io.on('connection', (socket) => {
     })
 
     // What the bid flow could look like
-    socket.on('bid', bid => {
+    socket.on('bid', new_bid => {
         const room = getRoom(socket.id);
         if (room) {
             const player = room.getPlayer(socket.id);
+            console.log('A bid was just received', bid);
             if (player) {
-                room.bid(bid);
-                // placeholder for now
-                io.in(room.roomCode).emit('newBid', { title: `${player.playerName} just did something` });
+                const { bid, error, endOfRound } = room.bid(new_bid);
+                if (bid) {
+                    io.in(room.roomCode).emit('newBid', { bid });
+                } else if (endOfRound) {
+                    io.in(room.roomCode).emit('endOfRound', { endOfRound });
+                } else if (error) {
+                    io.broadcast.to(socket.id).emit('error', { error });
+                } else {
+                    io.broadcast.to(socket.id).emit('error', { error: 'An unexpected error occurred '});
+                }
             } else {
-                return { error: 'Invalid Player id'}
+                return { error: 'Invalid Player id' }
             }
         }
     })
@@ -77,7 +85,7 @@ io.on('connection', (socket) => {
             // Placeholder for now
             io.in(player.room).emit('message', { player: player.playerName, text: message });
         } else {
-            return { error: 'Invalid Player id'}
+            return { error: 'Invalid Player id' }
         }
     })
 
