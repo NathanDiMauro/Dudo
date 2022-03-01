@@ -22,11 +22,13 @@ class Room {
         amount: null, // amount of dice ie. (4) two's 4 being the amount
         dice: null // dice num 4 (two's) two's being the nice num
     };  // {player: Player, action: String, amount: Number, dice: Number}
+    bets_in_round;
 
     constructor(roomCode) {
         this.roomCode = roomCode;
         this.players = [];
         this.prevBid = null;
+        this.bets_in_round = 0;
     }
 
     addPlayer(player) {
@@ -61,6 +63,22 @@ class Room {
         return this.players.reduce((prev, curr) => prev + curr.dice.length, 0)
     }
 
+    countOfSpecificDie(die) {
+        let validDice;
+        if (this.bets_in_round == 1) {
+            validDice = (dice) => dice == die;
+        } else {
+            validDice = (dice) => dice == die || dice == 1;
+        }
+
+        return this.players.reduce((game_total, player) => {
+            return game_total + player.dice.reduce((player_total, dice) => {
+                if (validDice(dice)) return player_total + 1;
+                else return player_total;
+            }, 0)
+        }, 0);
+    }
+
     // Utility function for generating dice for a player
     generateDice(size) {
         let dice = [];
@@ -81,6 +99,7 @@ class Room {
     // Validating that the bid sent from the client is valid
     // Checking the playerId, action, amount, and dice
     validateBid(bid) {
+        // Checking if the same player has bid 2 times in a row
         if (this.prevBid?.playerId == bid.playerId) {
             return { error: 'Player cannot bid 2 times in a row' };
         }
@@ -89,17 +108,26 @@ class Room {
         if (!this.playerExistsById(bid.playerId)) {
             return { error: `Player with id of ${bid.playerId} does not exist` };
         }
+
         // Checking if it is a valid bid action
         if (!Room.validBidActions.includes(bid.action)) {
             return { error: `Invalid bid action: ${bid.action}` };
         }
+
         // Checking if the amount if dice is actually in the game
         if (bid.amount > this.countOfDice()) {
             return { error: `There are only ${this.countOfDice()} dice left in the game. ${bid.amount} is too high` }
         }
+
         // Checking if the dice # if valid (1-6)
         if (1 > bid.dice || bid.dice > 7) {
             return { error: `Dice must be 1, 2, 3, 4, 5 , or 6. Not ${bid.dice}` };
+        }
+
+        if ((bid.action == 'raise' || bid.action == 'aces') && this.prevBid != null) {
+            // Checking for the aces rule
+            const error = this.checkAces(bid);
+            if (error) return { error };
         }
     }
 
@@ -121,101 +149,96 @@ class Room {
         }
     }
 
-
     bidRaise(bid) {
-        // Checking for aces rule
-        const { error } = this.checkAces();
-        if (error) {
-            return { error }
-        }
         if (bid.amount > this.prevBid.amount) {
-            this.prevBid = { playerId: bid.player, action: bid.action, amount: bid.amount, dice: bid.dice }
+            this.prevBid = { playerId: bid.playerId, action: bid.action, amount: bid.amount, dice: bid.dice }
             // this.prevBid = bid 
             // We could also do this I think?? I'm not sure
             // i think we can? - Liam
+            this.bets_in_round++;
             return { bid: this.prevBid }
         }
         if (bid.dice > this.prevBid.dice) {
-            this.prevBid = { playerId: bid.player, action: bid.action, amount: bid.amount, dice: bid.dice }
+            this.prevBid = { playerId: bid.playerId, action: bid.action, amount: bid.amount, dice: bid.dice }
+            this.bets_in_round++;
             return { bid: this.prevBid }
         }
         return { error: 'Raise must raise the amount of dice or the dice' };
     }
-    // IF YOU HAVE TIME CAN YOU Take a look through these
+
     bidAces(bid) {
-        const { error } = this.checkAces();
-        if (error) {
-            return { error }
-        }
         // check if bid is at least half of the last bid
-        // ceil just rounds up the division to the next num
-        if (bid.amount >= (Math.ceil(this.prevBid / 2))) {
+        // ceil just rounds up the division to the next num\
+
+        // We prob do not nee this check because validate bid takes care of this. Keeping it for now tho
+        if (this.prevBid.dice == 1 && bid.amount <= this.prevBid.amount) {
+            return { error: 'Cannot bid same amount or less of 1s' }
+        } else if (this.prevBid.dice != 1 && bid.amount < Math.ceil(this.prevBid.amount / 2)) {
             return { error: 'Your bid needs to be at least half(rounded up) of the last bid' };
-        } else {
-            this.prevBid = { playerId: bid.player, action: bid.action, amount: bid.amount, dice: bid.dice }
-            // this.prevBid = bid
-            return { bid: this.prevBid }
         }
+
+        this.prevBid = { playerId: bid.playerId, action: bid.action, amount: bid.amount, dice: bid.dice }
+        this.bets_in_round++;
+        return { bid: this.prevBid }
     }
 
     bidCall(bid) {
-        // person thinks last bid is fake (this is just so I remember what needed to be made)
-        // getting all the dice 
-        const { error } = this.checkAces();
-        if (error) {
-            return { error }
-        }
-        dieCount = 0;
-        this.players.forEach(player =>
-            player.dice.forEach(die => {
-                if (die == this.prevBid.dice || die == 1) {
-                    dieCount++;
-                }
-            })
-        );
-        //if the guess is not correct, the previous player (the player who made the bid) loses a die.
-        if (dieCount <= this.prevBid.amount) {
-            getPlayer(bid.playerId).diceCount--;
-            return bid;
+        const dieCount = this.countOfSpecificDie(this.prevBid.dice);
+
+        let return_str = `${this.getPlayer(bid.playerId).playerName} called ${this.getPlayer(this.prevBid.playerId).playerName} on their bet of ${this.prevBid.amount} ${this.prevBid.dice}s.`;
+
+        // Player who called loses a dice
+        if (dieCount >= this.prevBid.amount) {
+            this.getPlayer(bid.playerId).diceCount--;
+            return {
+                endOfRound: `${return_str} ${this.getPlayer(bid.playerId).playerName} loses a dice.`
+            };
         } else {
-            getPlayer(this.prevBid.playerId).diceCount--;
-            return bid;
+            // Player who got called (prevBid) loses a dice
+            this.getPlayer(this.prevBid.playerId).diceCount--;
+            return {
+                endOfRound: `${return_str} ${this.getPlayer(this.prevBid.playerId).playerName} loses a dice.`
+            };
         }
-        // these returns will probably need to return a value instead of text 
     }
 
     bidSpot(bid) {
         //player claims that the previous bidder's bid is exactly right
         //f the number is higher or lower, the claimant loses the round; otherwise, 
         //the bidder loses the round.
-        dieCount = 0;
-        this.players.forEach(player =>
-            player.dice.forEach(die => {
-                if (die == this.prevBid.dice || die == 1) {
-                    dieCount++;
-                }
-            })
-        );
+        const dieCount = this.countOfSpecificDie(this.prevBid.dice);
+
+        let return_str = `${this.getPlayer(bid.playerId).playerName} called spot on ${this.prevBid.amount} ${this.prevBid.dice}s. ${this.getPlayer(bid.playerId).playerName}`;
+
         if (dieCount == this.prevBid.amount) {
-            getPlayer(bid.playerId).diceCount--;
-            return bid;
+            if (this.getPlayer(bid.playerId).dice.length < 5) {
+                this.getPlayer(bid.playerId).diceCount++;
+                return {
+                    endOfRound: `${return_str} called spot correctly and gets 1 dice back.`
+                }
+            }
+            return {
+                endOfRound: `${return_str} called spot correctly, however, they already have 5 dice.`
+            }
         } else {
-            getPlayer(this.prevBid.playerId).diceCount--;
-            return bid;
+            this.getPlayer(this.prevBid.playerId).diceCount--;
+            return {
+                endOfRound: `${return_str} called spot incorrectly and loses 1 dice.`
+            }
         }
     }
 
     bid(bid) {
-        const { error } = this.validateBid(bid);
+        const { error } = this.validateBid(bid) || {};
         if (error) {
             return { error };
         }
         // initial round bet
         if (this.prevBid == null) {
             if (bid.action == 'call' || bid.action == 'spot') {
-                return { error: 'Cannot call spot of call on initial bet' };
+                return { error: `Cannot call ${bid.action} on initial bet.` };
             }
-            this.prevBid = { playerId: bid.player, action: bid.action, amount: bid.amount, dice: bid.dice }
+            this.prevBid = { playerId: bid.playerId, action: bid.action, amount: bid.amount, dice: bid.dice }
             return { bid: this.prevBid }
         }
 
