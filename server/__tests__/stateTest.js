@@ -59,7 +59,7 @@ describe('get player', () => {
     })
 
     test('get players', () => {
-        expect(getPlayers(roomCode)).toStrictEqual([player1]);
+        expect(getPlayers(roomCode)).toStrictEqual([{playerName: player1.playerName, diceCount: 5}]);
     })
 
     test('get players invalid room code', () => {
