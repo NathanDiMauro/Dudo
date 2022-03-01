@@ -22,13 +22,13 @@ class Room {
         amount: null, // amount of dice ie. (4) two's 4 being the amount
         dice: null // dice num 4 (two's) two's being the nice num
     };  // {player: Player, action: String, amount: Number, dice: Number}
-    bets_in_round;
+    betsInRound;
 
     constructor(roomCode) {
         this.roomCode = roomCode;
         this.players = [];
         this.prevBid = null;
-        this.bets_in_round = 0;
+        this.betsInRound = 0;
     }
 
     addPlayer(player) {
@@ -65,7 +65,7 @@ class Room {
 
     countOfSpecificDie(die) {
         let validDice;
-        if (this.bets_in_round == 1) {
+        if (this.betsInRound == 1) {
             validDice = (dice) => dice == die;
         } else {
             validDice = (dice) => dice == die || dice == 1;
@@ -98,6 +98,8 @@ class Room {
 
     newRound() {
         this.populatePlayerDice();
+        this.prevBid = null;
+        this.betsInRound = 0;
     }
 
     // Validating that the bid sent from the client is valid
@@ -159,12 +161,12 @@ class Room {
             // this.prevBid = bid 
             // We could also do this I think?? I'm not sure
             // i think we can? - Liam
-            this.bets_in_round++;
+            this.betsInRound++;
             return { bid: this.prevBid }
         }
         if (bid.dice > this.prevBid.dice) {
             this.prevBid = { playerId: bid.playerId, action: bid.action, amount: bid.amount, dice: bid.dice }
-            this.bets_in_round++;
+            this.betsInRound++;
             return { bid: this.prevBid }
         }
         return { error: 'Raise must raise the amount of dice or the dice' };
@@ -182,7 +184,7 @@ class Room {
         }
 
         this.prevBid = { playerId: bid.playerId, action: bid.action, amount: bid.amount, dice: bid.dice }
-        this.bets_in_round++;
+        this.betsInRound++;
         return { bid: this.prevBid }
     }
 
@@ -201,9 +203,10 @@ class Room {
         } else {
             // Player who got called (prevBid) loses a dice
             this.getPlayer(this.prevBid.playerId).diceCount--;
+            let prevPlayerName = this.getPlayer(this.prevBid.playerId).playerName;
             this.newRound();
             return {
-                endOfRound: `${return_str} ${this.getPlayer(this.prevBid.playerId).playerName} loses a dice.`
+                endOfRound: `${return_str} ${prevPlayerName} loses a dice.`
             };
         }
     }
