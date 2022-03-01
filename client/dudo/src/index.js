@@ -1,17 +1,30 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import './index.css';
-import App from './App';
-import reportWebVitals from './reportWebVitals';
+import './styles/index.css';
+import App from './pages/App';
+import { 
+  BrowserRouter, 
+  Routes,
+  Route } from "react-router-dom";
+import About from './pages/about';
+import 'bootstrap/dist/css/bootstrap.min.css';
+import Header from './components/header'
+import Footer from './components/footer'
+import License from './pages/license'
 
 ReactDOM.render(
   <React.StrictMode>
-    <App />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link href="https://fonts.googleapis.com/css2?family=Bitter:wght@500&display=swap" rel="stylesheet" />
+    <BrowserRouter>
+      <Header />
+      <Routes>
+        <Route path="/" element={<App />} />
+        <Route path="/about" element={<About />} />
+        <Route path="/license" element={<License />} />
+      </Routes>
+      <Footer />
+    </BrowserRouter>
   </React.StrictMode>,
   document.getElementById('root')
 );
-
-// If you want to start measuring performance in your app, pass a function
-// to log results (for example: reportWebVitals(console.log))
-// or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
-reportWebVitals();

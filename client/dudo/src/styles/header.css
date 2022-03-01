@@ -1,0 +1,32 @@
+#header {
+    background-color: #004c8c;
+    font-family: 'Bitter', serif;
+}
+
+#brand {
+    color: #ffffff;
+    font-size: 200%;
+    text-decoration: none;
+    margin-left: 10%;
+}
+
+.links, .links:visited {
+    color: #ffffff;
+    margin-left: 10%;
+    text-decoration: none;
+    padding-top: 5%;
+    padding-left: 7%;
+    padding-right: 7%;
+    border-radius: 5px;
+}
+
+#first {
+    margin-left: 1%;
+}
+
+.links:hover {
+    color: #58a5f0;
+    background-color: #ffffff;
+}
+
+

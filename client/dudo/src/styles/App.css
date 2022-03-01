@@ -1,0 +1,5 @@
+#players {
+  display: flex;
+  justify-content: space-evenly;
+  background-color: #0277bd;
+}
