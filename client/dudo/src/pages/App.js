@@ -9,11 +9,12 @@ import { SocketProvider } from '../components/socketContext';
 function App() {
   
   const [name, setName] = useState(null);
+  const [room, setRoom] = useState(null);
 
   return (
     <SocketProvider id="game">
-        <HostGame name={name} setName={setName}/>
-        <JoinGame />
+        <HostGame name={name} setName={setName} room={room} setRoom={setRoom}/>
+        <JoinGame name={name} setName={setName} room={room} setRoom={setRoom}/>
         <Player name={name}/>
         <div id='players'>
           <Oponent name="Oponent 1"/>
