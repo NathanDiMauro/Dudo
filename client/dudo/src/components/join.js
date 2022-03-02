@@ -3,30 +3,18 @@ import { SocketContext } from './socketContext';
 import '../styles/join.css'
 
 const JoinGame = (props) => {
-    const socket = useContext(SocketContext);
-
     const [join, setJoin] = useState(false);
-
-    useEffect(() => {
-        // Adding an event listener to the socket to listen for new players
-        // It will continually listen to the players event being emitted from the backend
-        // And whenever a new player is added or remove, it will update the players array
-        socket.on('players', players => {
-            console.log(players)
-            props.setPlayers(players);
-        })
-    }, [socket])
 
     //when room or name changes add players to socket
     useEffect(() => {
         if (props.name && props.room && join == true){
             console.log('trying to join', props.name, "to room", props.room);
             console.log("room:", props.room)
-            socket.emit('join', { name: props.name, roomCode: props.room}, error => {
+            props.socket.emit('join', { name: props.name, roomCode: props.room}, error => {
                 if (error) {
                     console.log(error);
                 } else {
-                    console.log(props.name, props.room, socket)
+                    console.log(props.name, props.room, props.socket)
                 }
             })
             setJoin(false);
