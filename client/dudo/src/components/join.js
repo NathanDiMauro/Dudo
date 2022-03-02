@@ -5,15 +5,13 @@ import '../styles/join.css'
 const JoinGame = (props) => {
     const socket = useContext(SocketContext);
 
-    const [title, setTitle] = useState(null);
-    const [players, setPlayers] = useState([]);
-
     useEffect(() => {
         // Adding an event listener to the socket to listen for new players
         // It will continually listen to the players event being emitted from the backend
         // And whenever a new player is added or remove, it will update the players array
         socket.on('players', players => {
-            setPlayers(players);
+            console.log(players)
+            props.setPlayers(players);
         })
     }, [socket])
 
@@ -30,13 +28,17 @@ const JoinGame = (props) => {
                     console.log(name, room, socket)
                 }
             })
-            setTitle(<h4>Room: {props.room}</h4>)
         }
     }, [props.room, props.name])
 
     const addPlayer = () => {
         props.setName(document.getElementById("joinNameInput").value);
-        props.setRoom(document.getElementById("joinRoomInput").value)
+        props.setRoom(document.getElementById("joinRoomInput").value);
+        props.setShow(false);
+    }
+
+    if (props.show == false){
+        return false;
     }
     
     return (
@@ -49,10 +51,6 @@ const JoinGame = (props) => {
                 <input type="text" id="joinRoomInput"></input> 
                 <button onClick={addPlayer}>Join</button>
                 <br />
-            </div>
-            <div id="pLog">
-                {title}
-                {players.map((player, key) => <p key={key}>{player.name} has {player.dice} dice left</p>)}
             </div>
         </div>
     );

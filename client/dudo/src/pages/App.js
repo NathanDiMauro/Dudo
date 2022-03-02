@@ -10,15 +10,45 @@ function App() {
   
   const [name, setName] = useState(null);
   const [room, setRoom] = useState(null);
+  const [players, setPlayers] = useState([]);
+  const [show, setShow] = useState(true);
+
+  const outPutName = () => {
+    if (name)
+      return 
+  }
+
+  const outPutOp = () => {
+    for (const player in players){
+      console.log("Player:",player)
+    }
+  }
+
+  const leaveGame = () => {
+    setName(null);
+    setRoom(null);
+    setPlayers([]);
+    setShow(true);
+  }
+
+  const showLeave = () => {
+    if (name)
+      return <button onClick={leaveGame}>Leave Game</button>
+  }
 
   return (
     <SocketProvider id="game">
-        <HostGame name={name} setName={setName} room={room} setRoom={setRoom}/>
-        <JoinGame name={name} setName={setName} room={room} setRoom={setRoom}/>
-        <Player name={name}/>
+        <HostGame name={name} setName={setName} room={room} setRoom={setRoom} 
+                  players={players} setPlayers={setPlayers} show={show} setShow={setShow}/>
+
+        <JoinGame name={name} setName={setName} room={room} setRoom={setRoom} 
+                  players={players} setPlayers={setPlayers} show={show} setShow={setShow}/>
+                  
+        <Player name={name} show={show}/>
         <div id='players'>
-          <Oponent name="Oponent 1"/>
-          <Oponent name="Oponent 2"/>
+          {outPutOp()}
+          {/* <Oponent name="Oponent 1"/> */}
+          {showLeave()}
         </div>
     </SocketProvider>
   );
