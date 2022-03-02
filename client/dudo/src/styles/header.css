@@ -1,6 +1,8 @@
 #header {
     background-color: #004c8c;
     font-family: 'Bitter', serif;
+    height:8vh;
+    min-height: 3em;
 }
 
 #brand {
