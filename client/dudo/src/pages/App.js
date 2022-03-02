@@ -19,7 +19,7 @@ function App() {
     // It will continually listen to the players event being emitted from the backend
     // And whenever a new player is added or remove, it will update the players array
     socket.on('players', players => {
-        console.log(players)
+        console.log("Players: ", players)
         setPlayers(players);
     })
 }, [socket])

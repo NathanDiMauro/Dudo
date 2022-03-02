@@ -12,6 +12,7 @@ const JoinGame = (props) => {
             console.log("room:", props.room)
             props.socket.emit('join', { name: props.name, roomCode: props.room}, error => {
                 if (error) {
+                    console.log(error);
                     alert(error);
                     props.setName(null);
                     props.setRoom(null);
