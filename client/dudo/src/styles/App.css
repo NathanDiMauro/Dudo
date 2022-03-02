@@ -1,3 +1,9 @@
+#game {
+  height: auto;
+  min-height:88.75vh;
+  background-color: #0277bd;
+}
+
 #players {
   display: flex;
   justify-content: space-evenly;
