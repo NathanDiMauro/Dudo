@@ -67,7 +67,7 @@ io.on('connection', (socket) => {
                 } else if (endOfRound) {
                     io.in(room.roomCode).emit('endOfRound', { endOfRound });
                 } else if (error) {
-                    socket.emit(socket.id).emit('error', { error });
+                    socket.emit(socket.id).emit('bidError', { error });
                 } else {
                     socket.emit(socket.id).emit('error', { error: 'An unexpected error occurred ' });
                 }
