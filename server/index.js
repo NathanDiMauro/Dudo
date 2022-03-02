@@ -1,23 +1,25 @@
-const app = require('express')();
-const http = require('http').createServer(app);
-// Initializing a new socket.io instance and passing the http server to it
-const io = require('socket.io')(http);
-const cors = require('cors');
+const express = require('express');
+const { createServer } = require('http');
+const { Server } = require('socket.io');
+
+const app = express();
+const http = createServer();
+const io = new Server(http, { options: { cors: { origin: ['http://localhost:3000'], methods: ['GET', 'POST'] } } })
+
 
 const PORT = process.env.PORT || 5000
 const { addPlayer, getPlayer, getPlayers, removePlayer, getRoom, createRoom } = require('./state');
 
-app.use(cors);
-
 const _addPlayer = (socket, name, roomCode, callback) => {
     const { newPlayer, error } = addPlayer(socket.id, name, roomCode);
 
-    console.log('Player is joining', newPlayer, error);
+    console.log('Player is joining', newPlayer, error, roomCode);
 
     // If there is an error, return it
     if (error) return callback(error);
     // Adding the new player to the room
-    socket.join(newPlayer.roomCode);
+    socket.join(roomCode);
+
     // Notifying the entire room that a new player joined -- socket.io does not notify the sender
     socket.in(roomCode).emit('notification', { title: 'Someone just joined', description: `${newPlayer.playerName} just entered the room` });
     // Sending an updated list of players to the room -- io.in notifies everyone along with the sender
@@ -58,7 +60,6 @@ io.on('connection', (socket) => {
         const room = getRoom(socket.id);
         if (room) {
             const player = room.getPlayer(socket.id);
-            console.log('A bid was just received', bid);
             if (player) {
                 const { bid, error, endOfRound } = room.bid(new_bid);
                 if (bid) {
@@ -66,12 +67,12 @@ io.on('connection', (socket) => {
                 } else if (endOfRound) {
                     io.in(room.roomCode).emit('endOfRound', { endOfRound });
                 } else if (error) {
-                    io.broadcast.to(socket.id).emit('error', { error });
+                    socket.emit(socket.id).emit('error', { error });
                 } else {
-                    io.broadcast.to(socket.id).emit('error', { error: 'An unexpected error occurred '});
+                    socket.emit(socket.id).emit('error', { error: 'An unexpected error occurred ' });
                 }
             } else {
-                return { error: 'Invalid Player id' }
+                socket.emit('error', { error: 'Invalid Player id' })
             }
         }
     })
@@ -79,13 +80,14 @@ io.on('connection', (socket) => {
 
 
     socket.on('sendMessage', message => {
-        console.log('Got a message:', message)
-        const player = getPlayer(socket.id);
-        if (player) {
+        const room = getRoom(socket.id);
+        if (room) {
+            const player = room.getPlayer(socket.id)
+            console.log(player, room.roomCode)
             // Placeholder for now
-            io.in(player.room).emit('message', { player: player.playerName, text: message });
+            io.in(room.roomCode).emit('message', { player: player.playerName, text: message });
         } else {
-            return { error: 'Invalid Player id' }
+            socket.emit('error', { error: 'Invalid Player id' });
         }
     })
 
