@@ -4,23 +4,61 @@ import JoinGame from '../components/join';
 import HostGame from '../components/host';
 import Player from "../components/player";
 import Oponent from '../components/oponent';
-import { SocketProvider } from '../components/socketContext';
+import { SocketContext } from '../components/socketContext'; 
 
 function App() {
   
+  const socket = useContext(SocketContext);
   const [name, setName] = useState(null);
   const [room, setRoom] = useState(null);
+  const [players, setPlayers] = useState([]);
+  const [show, setShow] = useState(true);
+
+  useEffect(() => {
+    // Adding an event listener to the socket to listen for new players
+    // It will continually listen to the players event being emitted from the backend
+    // And whenever a new player is added or remove, it will update the players array
+    socket.on('players', players => {
+        console.log(players)
+        setPlayers(players);
+    })
+}, [socket])
+  
+  const outPutOp = () => {
+    for (const player in players){
+      console.log("Player:",player)
+    }
+  }
+
+  const leaveGame = () => {
+    setName(null);
+    setRoom(null);
+    setPlayers([]);
+    setShow(true);
+  }
+
+  const showLeave = () => {
+    if (!show)
+      return <button onClick={leaveGame}>Leave Game</button>
+  }
 
   return (
-    <SocketProvider id="game">
-        <HostGame name={name} setName={setName} room={room} setRoom={setRoom}/>
-        <JoinGame name={name} setName={setName} room={room} setRoom={setRoom}/>
-        <Player name={name}/>
-        <div id='players'>
-          <Oponent name="Oponent 1"/>
-          <Oponent name="Oponent 2"/>
-        </div>
-    </SocketProvider>
+    <div id="game">
+      <HostGame name={name} setName={setName} room={room} setRoom={setRoom} 
+                players={players} setPlayers={setPlayers} show={show} setShow={setShow}
+                socket={socket}/>
+
+      <JoinGame name={name} setName={setName} room={room} setRoom={setRoom} 
+                players={players} setPlayers={setPlayers} show={show} setShow={setShow}
+                socket={socket}/>
+                
+      <Player name={name} show={show}/>
+      <div id='players'>
+        {outPutOp()}
+        {/* <Oponent name="Oponent 1"/> */}
+        {showLeave()}
+      </div>
+    </div>
   );
 }
 

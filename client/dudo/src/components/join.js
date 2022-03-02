@@ -3,40 +3,36 @@ import { SocketContext } from './socketContext';
 import '../styles/join.css'
 
 const JoinGame = (props) => {
-    const socket = useContext(SocketContext);
-
-    const [title, setTitle] = useState(null);
-    const [players, setPlayers] = useState([]);
-
-    useEffect(() => {
-        // Adding an event listener to the socket to listen for new players
-        // It will continually listen to the players event being emitted from the backend
-        // And whenever a new player is added or remove, it will update the players array
-        socket.on('players', players => {
-            setPlayers(players);
-        })
-    }, [socket])
+    const [join, setJoin] = useState(false);
 
     //when room or name changes add players to socket
     useEffect(() => {
-        if (props.name && props.room){
+        if (props.name && props.room && join == true){
             console.log('trying to join', props.name, "to room", props.room);
-            const name = props.name;
-            const room = props.room;
-            socket.emit('join', { name, room }, error => {
+            console.log("room:", props.room)
+            props.socket.emit('join', { name: props.name, roomCode: props.room}, error => {
                 if (error) {
-                    console.log(error);
+                    alert(error);
+                    props.setName(null);
+                    props.setRoom(null);
+                    props.setShow(true);
                 } else {
-                    console.log(name, room, socket)
+                    console.log(props.name, props.room, props.socket)
                 }
             })
-            setTitle(<h4>Room: {props.room}</h4>)
+            setJoin(false);
         }
     }, [props.room, props.name])
 
     const addPlayer = () => {
+        setJoin(true);
         props.setName(document.getElementById("joinNameInput").value);
-        props.setRoom(document.getElementById("joinRoomInput").value)
+        props.setRoom(parseInt(document.getElementById("joinRoomInput").value));
+        props.setShow(false);
+    }
+
+    if (props.show == false){
+        return false;
     }
     
     return (
@@ -49,10 +45,6 @@ const JoinGame = (props) => {
                 <input type="text" id="joinRoomInput"></input> 
                 <button onClick={addPlayer}>Join</button>
                 <br />
-            </div>
-            <div id="pLog">
-                {title}
-                {players.map((player, key) => <p key={key}>{player.name} has {player.dice} dice left</p>)}
             </div>
         </div>
     );
