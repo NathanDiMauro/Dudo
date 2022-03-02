@@ -12,12 +12,7 @@ function App() {
   const [room, setRoom] = useState(null);
   const [players, setPlayers] = useState([]);
   const [show, setShow] = useState(true);
-
-  const outPutName = () => {
-    if (name)
-      return 
-  }
-
+  
   const outPutOp = () => {
     for (const player in players){
       console.log("Player:",player)
