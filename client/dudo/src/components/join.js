@@ -5,6 +5,8 @@ import '../styles/join.css'
 const JoinGame = (props) => {
     const socket = useContext(SocketContext);
 
+    const [join, setJoin] = useState(false);
+
     useEffect(() => {
         // Adding an event listener to the socket to listen for new players
         // It will continually listen to the players event being emitted from the backend
@@ -17,23 +19,24 @@ const JoinGame = (props) => {
 
     //when room or name changes add players to socket
     useEffect(() => {
-        if (props.name && props.room){
+        if (props.name && props.room && join == true){
             console.log('trying to join', props.name, "to room", props.room);
-            const name = props.name;
-            const room = props.room;
-            socket.emit('join', { name, room }, error => {
+            console.log("room:", props.room)
+            socket.emit('join', { name: props.name, roomCode: props.room}, error => {
                 if (error) {
                     console.log(error);
                 } else {
-                    console.log(name, room, socket)
+                    console.log(props.name, props.room, socket)
                 }
             })
+            setJoin(false);
         }
     }, [props.room, props.name])
 
     const addPlayer = () => {
+        setJoin(true);
         props.setName(document.getElementById("joinNameInput").value);
-        props.setRoom(document.getElementById("joinRoomInput").value);
+        props.setRoom(parseInt(document.getElementById("joinRoomInput").value));
         props.setShow(false);
     }
 
