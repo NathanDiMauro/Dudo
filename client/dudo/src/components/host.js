@@ -5,6 +5,16 @@ import '../styles/join.css'
 const HostGame = (props) => {
     const socket = useContext(SocketContext);
 
+    useEffect(() => {
+        // Adding an event listener to the socket to listen for new players
+        // It will continually listen to the players event being emitted from the backend
+        // And whenever a new player is added or remove, it will update the players array
+        socket.on('players', players => {
+            console.log(players)
+            props.setPlayers(players);
+        })
+    }, [socket])
+
     //when room or name changes add players to socket
     useEffect(() => {
         if (props.name && props.room){
@@ -13,7 +23,7 @@ const HostGame = (props) => {
             console.log('trying to join', props.name, "to room", props.room)
             const name = props.name;
             const room = props.room
-            socket.emit('join', { name, room }, error => {
+            socket.emit('createRoom', { name, room }, error => {
                 if (error) {
                     console.log(error);
                 } else {
@@ -21,11 +31,17 @@ const HostGame = (props) => {
                 }
             })
         }
-    }, [props.room, props.name])
+    }, [props.name])
 
     const addRoom = () => {
         props.setName(document.getElementById("nameInput").value);
-        props.setRoom(document.getElementById("roomInput").value)
+        let rnd = Math.floor(Math.random() * 9999);
+        props.setRoom(rnd)
+        props.setShow(false)
+    }
+
+    if (props.show == false){
+        return false;
     }
     
     return (
@@ -34,8 +50,6 @@ const HostGame = (props) => {
             <div id="jInput">
                 <h4>Name:</h4>
                 <input type="text" id="nameInput"></input>
-                <h4>Room code:</h4>
-                <input type="text" id="roomInput"></input> 
                 <button onClick={addRoom}>Host</button>
                 <br />
             </div>
