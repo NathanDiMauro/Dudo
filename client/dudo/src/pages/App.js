@@ -20,16 +20,6 @@ function App() {
     // Adding an event listener to the socket to listen for new players
     // It will continually listen to the players event being emitted from the backend
     // And whenever a new player is added or remove, it will update the players array
-    socket.on('test', message => {
-      console.log(message);
-      
-    })
-  }, [socket])
-
-  useEffect(() => {
-    // Adding an event listener to the socket to listen for new players
-    // It will continually listen to the players event being emitted from the backend
-    // And whenever a new player is added or remove, it will update the players array
     socket.on('players', players => {
       console.log("Recived Players", players);
 
@@ -38,15 +28,15 @@ function App() {
       for (let i = 0; i<players.length; i++) {
         console.log(players[i].playerName != name);
         if (players[i].playerName != name)
-          oponentsBuilder.push(players[i].playerName)
+          oponentsBuilder.push(players[i])
         else
-          setPlayer(players[i].playerName)
+          setPlayer(players[i])
       }
 
       setOponents(oponentsBuilder);
 
-      const oponentComponentBuilder = oponentsBuilder.map((name) =>
-        <Oponent name={name} key={name}/>
+      const oponentComponentBuilder = oponentsBuilder.map((oponent) =>
+        <Oponent name={oponent.playerName} key={oponent.playerName} diceNum={oponent.diceCount} />
       );
 
       setOponentsComponents(oponentComponentBuilder)
@@ -78,7 +68,7 @@ function App() {
       <JoinGame name={name} setName={setName} room={room} setRoom={setRoom} 
                 show={show} setShow={setShow} socket={socket}/>
       {showRoom()}
-      <Player name={name} show={show}/>
+      <Player name={name} show={show} diceNum={player.diceCount}/>
       <div id='players'>
         {oponentsComponents}
       </div>
