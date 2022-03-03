@@ -1,5 +1,4 @@
-import React, { useContext, useState, useEffect } from 'react';
-import { SocketContext } from './socketContext'; 
+import React, {useState, useEffect } from 'react';
 import '../styles/join.css'
 
 const HostGame = (props) => {
@@ -17,6 +16,10 @@ const HostGame = (props) => {
             props.socket.emit('createRoom', {name: props.name, roomCode: props.room}, error => {
                 if (error) {
                     console.log(error);
+                    alert(error);
+                    props.setName(null);
+                    props.setRoom(null);
+                    props.setShow(true);
                 } else {
                     console.log(props.name, props.room, props.socket)
                 }
@@ -28,8 +31,8 @@ const HostGame = (props) => {
     const addRoom = () => {
         setHost(true);
         props.setName(document.getElementById("nameInput").value);
-        props.setRoom(Math.floor(Math.random() * 9999))
-        props.setShow(false)
+        props.setRoom(Math.floor(Math.random() * 9999));
+        props.setShow(false);
     }
 
     if (props.show == false){
