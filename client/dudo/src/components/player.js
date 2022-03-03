@@ -14,7 +14,6 @@ const Player = (props) => {
 
     const allDice = [dice1, dice2, dice3, dice4, dice5, dice6];
     
-    const [playerID, setPlayerID] = useState(props.socket.playerID);
     const [action, setAction] = useState(null);
     const [amount, setAmmount] = useState(null);
     const [dice, setDice] = useState(null);
@@ -29,8 +28,10 @@ const Player = (props) => {
     }, [props.diceNum])
 
     useEffect(() => {
-        const bid_obj = { playerId: playerID, action: action, amount: amount, dice: dice }
+        console.log(props.id);
+        const bid_obj = { playerId: props.id, action: action, amount: amount, dice: dice }
         console.log(bid_obj);
+
         props.socket.emit('bid', {new_bid: bid_obj}, error => {
             alert(error);
         });

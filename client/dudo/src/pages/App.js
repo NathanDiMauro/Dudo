@@ -30,7 +30,7 @@ function App() {
         if (players[i].playerName != name)
           oponentsBuilder.push(players[i])
         else
-          setPlayer(players[i])
+          setPlayer(players[i]);
       }
 
       setOponents(oponentsBuilder);
@@ -68,7 +68,8 @@ function App() {
       <JoinGame name={name} setName={setName} room={room} setRoom={setRoom} 
                 show={show} setShow={setShow} socket={socket}/>
       {showRoom()}
-      <Player name={name} show={show} diceNum={player.diceCount} socket={socket}/>
+      <Player name={name} show={show} diceNum={player.diceCount} socket={socket}
+              id={socket.id}/>
       <div id='players'>
         {oponentsComponents}
       </div>
