@@ -5,6 +5,7 @@ import HostGame from '../components/host';
 import Player from "../components/player";
 import Oponent from '../components/oponent';
 import { SocketProvider } from '../components/socketContext';
+import SocketExample from '../components/socketExample';
 
 function App() {
   
@@ -13,13 +14,14 @@ function App() {
 
   return (
     <SocketProvider id="game">
-        <HostGame name={name} setName={setName} room={room} setRoom={setRoom}/>
+      <SocketExample />
+        {/* <HostGame name={name} setName={setName} room={room} setRoom={setRoom}/>
         <JoinGame name={name} setName={setName} room={room} setRoom={setRoom}/>
         <Player name={name}/>
         <div id='players'>
           <Oponent name="Oponent 1"/>
           <Oponent name="Oponent 2"/>
-        </div>
+        </div> */}
     </SocketProvider>
   );
 }

@@ -28,7 +28,7 @@ class Room {
         this.roomCode = roomCode;
         this.players = [];
         this.prevBid = null;
-        this.betsInRound = 0;
+        this.betsInRound = null;
     }
 
     addPlayer(player) {
@@ -102,6 +102,7 @@ class Room {
 
     newRound() {
         this.populatePlayerDice();
+        console.log('new round');
         this.prevBid = null;
         this.betsInRound = 0;
     }
@@ -245,21 +246,30 @@ class Room {
     }
 
     bid(bid) {
+        if (this.betsInRound == null) {
+            return { error: 'Game has not been started yet.' };
+        }
         const { error } = this.validateBid(bid) || {};
         if (error) {
             return { error };
         }
         // initial round bet
+
+        console.log(this.prevBid);
+        console.log(bid.action);
+
         if (this.prevBid == null) {
             if (bid.action == 'call' || bid.action == 'spot') {
                 return { error: `Cannot call ${bid.action} on initial bet.` };
             }
             this.prevBid = { playerId: bid.playerId, action: bid.action, amount: bid.amount, dice: bid.dice }
-            return { bid: this.prevBid }
+            console.log(`265: ${this.prevBid}`)
+            return { bid: this.prevBid, startOfRound: true }
         }
 
         switch (bid.action) {
             case 'raise':
+                console.log('in raise');
                 return this.bidRaise(bid);
             case 'aces':
                 return this.bidAces(bid);

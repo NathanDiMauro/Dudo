@@ -2,6 +2,9 @@ To start the server: `npm start`
 
 This project uses [socket.io](https://socket.io/).
 
+# Client Guide
+
+
 ### Bid format: 
 This is the object that the client will send to the server when a player make a bid.  
 `{ playerId: number, action: string, amount: number, dice: number }`  
@@ -11,7 +14,7 @@ This is the object that will be sent to the client when a round is over.
 `{ endOfRound: 'message' }`  
 Example: `{ endOfRound: 'Joe called paul on their bet of 4 4s. Joe loses a dice' }` -->
 
-# Client Emit Events
+## Client Emit Events
 
 ### Create a room
 Creating a new room with `name` being the player name and `roomCode` being the room code.  
@@ -29,7 +32,7 @@ Example new_bid: `{ playerId: 0, action: 'raise', amount: 4, dice: 4 }`
 There are some important things to note when making a bid.  
 When you send a bid to the server, the serve validates it. If the bid is invalid, it will emit an `bidError` event to the client who made the bid.  To catch this error, make sure the client is listening to the `bidError` event from the server.
 
-# Client Listen Events
+## Client Listen Events
 ### New players
 `socket.on('players', players => {...})`  
 Anytime a new player joins, the server will return an array of players.  

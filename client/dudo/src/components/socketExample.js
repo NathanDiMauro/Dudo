@@ -17,25 +17,36 @@ const SocketExample = () => {
         // It will continually listen to the players event being emitted from the backend
         // And whenever a new player is added or remove, it will update the players array
         socket.on('players', players => {
-            setPlayers(players);
+            console.log(players)
+        })
+
+        socket.on('diceForRound', dice => {
+            console.log(dice);
+        })
+
+        socket.on('newBid', bid => {
+            console.log(bid);
+        })
+
+        socket.on('bidError', error => {
+            console.log(error);
         })
 
         // These are just examples, you probably do not want all the socket stuff in the same useEffect
 
-        socket.on('message', msg => {
-            setMessages(messages => [...messages, msg])
+        socket.on('message', message => {
+            console.log(message)
         })
 
         socket.on('notification', notification => {
             console.log(notification)
-            setNotifications(notifications => [...notifications, notification]);
         })
     }, [socket])
 
     const handleClick = () => {
         console.log('trying to join')
         // Login to the socket
-        socket.emit('join', { name, roomCode }, error => {
+        socket.emit('createRoom', { name, roomCode }, error => {
             if (error) {
                 console.log(error);
             } else {
@@ -48,6 +59,14 @@ const SocketExample = () => {
         socket.emit('sendMessage', 'Message');
     }
 
+    const startGame = () => {
+        socket.emit('startGame')
+    }
+
+    const bid = () => {
+        socket.emit('bid', { playerId: socket.id, action: 'raise', amount: 4, dice: 4 })
+    }
+
     console.log(players)
 
 
@@ -55,12 +74,8 @@ const SocketExample = () => {
         <div>
             <button onClick={handleClick}>Join</button>
             <button onClick={sendMessage}>sendMessage</button>
-            <div>
-                {players.map((player, key) => <p key={key}>{player.name} has {player.dice} dice left</p>)}
-            </div>
-            <div>
-                {messages.map((message, key) => <p key={key}>{message.player}: {message.text}</p>)}
-            </div>
+            <button onClick={startGame}>Start Game</button>
+            <button onClick={bid}>Bid</button>
         </div>
     );
 }
