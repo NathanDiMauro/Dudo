@@ -30,3 +30,66 @@
     color: white;
     box-shadow: 0 12px 16px 0 rgba(0,0,0,0.24), 0 17px 50px 0 rgba(0,0,0,0.19);
 }
+
+#betText {
+    margin-left: 10em;
+}
+
+#betNumInput {
+    width: 30px;
+    margin-left: 0.5em;
+}
+
+#betDiceSelect {
+    width: 150px;
+    height: 100px;
+}
+
+#diceDropdown {
+    position: relative;
+    display: inline-block;
+}
+
+#dropdownSelect {
+    background-color: #58a5f0;
+    color: white;
+    cursor: pointer;
+}
+
+#dropdownContent {
+    display: none;
+    position: absolute;
+    background-color: #0277bd;
+    box-shadow: 0px 8px 16px 
+        0px rgba(0, 0, 0, 0.2);
+    z-index: 1;
+}
+
+#dropdownContent a {
+    display: block;
+}
+
+#dropdownContent a:hover img {
+    border-color: #58a5f0;
+}
+
+#dropdownContent img {
+    border: 1px solid #004c8c;
+    position: relative;
+}
+
+#diceDropdown:hover #dropdownContent {
+    display: flex;
+}
+
+#diceDropdown:hover #dropdownSelect {
+    background-color: #58a5f0;
+}
+#diceDropdown ul {
+    list-style-type: none;
+}
+
+.actionText {
+    position: relative;
+    left: 10em;
+}
