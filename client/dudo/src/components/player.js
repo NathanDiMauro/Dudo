@@ -79,6 +79,7 @@ const Player = (props) => {
         <div id="player">
             <h2>{props.name}:</h2>
             {dice.map((die, key) => <img src={die} key={key} />)}
+            <br/>
             <span id='betText'>Bet:</span>
             <input id='betNumInput'/>
             <div id='diceDropdown'>
