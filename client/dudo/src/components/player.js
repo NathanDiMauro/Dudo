@@ -52,27 +52,42 @@ const Player = (props) => {
 
     function bet() {
         // Read and process the given bet from the player
-        var betNum = document.getElementById("betNumInput").value;  //Get number of dice
-        var betDice = document.getElementById("diceSelected").alt.charAt(24);    //Get dice selected from alt of img tag
+        var betNum = parseInt(document.getElementById("betNumInput").value);  //Get number of dice
+        var betDice = parseInt(document.getElementById("diceSelected").alt.charAt(24));    //Get dice selected from alt of img tag
         var bid_obj = {playerId: props.socket.id, action: 'raise', amount: betNum, dice: betDice};
-        console.log(bid_obj);
-        props.socket.emit('bid', {newBid: bid_obj}, error => {});
-        
+        props.socket.emit('bid', {newBid: bid_obj}, error => {
+            alert(error);
+        });
     }
 
     function call() {
         // Call out the previous bet as incorrect
-
+        var betNum = 1;     //Get prev opponent's bet num
+        var betDice = 1;    //Get prev opponent's bet dice selection
+        var bid_obj = {playerId: props.socket.id, action: 'call', amount: betNum, dice: betDice};
+        props.socket.emit('bid', {newBid: bid_obj}, error => {
+            alert(error);
+        });
     }
 
     function spot() {
         // Call out the previous bet as correct
-
+        var betNum = 1;     //Get prev opponent's bet num
+        var betDice = 1;    //Get prev opponent's bet dice selection
+        var bid_obj = {playerId: props.socket.id, action: 'spot', amount: betNum, dice: betDice};
+        props.socket.emit('bid', {newBid: bid_obj}, error => {
+            alert(error);
+        });
     }
 
     function bidAces() {
         // Player wants to bid aces
-
+        var betNum = 1;     //Get prev opponent's bet num
+        var betDice = 1;    //Get prev opponent's bet dice selection
+        var bid_obj = {playerId: props.socket.id, action: 'aces', amount: betNum, dice: betDice};
+        props.socket.emit('bid', {newBid: bid_obj}, error => {
+            alert(error);
+        });
     }
 
     return (

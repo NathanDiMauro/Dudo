@@ -68,7 +68,7 @@ function App() {
       <JoinGame name={name} setName={setName} room={room} setRoom={setRoom} 
                 show={show} setShow={setShow} socket={socket}/>
       {showRoom()}
-      <Player name={name} show={show} diceNum={player.diceCount}/>
+      <Player name={name} show={show} diceNum={player.diceCount} socket={socket}/>
       <div id='players'>
         {oponentsComponents}
       </div>
