@@ -6,7 +6,6 @@ import dice4 from '../dice/dice4.svg'
 import dice5 from '../dice/dice5.svg'
 import dice6 from '../dice/dice6.svg'
 import '../styles/player.css'
-import JoinGame from './join';
 
 const Player = (props) => {
     const [dice, setDice] = useState([dice1, dice2, dice3, dice4, dice5, dice6]);
@@ -80,7 +79,6 @@ const Player = (props) => {
         <div id="player">
             <h2>{props.name}:</h2>
             {dice.map((die, key) => <img src={die} key={key} />)}
-            <button onClick={shuffle}>Shuffle</button><br/>
             <span id='betText'>Bet:</span>
             <input id='betNumInput'/>
             <div id='diceDropdown'>
