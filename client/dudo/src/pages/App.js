@@ -42,6 +42,11 @@ function App() {
       return <button onClick={leaveGame}>Leave Game</button>
   }
 
+  const showRoom = () => {
+    if (!show)
+      return <h1>Room Code: {room}</h1>
+  }
+
   return (
     <div id="game">
       <HostGame name={name} setName={setName} room={room} setRoom={setRoom} 
@@ -51,7 +56,7 @@ function App() {
       <JoinGame name={name} setName={setName} room={room} setRoom={setRoom} 
                 players={players} setPlayers={setPlayers} show={show} setShow={setShow}
                 socket={socket}/>
-                
+      {showRoom()}
       <Player name={name} show={show}/>
       <div id='players'>
         {outPutOp()}
