@@ -1,31 +1,42 @@
-import React, { useContext, useState, useEffect } from 'react';
-import { SocketContext } from './socketContext'; 
+import React, {useState, useEffect } from 'react';
 import '../styles/join.css'
 
 const HostGame = (props) => {
-    const socket = useContext(SocketContext);
 
+    const [host, setHost] = useState(false);
+
+    
     //when room or name changes add players to socket
     useEffect(() => {
-        if (props.name && props.room){
+        if (props.name && props.room && host == true){
             console.log('trying to create room', props.room)
 
             console.log('trying to join', props.name, "to room", props.room)
-            const name = props.name;
-            const room = props.room
-            socket.emit('join', { name, room }, error => {
+
+            props.socket.emit('createRoom', {name: props.name, roomCode: props.room}, error => {
                 if (error) {
                     console.log(error);
+                    alert(error);
+                    props.setName(null);
+                    props.setRoom(null);
+                    props.setShow(true);
                 } else {
-                    console.log(props.name, room, socket)
+                    console.log(props.name, props.room, props.socket)
                 }
             })
+            setHost(false);
         }
-    }, [props.room, props.name])
+    }, [props.name])
 
     const addRoom = () => {
+        setHost(true);
         props.setName(document.getElementById("nameInput").value);
-        props.setRoom(document.getElementById("roomInput").value)
+        props.setRoom(Math.floor(Math.random() * 9999));
+        props.setShow(false);
+    }
+
+    if (props.show == false){
+        return false;
     }
     
     return (
@@ -34,8 +45,6 @@ const HostGame = (props) => {
             <div id="jInput">
                 <h4>Name:</h4>
                 <input type="text" id="nameInput"></input>
-                <h4>Room code:</h4>
-                <input type="text" id="roomInput"></input> 
                 <button onClick={addRoom}>Host</button>
                 <br />
             </div>

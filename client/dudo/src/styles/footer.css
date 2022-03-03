@@ -2,6 +2,8 @@
     background-color: #58a5f0;
     color: #ffffff;
     font-size: 15pt;
+    height: 3vh;
+    min-height:1.4em;
 }
 
 .fLink {
