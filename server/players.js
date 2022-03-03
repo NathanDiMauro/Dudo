@@ -102,7 +102,6 @@ class Room {
 
     newRound() {
         this.populatePlayerDice();
-        console.log('new round');
         this.prevBid = null;
         this.betsInRound = 0;
     }
@@ -254,16 +253,11 @@ class Room {
             return { error };
         }
         // initial round bet
-
-        console.log(this.prevBid);
-        console.log(bid.action);
-
         if (this.prevBid == null) {
             if (bid.action == 'call' || bid.action == 'spot') {
                 return { error: `Cannot call ${bid.action} on initial bet.` };
             }
             this.prevBid = { playerId: bid.playerId, action: bid.action, amount: bid.amount, dice: bid.dice }
-            console.log(`265: ${this.prevBid}`)
             return { bid: this.prevBid, startOfRound: true }
         }
 
