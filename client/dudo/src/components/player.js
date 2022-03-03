@@ -1,4 +1,4 @@
-import React, {useState, useEffect } from 'react';
+import React, {useState} from 'react';
 import dice1 from '../dice/dice1.svg'
 import dice2 from '../dice/dice2.svg'
 import dice3 from '../dice/dice3.svg'

@@ -1,5 +1,4 @@
-import React, { useContext, useState, useEffect } from 'react';
-import { SocketContext } from './socketContext';
+import React, {useState, useEffect } from 'react';
 import '../styles/join.css'
 
 const JoinGame = (props) => {
