@@ -1,4 +1,4 @@
-import React, {useState, useEffect } from 'react';
+import React, {useState} from 'react';
 import dice1 from '../dice/dice1.svg'
 import dice2 from '../dice/dice2.svg'
 import dice3 from '../dice/dice3.svg'
@@ -10,20 +10,20 @@ import '../styles/oponent.css'
 
 const Oponent = (props) => {
     const [dice, setDice] = useState([dice1, dice2, dice3, dice4, dice5, dice6]);
-    const [show, setShow] = useState([cup]);
+    const [hand, setHand] = useState([cup]);
 
     const showDice = () => {
-        setShow(dice)
+        setHand(dice)
     }
 
     const hideDice = () => {
-        setShow([cup])
+        setHand([cup])
     }
 
     return (
         <div id="oponent">
             <h2>{props.name}</h2>
-            {show.map((die, key) => <img src={die} key={key} />)}
+            {hand.map((die, key) => <img src={die} key={key} />)}
             <button onClick={showDice}>Show</button>
             <button onClick={hideDice}>Hide</button>
         </div>

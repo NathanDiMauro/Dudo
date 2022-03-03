@@ -11,29 +11,52 @@ function App() {
   const socket = useContext(SocketContext);
   const [name, setName] = useState(null);
   const [room, setRoom] = useState(null);
-  const [players, setPlayers] = useState([]);
   const [show, setShow] = useState(true);
+  const [player, setPlayer] = useState([]);
+  const [oponents, setOponents] = useState([]);
+  const [oponentsComponents, setOponentsComponents] = useState([]);
+
+  useEffect(() => {
+    // Adding an event listener to the socket to listen for new players
+    // It will continually listen to the players event being emitted from the backend
+    // And whenever a new player is added or remove, it will update the players array
+    socket.on('test', message => {
+      console.log(message);
+      
+    })
+  }, [socket])
 
   useEffect(() => {
     // Adding an event listener to the socket to listen for new players
     // It will continually listen to the players event being emitted from the backend
     // And whenever a new player is added or remove, it will update the players array
     socket.on('players', players => {
-        console.log("Players: ", players)
-        setPlayers(players);
-    })
-}, [socket])
-  
-  const outPutOp = () => {
-    for (const player in players){
-      console.log("Player:",player)
-    }
-  }
+      console.log("Recived Players", players);
 
+      let oponentsBuilder=[];
+
+      for (let i = 0; i<players.length; i++) {
+        console.log(players[i].playerName != name);
+        if (players[i].playerName != name)
+          oponentsBuilder.push(players[i].playerName)
+        else
+          setPlayer(players[i].playerName)
+      }
+
+      setOponents(oponentsBuilder);
+
+      const oponentComponentBuilder = oponentsBuilder.map((name) =>
+        <Oponent name={name} key={name}/>
+      );
+
+      setOponentsComponents(oponentComponentBuilder)
+    })
+  }, [socket, name])
+  
   const leaveGame = () => {
     setName(null);
     setRoom(null);
-    setPlayers([]);
+    setOponentsComponents([]);
     setShow(true);
   }
 
@@ -50,19 +73,16 @@ function App() {
   return (
     <div id="game">
       <HostGame name={name} setName={setName} room={room} setRoom={setRoom} 
-                players={players} setPlayers={setPlayers} show={show} setShow={setShow}
-                socket={socket}/>
+                show={show} setShow={setShow} socket={socket}/>
 
       <JoinGame name={name} setName={setName} room={room} setRoom={setRoom} 
-                players={players} setPlayers={setPlayers} show={show} setShow={setShow}
-                socket={socket}/>
+                show={show} setShow={setShow} socket={socket}/>
       {showRoom()}
       <Player name={name} show={show}/>
       <div id='players'>
-        {outPutOp()}
-        {/* <Oponent name="Oponent 1"/> */}
-        {showLeave()}
+        {oponentsComponents}
       </div>
+      {showLeave()}
     </div>
   );
 }
