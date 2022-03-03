@@ -8,8 +8,16 @@ import dice6 from '../dice/dice6.svg'
 import '../styles/player.css'
 
 const Player = (props) => {
-    const [dice, setDice] = useState([dice1, dice2, dice3, dice4, dice5, dice6]);
+
+    const [hand, setHand] = useState([dice1, dice2, dice3, dice4, dice5, dice6]);
+    const [chosenDice, setChosenDice] = useState(null);
+
     const allDice = [dice1, dice2, dice3, dice4, dice5, dice6];
+    
+    const [playerID, setPlayerID] = useState(props.socket.playerID);
+    const [action, setAction] = useState(null);
+    const [amount, setAmmount] = useState(null);
+    const [dice, setDice] = useState(null);
 
     useEffect(() => {
         const diceBuilder = []
@@ -17,17 +25,20 @@ const Player = (props) => {
         for (let i=0; i<props.diceNum; i++)
             diceBuilder.push(allDice[Math.floor(Math.random() * 6)]);
 
-        setDice(diceBuilder)
-      }, [props.diceNum])
+        setHand(diceBuilder)
+    }, [props.diceNum])
 
-    if (props.show == true){
-        return false;
-    }
+    useEffect(() => {
+        const bid_obj = { playerId: playerID, action: action, amount: amount, dice: dice }
+        console.log(bid_obj);
+        props.socket.emit('bid', {new_bid: bid_obj}, error => {
+            alert(error);
+        });
+    },[action])
 
     function hideDiceSelected() {
         // Hide the diceSelected image
         var diceSelected = document.getElementById("diceSelected");
-        diceSelected.src = "";
         diceSelected.style.display = "none";
     }
 
@@ -39,80 +50,65 @@ const Player = (props) => {
     }
 
     function selectDice(dice, diceNum) {
-        // Set the selectedDice img tag to the dice image selected by the player and display it
         var diceSelected = document.getElementById("diceSelected");
-        diceSelected.src = dice;
-        diceSelected.alt = "Dice Selected is number " + diceNum;
         diceSelected.style.display = "inline-block";
-        
+        setChosenDice(dice);
+        setDice(diceNum);
+
         // Hide dropdown
         var diceDropdown = document.getElementById("diceDropdown");
         diceDropdown.style.display = "none";
     }
 
-    function bet() {
-        // Read and process the given bet from the player
-        var betNum = parseInt(document.getElementById("betNumInput").value);  //Get number of dice
-        var betDice = parseInt(document.getElementById("diceSelected").alt.charAt(24));    //Get dice selected from alt of img tag
-        var bid_obj = {playerId: props.socket.id, action: 'raise', amount: betNum, dice: betDice};
-        props.socket.emit('bid', {newBid: bid_obj}, error => {
-            alert(error);
-        });
+    function raise() {
+        setAmmount(parseInt(document.getElementById("ammountInput").value));  //Get number of dice
+        setAction('raise')
+        
     }
 
     function call() {
-        // Call out the previous bet as incorrect
-        var betNum = 1;     //Get prev opponent's bet num
-        var betDice = 1;    //Get prev opponent's bet dice selection
-        var bid_obj = {playerId: props.socket.id, action: 'call', amount: betNum, dice: betDice};
-        props.socket.emit('bid', {newBid: bid_obj}, error => {
-            alert(error);
-        });
+        setAmmount(parseInt(document.getElementById("ammountInput").value));  //Get number of dice
+        setAction('call')
     }
 
     function spot() {
-        // Call out the previous bet as correct
-        var betNum = 1;     //Get prev opponent's bet num
-        var betDice = 1;    //Get prev opponent's bet dice selection
-        var bid_obj = {playerId: props.socket.id, action: 'spot', amount: betNum, dice: betDice};
-        props.socket.emit('bid', {newBid: bid_obj}, error => {
-            alert(error);
-        });
+        setAmmount(parseInt(document.getElementById("ammountInput").value));  //Get number of dice
+        setAction('spot')
     }
 
     function bidAces() {
-        // Player wants to bid aces
-        var betNum = 1;     //Get prev opponent's bet num
-        var betDice = 1;    //Get prev opponent's bet dice selection
-        var bid_obj = {playerId: props.socket.id, action: 'aces', amount: betNum, dice: betDice};
-        props.socket.emit('bid', {newBid: bid_obj}, error => {
-            alert(error);
-        });
+        setAmmount(parseInt(document.getElementById("ammountInput").value));  //Get number of dice
+        setAction('aces')
+    }
+
+    if (props.show == true){
+        return false;
     }
 
     return (
         <div id="player">
             <h2>{props.name}:</h2>
-            {dice.map((die, key) => <img src={die} key={key} />)}
-            <br/>
-            <span id='betText'>Bet:</span>
-            <input id='betNumInput'/>
-            <div id='diceDropdown'>
-                <button id='dropdownSelect'>Select Dice</button>
-                <div id='dropdownContent'>
-                    <a onClick={() => selectDice(dice1, 1)}><img src={dice1} alt='Dice one'/></a>
-                    <a onClick={() => selectDice(dice2, 2)}><img src={dice2} alt='Dice two'/></a>
-                    <a onClick={() => selectDice(dice3, 3)}><img src={dice3} alt='Dice three'/></a>
-                    <a onClick={() => selectDice(dice4, 4)}><img src={dice4} alt='Dice four'/></a>
-                    <a onClick={() => selectDice(dice5, 5)}><img src={dice5} alt='Dice five'/></a>
-                    <a onClick={() => selectDice(dice6, 6)}><img src={dice6} alt='Dice six'/></a>
+            {hand.map((die, key) => <img src={die} key={key} />)}
+
+            <div id="playerAction">
+                <input id='ammountInput'/>
+                <div id='diceDropdown'>
+                    <button id='dropdownSelect'>Select Dice</button>
+                    <div id='dropdownContent'>
+                        <a onClick={() => selectDice(dice1, 1)}><img src={dice1} alt='Dice one'/></a>
+                        <a onClick={() => selectDice(dice2, 2)}><img src={dice2} alt='Dice two'/></a>
+                        <a onClick={() => selectDice(dice3, 3)}><img src={dice3} alt='Dice three'/></a>
+                        <a onClick={() => selectDice(dice4, 4)}><img src={dice4} alt='Dice four'/></a>
+                        <a onClick={() => selectDice(dice5, 5)}><img src={dice5} alt='Dice five'/></a>
+                        <a onClick={() => selectDice(dice6, 6)}><img src={dice6} alt='Dice six'/></a>
+                    </div>
                 </div>
+                <img id='diceSelected' onClick={showDiceDropdown} alt='Dice selected' src={chosenDice}/>
+                <button id='betButton' onClick={raise}>Raise</button>
+                <button id='callButton' onClick={call}>Call</button>
+                <button id='spotButton' onClick={spot}>Spot</button>
+                <button id='bidAcesButton' onClick={bidAces}>Bid Aces</button>
             </div>
-            <img id='diceSelected' onClick={() => showDiceDropdown()} alt='Dice selected'/>
-            <button id='betButton' onClick={() => bet()}>Bet</button><br/>
-            <div class='actionText'>OR<button id='callButton' onClick={() => call()} title='Call if you think the previous bet is false'>Call</button></div>
-            <div class='actionText'>OR<button id='spotButton' onClick={() => spot()} title='Spot if you think the previous bet is true'>Spot</button></div>
-            <div class='actionText'>OR<button id='bidAcesButton' onClick={() => bidAces()} title=''>Bid Aces</button></div>
         </div>
     );
 }
