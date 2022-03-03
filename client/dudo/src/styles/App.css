@@ -2,6 +2,12 @@
   height: auto;
   min-height:88.75vh;
   background-color: #0277bd;
+  color: white;
+}
+
+#game h1 {
+  padding-left: 5%;
+  padding-top: 1%;
 }
 
 #players {
