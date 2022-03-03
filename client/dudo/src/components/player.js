@@ -85,6 +85,10 @@ const Player = (props) => {
         return false;
     }
 
+    if (props.show == true){
+        return false;
+    }
+
     return (
         <div id="player">
             <h2>{props.name}:</h2>
