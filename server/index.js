@@ -66,6 +66,7 @@ io.on('connection', (socket) => {
     })
 
     socket.on('startGame', () => {
+        console.log("Starting game...")
         const room = getRoom(socket.id);
         if (room) {
             // Letting players know the game is starting

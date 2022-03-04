@@ -60,6 +60,17 @@ function App() {
       return <h1>Room Code: {room}</h1>
   }
 
+  const startGame = () => {
+    socket.emit('startGame', error => { 
+      alert(error);
+     })
+  }
+
+  const showStart = () => {
+    if (!show)
+      return <button onClick={startGame}>Start Game</button>
+  }
+
   return (
     <div id="game">
       <HostGame name={name} setName={setName} room={room} setRoom={setRoom} 
@@ -73,6 +84,7 @@ function App() {
       <div id='players'>
         {oponentsComponents}
       </div>
+      {showStart()}
       {showLeave()}
     </div>
   );
