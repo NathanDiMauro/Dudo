@@ -9,32 +9,51 @@ import '../styles/player.css'
 
 const Player = (props) => {
 
-    const [hand, setHand] = useState([dice1, dice2, dice3, dice4, dice5, dice6]);
+    const [hand, setHand] = useState([]);
     const [chosenDice, setChosenDice] = useState(null);
-
-    const allDice = [dice1, dice2, dice3, dice4, dice5, dice6];
     
     const [action, setAction] = useState(null);
     const [amount, setAmmount] = useState(null);
     const [dice, setDice] = useState(null);
 
     useEffect(() => {
-        const diceBuilder = []
+        if (props.playerHand){
+            const diceBuilder = []
 
-        for (let i=0; i<props.diceNum; i++)
-            diceBuilder.push(allDice[Math.floor(Math.random() * 6)]);
+            console.log("PHand", props.playerHand.dice)
 
-        setHand(diceBuilder)
-    }, [props.diceNum])
+            for (let i=0; i<props.playerHand.dice.length; i++){
+                switch(props.playerHand.dice[i]) {
+                    case 1: diceBuilder.push(dice1); break;
+                    case 2: diceBuilder.push(dice2); break;
+                    case 3: diceBuilder.push(dice3); break;
+                    case 4: diceBuilder.push(dice4); break;
+                    case 5: diceBuilder.push(dice5); break;
+                    case 6: diceBuilder.push(dice6); break;
+                }
+            }
+            setHand(diceBuilder)  
+        }
+    }, [props.playerHand])
+
+    useEffect(() => {
+        props.socket.on('bidError', error => {
+            alert(error);
+        })
+    }, [props.socket])
+
+    useEffect(() => {
+        props.socket.on('bidError', error => {
+            alert(error);
+        })
+    }, [props.socket])
 
     useEffect(() => {
         if (action){
             const bid_obj = { playerId: props.id, action: action, amount: amount, dice: dice }
             console.log("Placing bid:", bid_obj);
 
-            props.socket.emit('bid', {new_bid: bid_obj}, error => {
-                alert(error);
-            });
+            props.socket.emit('bid', {new_bid: bid_obj});
             setAction(null);
             setAmmount(null);
             setDice(null);
@@ -88,11 +107,7 @@ const Player = (props) => {
     }
 
     if (props.show == true){
-        return false;
-    }
-
-    if (props.show == true){
-        return false;
+        return null;
     }
 
     return (

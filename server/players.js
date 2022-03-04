@@ -28,7 +28,7 @@ class Room {
         this.roomCode = roomCode;
         this.players = [];
         this.prevBid = null;
-        this.betsInRound = 0;
+        this.betsInRound = null;
     }
 
     addPlayer(player) {
@@ -86,7 +86,7 @@ class Room {
     // Utility function for generating dice for a player
     generateDice(size) {
         let dice = [];
-        for (let i = 0; i <= size; i++) {
+        for (let i = 0; i <= size-1; i++) {
             dice[i] = Math.ceil(Math.random() * 6);
         }
         return dice;

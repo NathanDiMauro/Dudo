@@ -28,8 +28,9 @@ const _addPlayer = (socket, name, roomCode, callback) => {
 }
 
 const _startRound = (room) => {
+    console.log("Starting round...")
     // Updating client with list of players
-    io.in(room.roomCode).emit('players', { players: getPlayers(room.roomCode) });
+    io.in(room.roomCode).emit('players', getPlayers(room.roomCode) );
     // Starting a new round
     room.players.forEach((player) => {
         // Letting each player know what dice they have

@@ -15,6 +15,7 @@ function App() {
   const [player, setPlayer] = useState([]);
   const [oponents, setOponents] = useState([]);
   const [oponentsComponents, setOponentsComponents] = useState([]);
+  const [playerHand, setPlayerHand] = useState(null);
 
   useEffect(() => {
     // Adding an event listener to the socket to listen for new players
@@ -45,6 +46,14 @@ function App() {
       setOponentsComponents(oponentComponentBuilder)
     })
   }, [socket, name])
+
+  useEffect(() =>{
+    socket.on('diceForRound', dice => {
+      setPlayerHand(dice);
+      console.log("Players dice:", dice);
+    });
+
+  },[socket])
   
   const leaveGame = () => {
     setName(null);
@@ -64,9 +73,7 @@ function App() {
   }
 
   const startGame = () => {
-    socket.emit('startGame', error => { 
-      alert(error);
-     })
+    socket.emit('startGame');
   }
 
   const showStart = () => {
@@ -83,7 +90,7 @@ function App() {
                 show={show} setShow={setShow} socket={socket}/>
       {showRoom()}
       <Player name={name} show={show} diceNum={player.diceCount} socket={socket}
-              id={socket.id}/>
+              id={socket.id} playerHand={playerHand}/>
       <div id='players'>
         {oponentsComponents}
       </div>
