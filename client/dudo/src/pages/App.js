@@ -21,6 +21,7 @@ function App() {
     // It will continually listen to the players event being emitted from the backend
     // And whenever a new player is added or remove, it will update the players array
     socket.on('players', players => {
+      // players = players.players;
       console.log("Recived Players", players);
 
       let oponentsBuilder=[];
@@ -29,8 +30,10 @@ function App() {
         console.log(players[i].playerName != name);
         if (players[i].playerName != name)
           oponentsBuilder.push(players[i])
-        else
+        else{
+          console.log("Player:", players[i])
           setPlayer(players[i]);
+        }
       }
 
       setOponents(oponentsBuilder);

@@ -23,7 +23,7 @@ const _addPlayer = (socket, name, roomCode, callback) => {
     // Notifying the entire room that a new player joined -- socket.io does not notify the sender
     socket.in(roomCode).emit('notification', { title: 'Someone just joined', description: `${newPlayer.playerName} just entered the room` });
     // Sending an updated list of players to the room -- io.in notifies everyone along with the sender
-    io.in(roomCode).emit('players', { players: getPlayers(roomCode) });
+    io.in(roomCode).emit('players', getPlayers(roomCode) );
     callback();
 }
 
@@ -49,20 +49,7 @@ io.on('connection', (socket) => {
     })
 
     socket.on('join', ({ name, roomCode }, callback) => {
-        // return _addPlayer(socket, name, roomCode, callback);
-        const { newPlayer, error } = addPlayer(socket.id, name, roomCode);
-
-        console.log('Player is joining', newPlayer, error);
-
-        // If there is an error, return it
-        if (error) return callback(error);
-        // Adding the new player to the room
-        socket.join(newPlayer.roomCode);
-        // Notifying the entire room that a new player joined -- socket.io does not notify the sender
-        socket.in(roomCode).emit('notification', { title: 'Someone just joined', description: `${newPlayer.playerName} just entered the room` });
-        // Sending an updated list of players to the room -- io.in notifies everyone along with the sender
-        io.in(roomCode).emit('players', getPlayers(roomCode));
-        callback();
+        _addPlayer(socket, name, roomCode, callback);
     })
 
     socket.on('startGame', () => {

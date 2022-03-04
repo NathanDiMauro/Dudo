@@ -28,13 +28,17 @@ const Player = (props) => {
     }, [props.diceNum])
 
     useEffect(() => {
-        console.log(props.id);
-        const bid_obj = { playerId: props.id, action: action, amount: amount, dice: dice }
-        console.log(bid_obj);
+        if (action){
+            const bid_obj = { playerId: props.id, action: action, amount: amount, dice: dice }
+            console.log("Placing bid:", bid_obj);
 
-        props.socket.emit('bid', {new_bid: bid_obj}, error => {
-            alert(error);
-        });
+            props.socket.emit('bid', {new_bid: bid_obj}, error => {
+                alert(error);
+            });
+            setAction(null);
+            setAmmount(null);
+            setDice(null);
+        }
     },[action])
 
     function hideDiceSelected() {
@@ -79,7 +83,8 @@ const Player = (props) => {
 
     function bidAces() {
         setAmmount(parseInt(document.getElementById("ammountInput").value));  //Get number of dice
-        setAction('aces')
+        //setAction('aces')
+        console.log(props.diceNum)
     }
 
     if (props.show == true){
