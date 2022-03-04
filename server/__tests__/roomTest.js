@@ -1,5 +1,4 @@
-const Player = require("../players").Player;
-const Room = require("../players").Room;
+const { Room, Player } = require("../room");
 
 let room, player1, player2;
 

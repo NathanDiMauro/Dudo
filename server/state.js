@@ -1,5 +1,5 @@
-const Player = require('./players').Player;
-const Room = require('./players').Room;
+const { Player } = require('./room');
+const { Room } = require('./player');
 
 
 const rooms = [] // Array of Room class

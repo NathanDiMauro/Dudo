@@ -1,10 +1,5 @@
-const createRoom = require('../state').createRoom;
-const addPlayer = require('../state').addPlayer;
-const getPlayer = require('../state').getPlayer;
-const removePlayer = require('../state').removePlayer;
-const getPlayers = require('../state').getPlayers;
-const getRoom = require('../state').getRoom;
-const Player = require("../players").Player;
+const { createRoom, addPlayer, getPlayer, removePlayer, getPlayers, getRoom } = require('../state');
+const { Player } = require("../player");
 
 const roomCode = 'room';
 const player1 = new Player(0, 'player1');
@@ -25,7 +20,7 @@ describe('add player', () => {
         const { newPlayer } = addPlayer(player1.id, player1.playerName, roomCode);
         expect(newPlayer.id).toBe(player1.id);
         expect(newPlayer.playerName).toBe(player1.playerName);
-        expect(getPlayers(roomCode)).toStrictEqual([{playerName: player1.playerName, diceCount: 5}])
+        expect(getPlayers(roomCode)).toStrictEqual([{ playerName: player1.playerName, diceCount: 5 }])
     })
 
     test('add player duplicate', () => {
@@ -59,7 +54,7 @@ describe('get player', () => {
     })
 
     test('get players', () => {
-        expect(getPlayers(roomCode)).toStrictEqual([{playerName: player1.playerName, diceCount: 5}]);
+        expect(getPlayers(roomCode)).toStrictEqual([{ playerName: player1.playerName, diceCount: 5 }]);
     })
 
     test('get players invalid room code', () => {

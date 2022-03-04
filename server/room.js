@@ -1,16 +1,4 @@
-class Player {
-    id;         // Number
-    playerName; // String
-    dice = [];   // Number
-    diceCount; // amount of dice 
-
-    constructor(id, playerName) {
-        this.id = id;
-        this.playerName = playerName;
-        this.dice = [1, 1, 1, 1, 1];
-        this.diceCount = 5;
-    }
-}
+const {Player} = require('./player');
 
 class Room {
     static validBidActions = ['raise', 'aces', 'call', 'spot'];
