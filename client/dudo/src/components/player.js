@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react';
+import React, { useState, useEffect } from 'react';
 import dice1 from '../dice/dice1.svg'
 import dice2 from '../dice/dice2.svg'
 import dice3 from '../dice/dice3.svg'
@@ -11,19 +11,19 @@ const Player = (props) => {
 
     const [hand, setHand] = useState([]);
     const [chosenDice, setChosenDice] = useState(null);
-    
+
     const [action, setAction] = useState(null);
     const [amount, setAmmount] = useState(null);
     const [dice, setDice] = useState(null);
 
     useEffect(() => {
-        if (props.playerHand){
+        if (props.playerHand) {
             const diceBuilder = []
 
             console.log("PHand", props.playerHand.dice)
 
-            for (let i=0; i<props.playerHand.dice.length; i++){
-                switch(props.playerHand.dice[i]) {
+            for (let i = 0; i < props.playerHand.dice.length; i++) {
+                switch (props.playerHand.dice[i]) {
                     case 1: diceBuilder.push(dice1); break;
                     case 2: diceBuilder.push(dice2); break;
                     case 3: diceBuilder.push(dice3); break;
@@ -32,33 +32,27 @@ const Player = (props) => {
                     case 6: diceBuilder.push(dice6); break;
                 }
             }
-            setHand(diceBuilder)  
+            setHand(diceBuilder)
         }
     }, [props.playerHand])
 
     useEffect(() => {
         props.socket.on('bidError', error => {
-            alert(error);
+            console.log(error);
         })
     }, [props.socket])
 
     useEffect(() => {
-        props.socket.on('bidError', error => {
-            alert(error);
-        })
-    }, [props.socket])
-
-    useEffect(() => {
-        if (action){
+        if (action) {
             const bid_obj = { playerId: props.id, action: action, amount: amount, dice: dice }
             console.log("Placing bid:", bid_obj);
 
-            props.socket.emit('bid', {new_bid: bid_obj});
+            props.socket.emit('bid', bid_obj);
             setAction(null);
             setAmmount(null);
             setDice(null);
         }
-    },[action])
+    }, [action])
 
     function hideDiceSelected() {
         // Hide the diceSelected image
@@ -86,8 +80,7 @@ const Player = (props) => {
 
     function raise() {
         setAmmount(parseInt(document.getElementById("ammountInput").value));  //Get number of dice
-        setAction('raise')
-        
+        setAction('raise');
     }
 
     function call() {
@@ -106,7 +99,7 @@ const Player = (props) => {
         console.log(props.diceNum)
     }
 
-    if (props.show == true){
+    if (props.show == true) {
         return null;
     }
 
@@ -116,19 +109,19 @@ const Player = (props) => {
             {hand.map((die, key) => <img src={die} key={key} />)}
 
             <div id="playerAction">
-                <input id='ammountInput'/>
+                <input id='ammountInput' />
                 <div id='diceDropdown'>
                     <button id='dropdownSelect'>Select Dice</button>
                     <div id='dropdownContent'>
-                        <a onClick={() => selectDice(dice1, 1)}><img src={dice1} alt='Dice one'/></a>
-                        <a onClick={() => selectDice(dice2, 2)}><img src={dice2} alt='Dice two'/></a>
-                        <a onClick={() => selectDice(dice3, 3)}><img src={dice3} alt='Dice three'/></a>
-                        <a onClick={() => selectDice(dice4, 4)}><img src={dice4} alt='Dice four'/></a>
-                        <a onClick={() => selectDice(dice5, 5)}><img src={dice5} alt='Dice five'/></a>
-                        <a onClick={() => selectDice(dice6, 6)}><img src={dice6} alt='Dice six'/></a>
+                        <a onClick={() => selectDice(dice1, 1)}><img src={dice1} alt='Dice one' /></a>
+                        <a onClick={() => selectDice(dice2, 2)}><img src={dice2} alt='Dice two' /></a>
+                        <a onClick={() => selectDice(dice3, 3)}><img src={dice3} alt='Dice three' /></a>
+                        <a onClick={() => selectDice(dice4, 4)}><img src={dice4} alt='Dice four' /></a>
+                        <a onClick={() => selectDice(dice5, 5)}><img src={dice5} alt='Dice five' /></a>
+                        <a onClick={() => selectDice(dice6, 6)}><img src={dice6} alt='Dice six' /></a>
                     </div>
                 </div>
-                <img id='diceSelected' onClick={showDiceDropdown} alt='Dice selected' src={chosenDice}/>
+                <img id='diceSelected' onClick={showDiceDropdown} alt='Dice selected' src={chosenDice} />
                 <button id='betButton' onClick={raise}>Raise</button>
                 <button id='callButton' onClick={call}>Call</button>
                 <button id='spotButton' onClick={spot}>Spot</button>

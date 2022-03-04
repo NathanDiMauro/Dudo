@@ -4,10 +4,12 @@ import JoinGame from '../components/join';
 import HostGame from '../components/host';
 import Player from "../components/player";
 import Oponent from '../components/oponent';
-import { SocketContext } from '../components/socketContext'; 
+import { SocketContext } from '../components/socketContext';
+import Notification from '../components/notification';
+import LatestBid from '../components/latestBid';
 
 function App() {
-  
+
   const socket = useContext(SocketContext);
   const [name, setName] = useState(null);
   const [room, setRoom] = useState(null);
@@ -16,6 +18,8 @@ function App() {
   const [oponents, setOponents] = useState([]);
   const [oponentsComponents, setOponentsComponents] = useState([]);
   const [playerHand, setPlayerHand] = useState(null);
+  const [notification, setNotification] = useState({});
+  const [latestBid, setLatestBid] = useState();
 
   useEffect(() => {
     // Adding an event listener to the socket to listen for new players
@@ -25,13 +29,13 @@ function App() {
       // players = players.players;
       console.log("Recived Players", players);
 
-      let oponentsBuilder=[];
+      let oponentsBuilder = [];
 
-      for (let i = 0; i<players.length; i++) {
+      for (let i = 0; i < players.length; i++) {
         console.log(players[i].playerName != name);
         if (players[i].playerName != name)
           oponentsBuilder.push(players[i])
-        else{
+        else {
           console.log("Player:", players[i])
           setPlayer(players[i]);
         }
@@ -47,14 +51,26 @@ function App() {
     })
   }, [socket, name])
 
-  useEffect(() =>{
+  useEffect(() => {
+
+    const handleNewBid = (newBid) => {
+      setLatestBid(newBid);
+    }
+
     socket.on('diceForRound', dice => {
       setPlayerHand(dice);
       console.log("Players dice:", dice);
     });
 
-  },[socket])
-  
+    socket.on('notification', notification => {
+      console.log(notification);
+      setNotification(notification);
+    })
+
+    socket.on('newBid', handleNewBid);
+
+  }, [socket])
+
   const leaveGame = () => {
     setName(null);
     setRoom(null);
@@ -83,14 +99,16 @@ function App() {
 
   return (
     <div id="game">
-      <HostGame name={name} setName={setName} room={room} setRoom={setRoom} 
-                show={show} setShow={setShow} socket={socket}/>
+      <HostGame name={name} setName={setName} room={room} setRoom={setRoom}
+        show={show} setShow={setShow} socket={socket} />
 
-      <JoinGame name={name} setName={setName} room={room} setRoom={setRoom} 
-                show={show} setShow={setShow} socket={socket}/>
+      <JoinGame name={name} setName={setName} room={room} setRoom={setRoom}
+        show={show} setShow={setShow} socket={socket} />
       {showRoom()}
+      <Notification notification={notification} show={show} />
+      <LatestBid bid={latestBid} show={show} />
       <Player name={name} show={show} diceNum={player.diceCount} socket={socket}
-              id={socket.id} playerHand={playerHand}/>
+        id={socket.id} playerHand={playerHand} />
       <div id='players'>
         {oponentsComponents}
       </div>
