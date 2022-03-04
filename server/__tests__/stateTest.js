@@ -1,5 +1,6 @@
 const { createRoom, addPlayer, getPlayer, removePlayer, getPlayers, getRoom } = require('../state');
 const { Player } = require("../player");
+const { Room } = require('../room');
 
 const roomCode = 'room';
 const player1 = new Player(0, 'player1');
@@ -74,7 +75,7 @@ describe('get room', () => {
 
 describe('remove player', () => {
     test('remove player', () => {
-        expect(removePlayer(player1.id)).toStrictEqual(player1);
+        expect(removePlayer(player1.id)).toStrictEqual({ player: player1, roomCode: roomCode });
     })
 
     test('remove player does not exists', () => {
