@@ -1,4 +1,4 @@
-const {Player} = require('./player');
+const { Player } = require('./player');
 
 class Room {
     static validBidActions = ['raise', 'aces', 'call', 'spot'];
@@ -264,4 +264,4 @@ class Room {
         }
     }
 }
-module.exports = { Player, Room }
+module.exports = { Room }

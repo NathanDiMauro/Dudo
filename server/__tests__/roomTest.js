@@ -1,4 +1,5 @@
-const { Room, Player } = require("../room");
+const { Room } = require("../room");
+const { Player } = require("../player");
 
 let room, player1, player2;
 
