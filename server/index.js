@@ -23,14 +23,14 @@ const _addPlayer = (socket, name, roomCode, callback) => {
     // Notifying the entire room that a new player joined -- socket.io does not notify the sender
     socket.in(roomCode).emit('notification', { title: 'Someone just joined', description: `${newPlayer.playerName} just entered the room` });
     // Sending an updated list of players to the room -- io.in notifies everyone along with the sender
-    io.in(roomCode).emit('players', getPlayers(roomCode) );
+    io.in(roomCode).emit('players', getPlayers(roomCode));
     callback();
 }
 
 const _startRound = (room) => {
     console.log("Starting round...")
     // Updating client with list of players
-    io.in(room.roomCode).emit('players', getPlayers(room.roomCode) );
+    io.in(room.roomCode).emit('players', getPlayers(room.roomCode));
     // Starting a new round
     room.players.forEach((player) => {
         // Letting each player know what dice they have
@@ -53,18 +53,24 @@ io.on('connection', (socket) => {
         _addPlayer(socket, name, roomCode, callback);
     })
 
-    socket.on('startGame', () => {
+    socket.on('startRound', new_game => {
         console.log("Starting game...")
         const room = getRoom(socket.id);
         if (room) {
             // Letting players know the game is starting
-            if (room.betsInRound != null) {
-                socket.emit('error', { error: 'Game has already been started' });
-            } else {
-                io.in(room.roomCode).emit('notification', { title: 'Game is starting', description: 'The game is starting' });
-                room.newRound();
-                _startRound(room);
+            let notif = { title: 'New Round is Starting', description: 'A new round is starting' }
+
+            if (new_game) {
+                if (room.betsInRound != null) {
+                    socket.emit('error', { error: 'Game has already been started' });
+                } else {
+                    notif = { title: 'Game is starting', description: 'The game is starting' };
+                }
             }
+            io.in(room.roomCode).emit('notification', notif);
+            room.newRound();
+            _startRound(room);
+
         }
     })
 
@@ -84,7 +90,7 @@ io.on('connection', (socket) => {
                 if (bid) {
                     io.in(room.roomCode).emit('newBid', { bid });
                 } else if (endOfRound) {
-                    io.in(room.roomCode).emit('endOfRound', { endOfRound });
+                    io.in(room.roomCode).emit('notification', { title: 'The round has ended', description: endOfRound, eof: true });
                 } else if (error) {
                     socket.emit('bidError', { error });
                 } else {

@@ -20,6 +20,7 @@ function App() {
   const [playerHand, setPlayerHand] = useState(null);
   const [notification, setNotification] = useState({});
   const [latestBid, setLatestBid] = useState();
+  const [startRound, setStartRound] = useState(false);
 
   useEffect(() => {
     // Adding an event listener to the socket to listen for new players
@@ -64,6 +65,7 @@ function App() {
 
     socket.on('notification', notification => {
       console.log(notification);
+      if (notification?.eof) setStartRound(true);
       setNotification(notification);
     })
 
@@ -89,12 +91,17 @@ function App() {
   }
 
   const startGame = () => {
-    socket.emit('startGame');
+    socket.emit('startRound', { new_game: !startRound });
+    setStartRound(false)
   }
 
   const showStart = () => {
-    if (!show)
-      return <button onClick={startGame}>Start Game</button>
+    if (!show) {
+      console.log(startRound)
+      let text = 'Start Round'
+      if (!startRound) text = 'Start Game'
+      return <button onClick={startGame}>{text}</button>
+    }
   }
 
   return (
