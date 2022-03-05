@@ -151,7 +151,7 @@ io.on('connection', (socket) => {
         if (room) {
             const player = room.getPlayer(socket.id);
             if (player) {
-                const { bid, error, endOfRound, startOfRound } = room.bid(new_bid);
+                const { bid, error, endOfRound, startOfRound, endOfGame } = room.bid(new_bid);
 
                 console.log(bid, error, endOfRound, startOfRound);
                 if (startOfRound) {
@@ -162,6 +162,8 @@ io.on('connection', (socket) => {
                     io.in(room.roomCode).emit('newBid', { bid });
                 } else if (endOfRound) {
                     io.in(room.roomCode).emit('endOfRound', { endOfRound });
+                } else if (endOfGame) {
+                    io.in(room.roomCode).emit('endOfGame', { endOfGame });
                 } else if (error) {
                     callback(error);
                 } else {

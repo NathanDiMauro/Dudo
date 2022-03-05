@@ -56,6 +56,12 @@ Example response: `{ playerId: '0', action: 'raise', amount: 4, dice: 5 }`
 Anytime the round ends, the server will send an endOfRound object to all clients.  
 Example response: `{ endOfRound: 'Joe called paul on their bet of 4 4s. Joe loses a dice' }`  
 
+### End of game
+`socket.on('endOfGame', endOfGame => { ... })`  
+When only one player has dice left, the server will send an endOfGame object ot all clients.  
+This event can only happen after a `call`.  
+Example response: `{{ endOfGame: 'Joe has won the game.' }}`
+
 ### Errors
 `socket.on('error', players => { ... })`  
 Anytime any errors occur, the client will be notified.  

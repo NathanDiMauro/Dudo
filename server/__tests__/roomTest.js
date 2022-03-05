@@ -12,6 +12,8 @@ beforeEach(() => {
 afterEach(() => {
   room = null;
   player1 = null;
+  player2 = null;
+  player3 = null;
 })
 
 describe('adding player', () => {
@@ -58,6 +60,66 @@ describe('get players brief', () => {
     expect(room.getPlayersBrief()).toStrictEqual([{ playerName: player1.playerName, diceCount: 5 }, { playerName: player2.playerName, diceCount: 5 }])
   })
 })
+
+describe('get remaining players', () => {
+  test('get reaming players - 0', () => {
+    expect(room.getRemainingPlayers()).toBe(0);
+  })
+
+  test('get reaming players - 1', () => {
+    room.addPlayer(player1);
+    expect(room.getRemainingPlayers()).toBe(1);
+  })
+
+  test('get reaming players - 2', () => {
+    room.addPlayer(player1);
+    room.addPlayer(player2);
+    expect(room.getRemainingPlayers()).toBe(2);
+  })
+
+  test('get reaming players - 4', () => {
+    room.addPlayer(player1);
+    room.addPlayer(player2);
+    room.addPlayer(player1);
+    room.addPlayer(player2);
+    expect(room.getRemainingPlayers()).toBe(4);
+  })
+
+  test('get reaming players with 1 player out of dice', () => {
+    player3 = new Player('3', 'name3')
+    room.addPlayer(player1);
+    room.addPlayer(player2);
+    room.addPlayer(player3);
+    player3.dice = [];
+    expect(room.getRemainingPlayers()).toBe(2);
+  })
+
+  test('get reaming players with 2 player out of dice', () => {
+    player3 = new Player('3', 'name3')
+    const player4 = new Player('4', 'name4')
+    room.addPlayer(player1);
+    room.addPlayer(player2);
+    room.addPlayer(player3);
+    room.addPlayer(player4);
+    player3.dice = [];
+    player4.dice = [];
+    expect(room.getRemainingPlayers()).toBe(2);
+  })
+})
+
+describe('get winner', () => {
+  test('get winner', () => {
+    room.addPlayer(player1);
+    expect(room.getWinner()).toBe(player1);
+  })
+
+  test('get winner - 2 players left', () => {
+    room.addPlayer(player1);
+    room.addPlayer(player2);
+    expect(room.getWinner()).toBe(undefined);
+  })
+})
+
 
 describe('player exists', () => {
   test('player exists by name', () => {
@@ -334,6 +396,26 @@ describe('bid spot', () => {
     expect(player2.dice.length).toBe(5);
   })
 
+  test('bid spot - incorrect - second bid (1s dont count)', () => {
+    player1.dice = [2, 3, 1, 5, 6];
+    player2.dice = [2, 1, 5, 2, 4];
+    room.prevBid = { playerId: player1.id, action: 'raise', amount: 5, dice: 2 };
+    room.betsInRound = 1;
+    const new_bid = { playerId: player2.id, action: 'spot', amount: null, dice: null };
+    expect(room.bidSpot(new_bid)).toStrictEqual({ endOfRound: `${player2.playerName} called spot on 5 2s. ${player2.playerName} called spot incorrectly and loses 1 dice.` });
+    expect(player2.dice.length).toBe(4);
+  })
+
+  test('bid spot - correct - second bid (1s dont count)', () => {
+    player1.dice = [2, 3, 1, 5, 6];
+    player2.dice = [2, 1, 5, 2];
+    room.prevBid = { playerId: player1.id, action: 'raise', amount: 3, dice: 2 };
+    room.betsInRound = 1;
+    const new_bid = { playerId: player2.id, action: 'spot', amount: null, dice: null };
+    expect(room.bidSpot(new_bid)).toStrictEqual({ endOfRound: `${player2.playerName} called spot on 3 2s. ${player2.playerName} called spot correctly and gets 1 dice back.` });
+    expect(player2.dice.length).toBe(5);
+  })
+
 
   test('bid spot - incorrect', () => {
     player1.dice = [2, 3, 1, 5, 6];
@@ -346,7 +428,6 @@ describe('bid spot', () => {
   })
 
 })
-
 
 describe('bid', () => {
   beforeEach(() => {
@@ -407,7 +488,7 @@ describe('bid', () => {
     expect(room.bid(second_bid)).toStrictEqual({ error: 'Your bid needs to be at least half(rounded up) of the last bid' });
   })
 
-  test('bid call - not first round - person who is called loses dice', () => {
+  test('bid call - not first round - person who is called loses dice - endOfRound', () => {
     player1.dice = [2, 3, 1, 5, 6];
     player2.dice = [2, 1, 5, 2, 3];
     const first_bid = { playerId: player1.id, action: 'raise', amount: 8, dice: 2 };
@@ -417,7 +498,7 @@ describe('bid', () => {
     expect(room.bid(second_bid)).toStrictEqual({ endOfRound: `${player2.playerName} called ${player1.playerName} on their bet of 8 2s. ${player1.playerName} loses a dice.` })
   })
 
-  test('bid spot - correct', () => {
+  test('bid spot - correct - endOfRound', () => {
     player1.dice = [2, 3, 1, 5, 6];
     player2.dice = [2, 1, 5, 2];
     const first_bid = { playerId: player1.id, action: 'raise', amount: 5, dice: 2 };
@@ -425,6 +506,44 @@ describe('bid', () => {
     const second_bid = { playerId: player2.id, action: 'spot', amount: null, dice: null };
     room.bid(first_bid)
     expect(room.bid(second_bid)).toStrictEqual({ endOfRound: `${player2.playerName} called spot on 5 2s. ${player2.playerName} called spot correctly and gets 1 dice back.` })
+  })
+
+  test('bid spot - valid - first half of game', () => {
+    player1.dice = [2, 3, 3];
+    player2.dice = [2, 1];
+    const first_bid = { playerId: player1.id, action: 'raise', amount: 2, dice: 2 };
+    room.betsInRound = 4;
+    const second_bid = { playerId: player2.id, action: 'spot', amount: null, dice: null };
+    room.bid(first_bid);
+    expect(room.bid(second_bid)).toStrictEqual({ endOfRound: `${player2.playerName} called spot on 2 2s. ${player2.playerName} called spot incorrectly and loses 1 dice.` });
+  })
+
+  test('bid spot - valid - second bid (not counting 1s)', () => {
+    player1.dice = [2, 3, 3];
+    player2.dice = [2, 1];
+    const first_bid = { playerId: player1.id, action: 'raise', amount: 2, dice: 2 };
+    const second_bid = { playerId: player2.id, action: 'spot', amount: null, dice: null };
+    room.bid(first_bid);
+    expect(room.bid(second_bid)).toStrictEqual({ endOfRound: `${player2.playerName} called spot on 2 2s. ${player2.playerName} called spot correctly and gets 1 dice back.` });
+  })
+
+  test('bid spot - invalid - second half of game', () => {
+    player1.dice = [2, 3];
+    player2.dice = [2, 1];
+    const first_bid = { playerId: player1.id, action: 'raise', amount: 2, dice: 2 };
+    room.betsInRound = 4;
+    const second_bid = { playerId: player2.id, action: 'spot', amount: null, dice: null };
+    room.bid(first_bid);
+    expect(room.bid(second_bid)).toStrictEqual({ error: 'Cannot call spot in the second half of a game' });
+  })
+
+  test('bid call - not first round - person who is called loses dice - endOfGame', () => {
+    player1.dice = [2, 3];
+    player2.dice = [2];
+    const first_bid = { playerId: player1.id, action: 'raise', amount: 1, dice: 2 };
+    const second_bid = { playerId: player2.id, action: 'call', amount: null, dice: null };
+    room.bid(first_bid);
+    expect(room.bid(second_bid)).toStrictEqual({ endOfGame: `${player1.playerName} has won the game.` })
   })
 
 })

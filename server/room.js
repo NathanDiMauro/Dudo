@@ -80,6 +80,23 @@ class Room {
     }
 
     /**
+     * Get a count of all the remaining players (players with dice)
+     * @returns {Number}    A count of the remaining players
+     */
+    getRemainingPlayers() {
+        return this.players.reduce((prev, curr) => curr.dice.length > 0 ? prev + 1 : prev, 0);
+    }
+
+    /**
+     * Get the last player left
+     * @returns {Player}    The winning player
+     */
+    getWinner() {
+        if (this.getRemainingPlayers() > 1) return;
+        return this.players.find((player) => player.dice.length > 0);
+    }
+
+    /**
      * Get the total amount if dice in play  
      * @returns {Number}    The amount of currently in the game  
      */
@@ -172,12 +189,17 @@ class Room {
         }
 
         // Checking if the dice # if valid (1-6)
-        if (((bid.action == 'raise' || bid.action == 'aces')) && 1 > bid.dice || bid.dice > 7) {
+        if (((bid.action === 'raise' || bid.action === 'aces')) && 1 > bid.dice || bid.dice > 7) {
             return { error: `Dice must be 1, 2, 3, 4, 5 , or 6. Not ${bid.dice}` };
         }
 
+        // Can only call spot in the first half of the game
+        if (bid.action === 'spot' && Math.floor(this.players.length * 5 / 2) > this.countOfDice()) {
+            return { error: 'Cannot call spot in the second half of a game' };
+        }
+
         // Only ned to check aces if they are bidding aces or raising
-        if ((bid.action == 'raise' || bid.action == 'aces') && this.prevBid != null) {
+        if ((bid.action === 'raise' || bid.action === 'aces') && this.prevBid != null) {
             // Checking for the aces rule
             const error = this.checkAces(bid);
             if (error) return { error };
@@ -275,24 +297,23 @@ class Room {
     bidCall(bid) {
         const dieCount = this.countOfSpecificDie(this.prevBid.dice);
 
-        let return_str = `${this.getPlayer(bid.playerId).playerName} called ${this.getPlayer(this.prevBid.playerId).playerName} on their bet of ${this.prevBid.amount} ${this.prevBid.dice}s.`;
+        let return_str = `${this.getPlayer(bid.playerId).playerName} called ${this.getPlayer(this.prevBid.playerId).playerName} on their bet of ${this.prevBid.amount} ${this.prevBid.dice}s. `;
 
         // Player who called loses a dice
         if (dieCount >= this.prevBid.amount) {
             this.getPlayer(bid.playerId).dice.pop();
-            this.newRound();
-            return {
-                endOfRound: `${return_str} ${this.getPlayer(bid.playerId).playerName} loses a dice.`
-            };
+            return_str += `${this.getPlayer(bid.playerId).playerName} loses a dice.`;
         } else {
             // Player who got called (prevBid) loses a dice
-            this.getPlayer(bid.playerId).dice.pop();
-            let prevPlayerName = this.getPlayer(this.prevBid.playerId).playerName;
-            this.newRound();
-            return {
-                endOfRound: `${return_str} ${prevPlayerName} loses a dice.`
-            };
+            this.getPlayer(this.prevBid.playerId).dice.pop();
+            return_str += `${this.getPlayer(this.prevBid.playerId).playerName} loses a dice.`
         }
+        const winner = this.getWinner();
+        if (winner) {
+            return { endOfGame: `${winner.playerName} has won the game.` }
+        }
+        this.newRound();
+        return { endOfRound: return_str };
     }
 
     /**
@@ -340,9 +361,10 @@ class Room {
         }
         // initial round bet
         if (this.prevBid == null) {
-            if (bid.action == 'call' || bid.action == 'spot') {
+            if (bid.action === 'call' || bid.action === 'spot') {
                 return { error: `Cannot call ${bid.action} on initial bet.` };
             }
+            this.betsInRound++;
             this.prevBid = { playerId: bid.playerId, action: bid.action, amount: bid.amount, dice: bid.dice }
             return { bid: this.prevBid, startOfRound: true }
         }
