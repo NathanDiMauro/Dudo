@@ -2,15 +2,20 @@ const { Player } = require('./player');
 
 /** Class representing a room */
 class Room {
+    /** @type {['raise', 'aces', 'call', 'spot']} */
     static validBidActions = ['raise', 'aces', 'call', 'spot'];
-    players; // Array of Player class
-    roomCode; // String
+    /** @member {[Player]} */
+    players;
+    /** @member {String} */
+    roomCode;
+    /** @member {{playerId: Number, action: String, amount: Number, dice: Number} | null} */
     prevBid = {
         playerId: null,
         action: null,
-        amount: null, // amount of dice ie. (4) two's 4 being the amount
-        dice: null // dice num 4 (two's) two's being the nice num
-    };  // {playerID: Player, action: String, amount: Number, dice: Number}
+        amount: null,
+        dice: null
+    };
+    /** @member {Number | null} */
     betsInRound;
 
     /**

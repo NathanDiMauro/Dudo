@@ -1,7 +1,10 @@
 /** Class representing a player */
 class Player {
-    id;         // Number
-    playerName; // String
+    /** @member {String} */
+    id;
+    /** @member {String} */
+    playerName;
+    /** @member {[Number]} */
     dice = [];   // Number
     diceCount; // amount of dice 
 
