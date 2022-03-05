@@ -9,12 +9,7 @@ class Room {
     /** @member {String} */
     roomCode;
     /** @member {{playerId: Number, action: String, amount: Number, dice: Number} | null} */
-    prevBid = {
-        playerId: null,
-        action: null,
-        amount: null,
-        dice: null
-    };
+    prevBid = {};
     /** @member {Number | null} */
     betsInRound;
 
@@ -132,8 +127,7 @@ class Room {
      */
     populatePlayerDice() {
         this.players.forEach(player => {
-            player.dice = this.generateDice(player.diceCount)
-            player.dieCount = (player.dice).length
+            player.dice = this.generateDice(player.dice.length - 1)
         });
     }
 
@@ -266,14 +260,14 @@ class Room {
 
         // Player who called loses a dice
         if (dieCount >= this.prevBid.amount) {
-            this.getPlayer(bid.playerId).diceCount--;
+            this.getPlayer(bid.playerId).dice.pop();
             this.newRound();
             return {
                 endOfRound: `${return_str} ${this.getPlayer(bid.playerId).playerName} loses a dice.`
             };
         } else {
             // Player who got called (prevBid) loses a dice
-            this.getPlayer(this.prevBid.playerId).diceCount--;
+            this.getPlayer(bid.playerId).dice.pop();
             let prevPlayerName = this.getPlayer(this.prevBid.playerId).playerName;
             this.newRound();
             return {
@@ -297,7 +291,7 @@ class Room {
 
         if (dieCount == this.prevBid.amount) {
             if (this.getPlayer(bid.playerId).dice.length < 5) {
-                this.getPlayer(bid.playerId).diceCount++;
+                this.getPlayer(bid.playerId).dice.push(1);
                 this.newRound()
                 return {
                     endOfRound: `${return_str} called spot correctly and gets 1 dice back.`
@@ -308,7 +302,7 @@ class Room {
                 endOfRound: `${return_str} called spot correctly, however, they already have 5 dice.`
             }
         } else {
-            this.getPlayer(this.prevBid.playerId).diceCount--;
+            this.getPlayer(this.prevBid.playerId).dice.pop();
             this.newRound()
             return {
                 endOfRound: `${return_str} called spot incorrectly and loses 1 dice.`

@@ -6,7 +6,7 @@ class Player {
     playerName;
     /** @member {[Number]} */
     dice = [];   // Number
-    diceCount; // amount of dice 
+    // diceCount; // amount of dice 
 
     /**
      * Create a player
@@ -17,7 +17,7 @@ class Player {
         this.id = id;
         this.playerName = playerName;
         this.dice = [1, 1, 1, 1, 1];
-        this.diceCount = 5;
+        // this.diceCount = 5;
     }
 }
 
