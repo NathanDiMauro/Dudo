@@ -15,7 +15,7 @@ class Room {
 
     /**
      * Create a room
-     * @param {String} roomCode Room code
+     * @param {String} roomCode Room code  
      */
     constructor(roomCode) {
         this.roomCode = roomCode;
@@ -25,44 +25,44 @@ class Room {
     }
 
     /**
-     * Add a player to the room
-     * @param {Player} player   The new Player
+     * Add a player to the room  
+     * @param {Player} player   The new Player  
      */
     addPlayer(player) {
         this.players.push(player);
     }
 
     /**
-     * Get a plyer based on their id
-     * @param {Number} playerId     The id of the player
-     * @returns {Player}            The player with id of playerId
+     * Get a plyer based on their id  
+     * @param {Number} playerId     The id of the player  
+     * @returns {Player}            The player with id of playerId  
      */
     getPlayer(playerId) {
         return this.players.find(p => p.id === playerId);
     }
 
     /**
-     * Checking if a plyer exists based on player name
-     * @param {String} playerName   The name of the player
-     * @returns {Boolean}           True if the player exists, false if not
+     * Checking if a plyer exists based on player name  
+     * @param {String} playerName   The name of the player  
+     * @returns {Boolean}           True if the player exists, false if not  
      */
     playerExistsByName(playerName) {
         return this.players.find(p => p.playerName === playerName) !== undefined;
     }
 
     /**
-     * Checking if a plyer exists based on player id
-     * @param {Number} playerId The id of the player 
-     * @returns {Boolean}       True if player exits, false if not
+     * Checking if a plyer exists based on player id  
+     * @param {Number} playerId The id of the player   
+     * @returns {Boolean}       True if player exits, false if not  
      */
     playerExistsById(playerId) {
         return this.players.find(p => p.id === playerId) !== undefined;
     }
 
     /**
-     * Removing player based on id
-     * @param {Number} playerId         The id of the player
-     * @returns {Player | undefined}    The removed player if they exits, else undefined
+     * Removing player based on id  
+     * @param {Number} playerId         The id of the player  
+     * @returns {Player | undefined}    The removed player if they exits, else undefined  
      */
     removePlayer(playerId) {
         const index = this.players.findIndex((p) => p.id === playerId);
@@ -71,15 +71,28 @@ class Room {
         }
     }
 
+    /**
+     * Get a list of all players not including their dice, but just the amount of their dice  
+     * @returns {[{playerName: String, diceCount: Number}]} An array of an object with a playerName and diceCount  
+     */
     getPlayersBrief() {
         return this.players.map((player) => ({ playerName: player.playerName, diceCount: player.dice.length }))
     }
 
-    // Utility function for getting the total amount if dice in play
+    /**
+     * Get the total amount if dice in play  
+     * @returns {Number}    The amount of currently in the game  
+     */
     countOfDice() {
         return this.players.reduce((prev, curr) => prev + curr.dice.length, 0)
     }
 
+    /**
+     * Get the amount of a specific die in play  
+     * If it is not the first round, it will count 1s as well  
+     * @param {Number} die  The die to get the count of  
+     * @returns {Number}    The amount of dice that match die in the game  
+     */
     countOfSpecificDie(die) {
         let validDice;
         if (this.betsInRound == 1) {
@@ -96,7 +109,11 @@ class Room {
         }, 0);
     }
 
-    // Utility function for generating dice for a player
+    /**
+     * Generating dice for a player  
+     * @param {Number} size The size of the players hand  
+     * @returns {[Number]}  An array of random number in range of 1-6, with the size of size  
+     */
     generateDice(size) {
         let dice = [];
         for (let i = 0; i <= size; i++) {
@@ -105,7 +122,9 @@ class Room {
         return dice;
     }
 
-    // Generating dice for each player
+    /**
+     * Generating dice for each player
+     */
     populatePlayerDice() {
         this.players.forEach(player => {
             player.dice = this.generateDice(player.diceCount)
@@ -113,14 +132,24 @@ class Room {
         });
     }
 
+    /**
+     * Start a new round  
+     * Generates new dice for each player  
+     * Sets the prevBid to null  
+     * Sets betsInRound to 0  
+     */
     newRound() {
         this.populatePlayerDice();
         this.prevBid = null;
         this.betsInRound = 0;
     }
 
-    // Validating that the bid sent from the client is valid
-    // Checking the playerId, action, amount, and dice
+    /**
+     * Validating that the bid sent from the client is valid  
+     * Checking the playerId, action, amount, and dice  
+     * @param {{playerId: Number, action: String, amount: Number, dice: Number}} bid The new bid object
+     * @returns {{error: String} | undefined}   If the bid passed is not valid, it returns an error, else undefined
+     */
     validateBid(bid) {
         // Checking if the same player has bid 2 times in a row
         if (this.prevBid?.playerId == bid.playerId) {
@@ -147,6 +176,7 @@ class Room {
             return { error: `Dice must be 1, 2, 3, 4, 5 , or 6. Not ${bid.dice}` };
         }
 
+        // Only ned to check aces if they are bidding aces or raising
         if ((bid.action == 'raise' || bid.action == 'aces') && this.prevBid != null) {
             // Checking for the aces rule
             const error = this.checkAces(bid);
@@ -154,9 +184,13 @@ class Room {
         }
     }
 
-    // Checking for aces rule
-    // If the prev. bid was aces, then we have to make sure the new bid is valid
-    // This function should be called before raises and aces
+    /**
+     * Checking for aces rule  
+     * If the prev. bid was aces, then we have to make sure the new bid is valid  
+     * This function should be called before raises and aces  
+     * @param {{playerId: Number, action: String, amount: Number, dice: Number}} bid The bid object
+     * @returns {{error: String} | undefined}   If the new bid is not valid, it returns an error, else undefined
+     */
     checkAces(bid) {
         // Aces rule
         if (this.prevBid.dice == 1 && this.prevBid.action == 'aces') {
@@ -172,6 +206,11 @@ class Room {
         }
     }
 
+    /**
+     * Bid action of raising  
+     * @param {{playerId: Number, action: String, amount: Number, dice: Number}} bid The bid object 
+     * @returns {{error: String} | bid: {playerId: Number, action: String, amount: Number, dice: Number}}   If the new bid is not valid, it returns an error, else it returns the new bid
+     */
     bidRaise(bid) {
         if (bid.amount > this.prevBid.amount) {
             this.prevBid = { playerId: bid.playerId, action: bid.action, amount: bid.amount, dice: bid.dice }
@@ -189,6 +228,11 @@ class Room {
         return { error: 'Raise must raise the amount of dice or the dice' };
     }
 
+    /**
+     * Bid action of bidding aces  
+     * @param {{playerId: Number, action: String, amount: Number, dice: Number}} bid The bid object 
+     * @returns {{error: String} | bid: {playerId: Number, action: String, amount: Number, dice: Number}}   If the new bid is not valid, it returns an error, else it returns the new bid
+     */
     bidAces(bid) {
         // check if bid is at least half of the last bid
         // ceil just rounds up the division to the next num\
@@ -205,6 +249,11 @@ class Room {
         return { bid: this.prevBid }
     }
 
+    /**
+     * Bid action of calling the previous bid  
+     * @param {{playerId: Number, action: String, amount: Number, dice: Number}} bid The bid object 
+     * @returns {{endOfRound: String}}   An endOfRound object that states who lost a dice and what the call was
+     */
     bidCall(bid) {
         const dieCount = this.countOfSpecificDie(this.prevBid.dice);
 
@@ -228,6 +277,11 @@ class Room {
         }
     }
 
+    /**
+     * Bid action of calling the previous bid  
+     * @param {{playerId: Number, action: String, amount: Number, dice: Number}} bid The bid object 
+     * @returns {{endOfRound: String}}   An endOfRound object that states who lost a dice and what the spot call was
+     */
     bidSpot(bid) {
         //player claims that the previous bidder's bid is exactly right
         //f the number is higher or lower, the claimant loses the round; otherwise, 
@@ -257,6 +311,12 @@ class Room {
         }
     }
 
+    /**
+     * Handles all incoming bids  
+     * When a new bid needs to be made, this function should be called  
+     * @param {{playerId: Number, action: String, amount: Number, dice: Number}} bid The bid object 
+     * @returns {{error: String} | bid: {playerId: Number, action: String, amount: Number, dice: Number}}   If the new bid is not valid, it returns an error, else it returns the new bid
+     */
     bid(bid) {
         if (this.betsInRound == null) {
             return { error: 'Game has not been started yet.' };
@@ -276,7 +336,6 @@ class Room {
 
         switch (bid.action) {
             case 'raise':
-                console.log('in raise');
                 return this.bidRaise(bid);
             case 'aces':
                 return this.bidAces(bid);

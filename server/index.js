@@ -15,7 +15,7 @@ const PORT = process.env.PORT || 5000
  * @param {Socket}      socket      The socket of the user to not send the notification to
  * @param {String}      name        The name of the player joining the room
  * @param {String}      roomCode    The room code of the room to add the player to
- * @param {callback}    callback    The callback function from the socket.on function. This is used to alert the client of any errors  
+ * @param {Callback}    callback    The callback function from the socket.on function. This is used to alert the client of any errors  
  */
 const _addPlayer = (socket, name, roomCode, callback) => {
     const { newPlayer, error } = addPlayer(socket.id, name, roomCode);
@@ -57,9 +57,9 @@ const _startRound = (room) => {
 /**  
  * Sending a notification to everyone except the sender
  * This will usually only be called when someone leaves or joins a room
- * @param {Object} notification    The notification Object to to sent {title: String, description: String}
- * @param {String} roomCode        The room code of the room to sent the notification to
- * @param {Socket} socket          The socket of the user to not send the notification to
+ * @param {{title: String, description: String}}    notification    The notification Object to to sent
+ * @param {String}                                  roomCode        The room code of the room to sent the notification to
+ * @param {Socket}                                  socket          The socket of the user to not send the notification to
  */
 const _sendNotificationWithoutSender = (notification, roomCode, socket) => {
     socket.in(roomCode).emit('notification', notification)
@@ -70,9 +70,9 @@ const _sendNotificationWithoutSender = (notification, roomCode, socket) => {
  * Sending a notification to everyone in the room
  * This will usually be called to alter the client about game events
  * EX: round starting, round ending...
- * @param {Object} notification    The notification Object to to sent {title: String, description: String}
- * @param {String} roomCode        The room code of the room to sent the notification to
- * @param {Socket} socket          The socket of the user to not send the notification to
+ * @param {{title: String, description: String}}    notification    The notification Object to to sent
+ * @param {String}                                  roomCode        The room code of the room to sent the notification to
+ * @param {Socket}                                  socket          The socket of the user to not send the notification to
  */
 const _sendNotification = (notification, roomCode) => {
     io.in(roomCode).emit('notification', notification);
@@ -87,10 +87,18 @@ const _sendPlayers = (roomCode) => {
     io.in(roomCode).emit('players', getPlayers(roomCode));
 }
 
-
+/**
+ * Listening for new connections  
+ * In this on event, we set all other events for this socket.
+ * @param {Socket} socket   The socket of the client connecting
+ */
 io.on('connection', (socket) => {
-    console.log('Player connected')
 
+    /**
+     * Listening for a client requesting to create a new room
+     * @param {String}  name        The name of the player creating the room
+     * @param {String}  roomCode    The roomCode to assign to the new room
+     */
     socket.on('createRoom', ({ name, roomCode }, callback) => {
         const { error } = createRoom(roomCode);
         if (error) return callback(error);
@@ -98,10 +106,19 @@ io.on('connection', (socket) => {
         _addPlayer(socket, name, roomCode, callback);
     })
 
+    /**
+     * Listening for a client requesting to join a room
+     * @param {String}  name        The name of the player trying to join the room
+     * @param {String}  roomCode    The roomCode of the room that the player is trying to join
+     */
     socket.on('join', ({ name, roomCode }, callback) => {
         _addPlayer(socket, name, roomCode, callback);
     })
 
+    /**
+     * Listening for clients requesting to start a new game
+     * @param {Boolean} newGame     If true, then the client is requesting the start the game, if false, the client is requesting to start a new round
+     */
     socket.on('startGame', ({ newGame }, callback) => {
         const room = getRoom(socket.id);
         if (room) {
@@ -125,7 +142,10 @@ io.on('connection', (socket) => {
         callback();
     })
 
-    // What the bid flow could look like
+    /**
+     * Listening for when a client is requesting to make a new bid
+     * @param {{playerId: Number, action: String, amount: Number, dice: Number}}    new_bid     The new bid
+     */
     socket.on('bid', new_bid => {
         const room = getRoom(socket.id);
         if (room) {
@@ -168,9 +188,13 @@ io.on('connection', (socket) => {
     //     }
     // })
 
+    /**
+     * When a client is disconnecting, we remove them from a room and notify all other clients in the room
+     * @param {String}  message     I do not know what were doing with this currently
+     */
     socket.on('disconnect', message => {
         console.log('player is disconnecting')
-        const {player, roomCode } = removePlayer(socket.id);
+        const { player, roomCode } = removePlayer(socket.id);
         if (player) {
             _sendNotification({ title: 'Someone just left', description: `${player.playerName} just left the room` }, roomCode)
             _sendPlayers()

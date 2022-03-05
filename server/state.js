@@ -7,7 +7,7 @@ const rooms = [] // Array of Room class
 /**
  * Creates a new room with roomCode of roomCode 
  * @param {String}      roomCode    Room code for new new room to create
- * @returns {Object}    error       An error (if there is one)
+ * @returns {{error: String} | undefined}       If there is an error, it will return an error, else undefined
  */
 const createRoom = (roomCode) => {
     if (rooms.find(room => room.roomCode === roomCode)) {
@@ -22,8 +22,7 @@ const createRoom = (roomCode) => {
  * @param {String} id           id of the socket of the new player
  * @param {String} name         name of the new player
  * @param {String} roomCode     roomCode of the room that the player is joining 
- * @returns {Object} error      An error (if there is one)
- * @returns {Object} newPlayer  The new player (if no error occurs)
+ * @returns {{error: String | Player}} If there is an error, it will return an error, else it will return the new player
  */
 const addPlayer = (id, name, roomCode) => {
     // Validating the name and roomCode were provided
@@ -50,11 +49,10 @@ const addPlayer = (id, name, roomCode) => {
     return { newPlayer };
 }
 
-// Get a player based on their id
 /**
- * 
+ * Get a player based on their id
  * @param {String} id   id of the player
- * @returns {Player}    The player with the id of id
+ * @returns {Player | undefined}    The player with the id of id, if no players exists, undefined
  */
 const getPlayer = (id) => {
     // First we have to get the room
@@ -65,11 +63,10 @@ const getPlayer = (id) => {
     }
 }
 
-// Remove a player based on their id
 /**
- * 
+ * Remove a player based on their id
  * @param {String} id           id of the player
- * @returns {Player, roomCode}  If the player exists, it will return that removed player and the roomCode of the room that the player was in
+ * @returns {{player: Player, roomCode: String} | undefined}  If the player exists, it will return that removed player and the roomCode of the room that the player was in, else undefined
  */
 const removePlayer = (id) => {
     // First we have to get the room
@@ -83,7 +80,7 @@ const removePlayer = (id) => {
 /**
  * Returns an array of players in the room
  * @param {String} roomCode     The room code of the room to get the players
- * @returns {Array<Player>}     An array of players
+ * @returns {[{playerName: String, diceCount: Number}] | undefined}          An array of players in the room with roomCode of roomCode, if no room with roomCode of roomCode exists, then undefined
  */
 const getPlayers = (roomCode) => {
     // Getting room that matches roomCode
@@ -98,7 +95,7 @@ const getPlayers = (roomCode) => {
 /**
  * Returns the room based on playerId
  * @param {string} playerId     id of the player
- * @returns {Room}              The room that has the player with id of id
+ * @returns {Room | undefined}  The room that has the player with id of id, if no room ha a player with an id of playerId, then undefined
  */
 const getRoom = (playerId) => rooms.find(r => r.getPlayer(playerId));
 
