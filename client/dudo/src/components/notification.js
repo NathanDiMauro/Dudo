@@ -22,7 +22,7 @@ const Notification = (props) => {
     
       }, [props.socket])
 
-    if (props.show || !notification.title) return null;
+    if (props.show || notificationLog) return null;
 
     return (
         <div id='notification'>
