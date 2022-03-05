@@ -97,7 +97,6 @@ function App() {
 
   const showStart = () => {
     if (!show) {
-      console.log(startRound)
       let text = 'Start Round'
       if (!startRound) text = 'Start Game'
       return <button onClick={startGame}>{text}</button>
