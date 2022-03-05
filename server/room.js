@@ -1,5 +1,6 @@
 const { Player } = require('./player');
 
+/** Class representing a room */
 class Room {
     static validBidActions = ['raise', 'aces', 'call', 'spot'];
     players; // Array of Player class
@@ -12,6 +13,10 @@ class Room {
     };  // {playerID: Player, action: String, amount: Number, dice: Number}
     betsInRound;
 
+    /**
+     * Create a room
+     * @param {String} roomCode Room code
+     */
     constructor(roomCode) {
         this.roomCode = roomCode;
         this.players = [];
@@ -19,26 +24,46 @@ class Room {
         this.betsInRound = null;
     }
 
+    /**
+     * Add a player to the room
+     * @param {Player} player   The new Player
+     */
     addPlayer(player) {
         this.players.push(player);
     }
 
-    // Get a plyer based on their id
+    /**
+     * Get a plyer based on their id
+     * @param {Number} playerId     The id of the player
+     * @returns {Player}            The player with id of playerId
+     */
     getPlayer(playerId) {
         return this.players.find(p => p.id === playerId);
     }
 
-    // Checking if a plyer exists based on player name
+    /**
+     * Checking if a plyer exists based on player name
+     * @param {String} playerName   The name of the player
+     * @returns {Boolean}           True if the player exists, false if not
+     */
     playerExistsByName(playerName) {
         return this.players.find(p => p.playerName === playerName) !== undefined;
     }
 
-    // Checking if a plyer exists based on player id
+    /**
+     * Checking if a plyer exists based on player id
+     * @param {Number} playerId The id of the player 
+     * @returns {Boolean}       True if player exits, false if not
+     */
     playerExistsById(playerId) {
         return this.players.find(p => p.id === playerId) !== undefined;
     }
 
-    // Removing player based on id
+    /**
+     * Removing player based on id
+     * @param {Number} playerId         The id of the player
+     * @returns {Player | undefined}    The removed player if they exits, else undefined
+     */
     removePlayer(playerId) {
         const index = this.players.findIndex((p) => p.id === playerId);
         if (index !== -1) {
