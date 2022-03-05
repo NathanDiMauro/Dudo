@@ -39,3 +39,7 @@
     display: none;
     cursor: pointer;
 }
+
+#bidButtons {
+    padding-top: 1%;
+}
