@@ -1,28 +1,25 @@
-
+import React, { useState, useEffect } from "react";
+import '../styles/notification.css'
 
 const Notification = (props) => {
-    if (props.show || !props.notification.title) return null;
+    const [notification, setNotification] = useState({});
+
+    useEffect(() => {
+       props.socket.on('notification', notification => {
+          console.log(notification);
+          if (notification?.eof) props.setStartRound(true);
+          setNotification(notification)
+        })
+    
+      }, [props.socket])
+
+    if (props.show || !notification.title) return null;
 
     return (
-        <div style={styles.container}>
-            <h4>{props.notification.title}</h4>
-            <p>{props.notification.description}</p>
+        <div id='notification'>
+            <p>{notification.description}</p>
         </div>
     )
-}
-
-const styles = {
-    container: {
-        marginLeft: 50,
-        marginRight: 50,
-        borderColor: '#004c8c',
-        borderRadius: 5,
-        borderStyle: 'solid',
-        borderWidth: 5,
-        padding: 5,
-        width: '25%',
-        marginBottom: 10
-    }
 }
 
 
