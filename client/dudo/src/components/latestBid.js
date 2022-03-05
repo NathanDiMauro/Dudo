@@ -1,28 +1,24 @@
-
+import React, { useState, useEffect } from "react";
+import '../styles/latestBid.css'
 
 const LatestBid = (props) => {
-    if (props.show || !props.bid) return null;
+    const [bid, setBid] = useState();
 
-    console.log(props.bid);
+    useEffect(() => {
+        const handleNewBid = (newBid) => {
+            setBid(newBid);
+        }
+
+        props.socket.on('newBid', handleNewBid);
+    }, [props.socket])
+
+    if (props.show || !bid) return null;
 
     return (
-        <div style={styles.container}>
-            <h2>Latest Bid:</h2>
-            <h4>{props.bid.bid.amount} {props.bid.bid.dice}s</h4>
+        <div id="latestBid">
+            <h4>Current Bid: {bid.bid.amount} {bid.bid.dice}s</h4>
         </div>
     )
-}
-
-const styles = {
-    container: {
-        marginLeft: 50,
-        marginRight: 50,
-        borderColor: 'black',
-        borderRadius: 5,
-        borderStyle: 'solid',
-        padding: 5,
-        width: '25%'
-    }
 }
 
 export default LatestBid;

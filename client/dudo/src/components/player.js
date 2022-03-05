@@ -7,6 +7,7 @@ import dice5 from '../dice/dice5.svg'
 import dice6 from '../dice/dice6.svg'
 import '../styles/player.css'
 import PlayerActions from './playerActions';
+import LatestBid from '../components/latestBid';
 
 const Player = (props) => {
 
@@ -41,7 +42,8 @@ const Player = (props) => {
         <div id="player">
             <h2>{props.name}:</h2>
             {hand.map((die, key) => <img src={die} key={key} alt="dice"/>)}
-
+  
+            <LatestBid show={props.show} socket={props.socket}/>
             <PlayerActions socket={props.socket} id={props.id}/>
         </div>
     );

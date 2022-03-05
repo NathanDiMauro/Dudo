@@ -6,7 +6,6 @@ import Player from "../components/player";
 import Oponent from '../components/oponent';
 import { SocketContext } from '../components/socketContext';
 import Notification from '../components/notification';
-import LatestBid from '../components/latestBid';
 
 function App() {
 
@@ -17,7 +16,6 @@ function App() {
   const [player, setPlayer] = useState([]);
   const [oponentsComponents, setOponentsComponents] = useState([]);
   const [playerHand, setPlayerHand] = useState(null);
-  const [latestBid, setLatestBid] = useState();
   const [startRound, setStartRound] = useState(false);
 
   useEffect(() => {
@@ -49,17 +47,10 @@ function App() {
   }, [socket, name])
 
   useEffect(() => {
-
-    const handleNewBid = (newBid) => {
-      setLatestBid(newBid);
-    }
-
     socket.on('diceForRound', dice => {
       setPlayerHand(dice);
       console.log("Players dice:", dice);
     });
-
-    socket.on('newBid', handleNewBid);
 
   }, [socket])
 
@@ -103,9 +94,8 @@ function App() {
       <JoinGame name={name} setName={setName} room={room} setRoom={setRoom}
         show={show} setShow={setShow} socket={socket} />
       {showRoom()}
-      <LatestBid bid={latestBid} show={show} />
       <Player name={name} show={show} diceNum={player.diceCount} socket={socket}
-        id={socket.id} playerHand={playerHand} />
+        id={socket.id} playerHand={playerHand}/>
       <div id='players'>
         {oponentsComponents}
       </div>
