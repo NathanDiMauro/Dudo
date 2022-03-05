@@ -1,8 +1,18 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import '../styles/notification.css'
 
 const Notification = (props) => {
     const [notificationLog, setNotificationLog] = useState([]);
+
+    const messagesEndRef = useRef(null);
+
+    const scrollToBottom = () => {
+        messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
+    };
+
+    useEffect(() => {
+        scrollToBottom()
+    }, [notificationLog]);
 
     useEffect(() => {
        props.socket.on('notification', notification => {
@@ -19,14 +29,16 @@ const Notification = (props) => {
 
             setNotificationLog(notificationLogComponentBuilder)
         })
-    
-      }, [props.socket])
+    }, [props.socket])
 
     if (props.show || !notificationLog[0]) return null;
 
     return (
-        <div id='notification'>
-            {notificationLog}
+        <div>
+            <div id='notification'>
+                {notificationLog}
+                <div ref={messagesEndRef} />
+            </div>
         </div>
     )
 }
