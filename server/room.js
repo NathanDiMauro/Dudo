@@ -151,8 +151,9 @@ class Room {
      */
     validateBid(bid) {
         // Checking if the same player has bid 2 times in a row
-        if (this.prevBid?.playerId == bid.playerId) {
-            return { error: 'Player cannot bid 2 times in a row' };
+        if (this.prevBid) {
+            const { error } = this.checkTurn(bid.playerId) || {};
+            if (error) return { error }
         }
 
         // Checking if player exists
@@ -180,6 +181,24 @@ class Room {
             // Checking for the aces rule
             const error = this.checkAces(bid);
             if (error) return { error };
+        }
+    }
+
+    /**
+     * Check whose turn it is to bet, passing in the id of the player who is betting
+     * @param {String} playerId     id of the player who is making a bet
+     * @returns {error | undefined} If it is not the player with id of playerId's turn, then error, else undefined
+     */
+    checkTurn(playerId) {
+        // Getting the index of the player who last went
+        const indexOfLast = this.players.findIndex((player) => player.id === this.prevBid.playerId);
+        // If were at the end of the array
+        if (indexOfLast >= this.players.length - 1) {
+            if (this.players[0].id !== playerId) {
+                return { error: `It is not ${this.getPlayer(playerId).playerName}s turn` }
+            }
+        } else if (this.players[indexOfLast + 1].id !== playerId) {
+            return { error: `It is not ${this.getPlayer(playerId).playerName}s turn` }
         }
     }
 

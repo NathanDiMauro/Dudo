@@ -1,12 +1,12 @@
 const { Room } = require("../room");
 const { Player } = require("../player");
 
-let room, player1, player2;
+let room, player1, player2, player3;
 
 beforeEach(() => {
   room = new Room('1234');
-  player1 = new Player(0, 'name');
-  player2 = new Player(1, 'name2');
+  player1 = new Player('0', 'name');
+  player2 = new Player('1', 'name2');
 })
 
 afterEach(() => {
@@ -24,17 +24,17 @@ describe('adding player', () => {
 describe('remove player', () => {
   test('remove player testing count', () => {
     room.addPlayer(player1);
-    room.removePlayer(0);
+    room.removePlayer('0');
     expect(room.players.length).toBe(0);
   })
 
   test('remove player testing return', () => {
     room.addPlayer(player1);
-    expect(room.removePlayer(0)).toBe(player1);
+    expect(room.removePlayer('0')).toBe(player1);
   })
 
   test('remove player with invalid id', () => {
-    expect(room.removePlayer(0)).toBe(undefined);
+    expect(room.removePlayer('0')).toBe(undefined);
   })
 })
 
@@ -42,11 +42,11 @@ describe('get player', () => {
   test('get player', () => {
     const newPlayer = player1;
     room.addPlayer(newPlayer);
-    expect(room.getPlayer(0)).toBe(newPlayer);
+    expect(room.getPlayer('0')).toBe(newPlayer);
   })
 
   test('get player with invalid id', () => {
-    expect(room.getPlayer(0)).toBe(undefined);
+    expect(room.getPlayer('0')).toBe(undefined);
   })
 
 })
@@ -71,11 +71,11 @@ describe('player exists', () => {
 
   test('player exists by id', () => {
     room.addPlayer(player1);
-    expect(room.playerExistsById(0)).toBeTruthy();
+    expect(room.playerExistsById('0')).toBeTruthy();
   })
 
   test('player exists by id with invalid id', () => {
-    expect(room.playerExistsById(0)).toBeFalsy();
+    expect(room.playerExistsById('0')).toBeFalsy();
   })
 
 })
@@ -119,51 +119,47 @@ describe('populate dice', () => {
 })
 
 describe('validate bid', () => {
-  test('validate bid', () => {
+  beforeEach(() => {
     room.addPlayer(player1);
+  })
+  test('validate bid', () => {
     const bid = { playerId: player1.id, action: 'call', amount: 4, dice: 4 };
     expect(room.validateBid(bid)).toBe(undefined)
   })
 
   test('validate bid with player going 2 times in a row', () => {
-    room.addPlayer(player1);
-    const bid = { playerId: 2, action: 'call', amount: 4, dice: 4 };
+    room.addPlayer(player2);
+    const bid = { playerId: player1.id, action: 'call', amount: 4, dice: 4 };
     room.prevBid = bid;
-    expect(room.validateBid(bid)).toStrictEqual({ error: 'Player cannot bid 2 times in a row' });
+    expect(room.validateBid(bid)).toStrictEqual({ error: `It is not ${player1.playerName}s turn` });
   })
 
   test('validate bid with invalid playerId', () => {
-    room.addPlayer(player1);
     const bid = { playerId: 2, action: 'call', amount: 4, dice: 4 };
     expect(room.validateBid(bid)).toStrictEqual({ error: 'Player with id of 2 does not exist' });
   })
 
   test('validate bid with invalid bid action', () => {
-    room.addPlayer(player1);
     const bid = { playerId: player1.id, action: 'invalid', amount: 4, dice: 4 };
     expect(room.validateBid(bid)).toStrictEqual({ error: 'Invalid bid action: invalid' });
   })
 
   test('validate bid with invalid die amount', () => {
-    room.addPlayer(player1);
     const bid = { playerId: player1.id, action: 'call', amount: 6, dice: 4 };
     expect(room.validateBid(bid)).toStrictEqual({ error: 'There are only 5 dice left in the game. 6 is too high' });
   })
 
   test('validate bid with invalid dice - negative', () => {
-    room.addPlayer(player1);
     const bid = { playerId: player1.id, action: 'call', amount: 4, dice: -1 };
     expect(room.validateBid(bid)).toStrictEqual({ error: 'Dice must be 1, 2, 3, 4, 5 , or 6. Not -1' });
   })
 
   test('validate bid with invalid dice - zero', () => {
-    room.addPlayer(player1);
     const bid = { playerId: player1.id, action: 'call', amount: 4, dice: 0 };
     expect(room.validateBid(bid)).toStrictEqual({ error: 'Dice must be 1, 2, 3, 4, 5 , or 6. Not 0' });
   })
 
   test('validate bid with invalid dice - positive', () => {
-    room.addPlayer(player1);
     const bid = { playerId: player1.id, action: 'call', amount: 4, dice: 10 };
     expect(room.validateBid(bid)).toStrictEqual({ error: 'Dice must be 1, 2, 3, 4, 5 , or 6. Not 10' });
   })
@@ -421,6 +417,82 @@ describe('bid', () => {
     const second_bid = { playerId: player2.id, action: 'spot', amount: 5, dice: 2 };
     room.bid(first_bid)
     expect(room.bid(second_bid)).toStrictEqual({ endOfRound: `${player2.playerName} called spot on 5 2s. ${player2.playerName} called spot correctly and gets 1 dice back.` })
+  })
+
+})
+
+describe('turn taking', () => {
+  beforeEach(() => {
+    room.addPlayer(player1);
+    room.addPlayer(player2);
+    player3 = new Player('3', 'name3');
+    room.addPlayer(player3);
+    room.newRound();
+  })
+
+  test('turn taking - 1 round', () => {
+    const first_bid = { playerId: player1.id, action: 'raise', amount: 2, dice: 2 };
+    const second_bid = { playerId: player2.id, action: 'raise', amount: 3, dice: 2 };
+    const third_bid = { playerId: player3.id, action: 'raise', amount: 4, dice: 2 };
+
+    room.bid(first_bid)
+    room.bid(second_bid)
+    expect(room.bid(third_bid)).toStrictEqual({ bid: third_bid })
+  })
+
+  test('turn taking - 2 rounds', () => {
+    const first_bid = { playerId: player1.id, action: 'raise', amount: 2, dice: 2 };
+    const second_bid = { playerId: player2.id, action: 'raise', amount: 3, dice: 2 };
+    const third_bid = { playerId: player3.id, action: 'raise', amount: 4, dice: 2 };
+    const fourth_bid = { playerId: player1.id, action: 'raise', amount: 5, dice: 2 };
+    const fifth_bid = { playerId: player2.id, action: 'raise', amount: 6, dice: 2 };
+    const sixth_bid = { playerId: player3.id, action: 'raise', amount: 7, dice: 2 };
+
+
+    room.bid(first_bid)
+    room.bid(second_bid)
+    room.bid(third_bid)
+    room.bid(fourth_bid)
+    room.bid(fifth_bid)
+    expect(room.bid(sixth_bid)).toStrictEqual({ bid: sixth_bid })
+  })
+
+  test('turn taking - player 1 goes before player 3', () => {
+    const first_bid = { playerId: player1.id, action: 'raise', amount: 2, dice: 2 };
+    const second_bid = { playerId: player2.id, action: 'raise', amount: 3, dice: 2 };
+    const third_bid = { playerId: player1.id, action: 'raise', amount: 4, dice: 2 };
+
+    room.bid(first_bid)
+    room.bid(second_bid)
+    expect(room.bid(third_bid)).toStrictEqual({ error: `It is not ${player1.playerName}s turn` })
+  })
+
+  test('turn taking - player 2 goes before player 1', () => {
+    const first_bid = { playerId: player1.id, action: 'raise', amount: 2, dice: 2 };
+    const second_bid = { playerId: player2.id, action: 'raise', amount: 3, dice: 2 };
+    const third_bid = { playerId: player3.id, action: 'raise', amount: 4, dice: 2 };
+    const fourth_bid = { playerId: player2.id, action: 'raise', amount: 5, dice: 2 };
+
+    room.bid(first_bid)
+    room.bid(second_bid)
+    room.bid(third_bid)
+    expect(room.bid(fourth_bid)).toStrictEqual({ error: `It is not ${player2.playerName}s turn` })
+  })
+
+  test('turn taking - player 3 goes before player 2', () => {
+    const first_bid = { playerId: player1.id, action: 'raise', amount: 2, dice: 2 };
+    const second_bid = { playerId: player3.id, action: 'raise', amount: 3, dice: 2 };
+
+    room.bid(first_bid)
+    expect(room.bid(second_bid)).toStrictEqual({ error: `It is not ${player3.playerName}s turn` })
+  })
+
+  test('tun taking - player 1 tries to go twice', () => {
+    const first_bid = { playerId: player1.id, action: 'raise', amount: 2, dice: 2 };
+    const second_bid = { playerId: player1.id, action: 'raise', amount: 3, dice: 2 };
+
+    room.bid(first_bid)
+    expect(room.bid(second_bid)).toStrictEqual({ error: `It is not ${player1.playerName}s turn` })
   })
 
 })
