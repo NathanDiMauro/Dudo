@@ -8,9 +8,10 @@
     padding: 5px;
     width: 85%;
     margin-bottom: 10;
-    height: 100px;
+    height: 150px;
     overflow: auto;
     background-color: #58a5f0;
+    margin-bottom: 1%;
 }
 
 #notification #title {

@@ -14,13 +14,15 @@ const Player = (props) => {
     const [hand, setHand] = useState([]);
 
     useEffect(() => {
-        if (props.playerHand) {
+        props.socket.on('diceForRound', dice => {
+            dice=dice.dice;
+
             const diceBuilder = []
 
-            console.log("PHand", props.playerHand.dice)
+            console.log("Players Hand", dice)
 
-            for (let i = 0; i < props.playerHand.dice.length; i++) {
-                switch (props.playerHand.dice[i]) {
+            for (let i = 0; i < dice.length; i++) {
+                switch (dice[i]) {
                     case 1: diceBuilder.push(dice1); break;
                     case 2: diceBuilder.push(dice2); break;
                     case 3: diceBuilder.push(dice3); break;
@@ -29,10 +31,10 @@ const Player = (props) => {
                     case 6: diceBuilder.push(dice6); break;
                 }
             }
-            setHand(diceBuilder)
-        }
-    }, [props.playerHand])
 
+            setHand(diceBuilder)
+        });
+    }, [props.socket])
 
     if (props.show === true) {
         return null;

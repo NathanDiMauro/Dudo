@@ -88,6 +88,8 @@ io.on('connection', (socket) => {
                     _startRound(room);
                 }
                 if (bid) {
+                    console.log(bid);
+                    io.in(room.roomCode).emit('notification', { title: 'New Bid', description: "New bid entered" });
                     io.in(room.roomCode).emit('newBid', { bid });
                 } else if (endOfRound) {
                     io.in(room.roomCode).emit('notification', { title: 'The round has ended', description: endOfRound, eof: true });

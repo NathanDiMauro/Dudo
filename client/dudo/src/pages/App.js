@@ -15,7 +15,6 @@ function App() {
   const [show, setShow] = useState(true);
   const [player, setPlayer] = useState([]);
   const [oponentsComponents, setOponentsComponents] = useState([]);
-  const [playerHand, setPlayerHand] = useState(null);
   const [startRound, setStartRound] = useState(false);
 
   useEffect(() => {
@@ -45,14 +44,6 @@ function App() {
       setOponentsComponents(oponentComponentBuilder)
     })
   }, [socket, name])
-
-  useEffect(() => {
-    socket.on('diceForRound', dice => {
-      setPlayerHand(dice);
-      console.log("Players dice:", dice);
-    });
-
-  }, [socket])
 
   const leaveGame = () => {
     setName(null);
@@ -95,14 +86,14 @@ function App() {
         show={show} setShow={setShow} socket={socket} />
       {showRoom()}
       <Player name={name} show={show} diceNum={player.diceCount} socket={socket}
-        id={socket.id} playerHand={playerHand}/>
+        id={socket.id} />
       <div id='players'>
         {oponentsComponents}
       </div>
-      {showStart()}
-      {showLeave()}
       
       <Notification show={show} socket={socket} setStartRound={setStartRound}/>
+      {showStart()}
+      {showLeave()}
     </div>
   );
 }
