@@ -11,8 +11,8 @@ This project uses [socket.io](https://socket.io/). If you are unfamiliar with We
 ### Bid format
 This is the object that the client will send to the server when a player make a bid.  
 Possible actions are `'raise'`, `'aces'`, `'call'`, `'spot'`.  
-`{ playerId: number, action: string, amount: number, dice: number }`  
-Example: `{ playerId: 3, action: 'raise', amount: 5, dice: 5 }`  
+`{ playerId: string, action: string, amount: number, dice: number }`  
+Example: `{ playerId: '3', action: 'raise', amount: 5, dice: 5 }`  
 
 ## Client Emit Events
 
@@ -29,9 +29,10 @@ Example: `socket.emit('join', { name: 'joe', roomCode: 'roomCode' }, error => { 
 ### Send a bid
 Send a new bid to the server.  
 There are some important things to note when making a bid. If a bid is invalid, the server will return an error in the `error` variable. If the bid is valid, then the new bid will be sent to all clients through the [`newBid` event](#new-bids)  
+When sending a bid with an action of `spot` or `call`, you can just pass `null` for both `amount` and `dice`. We do not care what those numbers are since we are comparing the call to the previous bet.  
 Example: `socket.emit('bid', { new_bid: bid_obj }, error => { ... })`  
 In the example above, bid_obj is an object that matches the format of bid object. Refer to the [bid format section above](#bid-format).  
-Example new_bid: `{ playerId: 0, action: 'raise', amount: 4, dice: 4 }`  
+Example new_bid: `{ playerId: '0', action: 'raise', amount: 4, dice: 4 }`  
 
 ## Client Listen Events
 ### Notification
@@ -48,7 +49,7 @@ Example response:  `[{ playerName: 'joe', diceCount: 5 }, { playerName: 'dave', 
 `socket.on('newBid, bid => { ... })`  
 Anytime a new bid is made, the new bid will be sent to all clients.  
 The bid is formatted as an object. Refer to the [bid format section above](#bid-format).  
-Example response: `{ playerId: 0, action: 'raise', amount: 4, dice: 5 }`  
+Example response: `{ playerId: '0', action: 'raise', amount: 4, dice: 5 }`  
 
 ### End of round
 `socket.on('endOfRound', endOfRound => { ... })`  

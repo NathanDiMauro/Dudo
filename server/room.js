@@ -8,7 +8,7 @@ class Room {
     players;
     /** @member {String} */
     roomCode;
-    /** @member {{playerId: Number, action: String, amount: Number, dice: Number} | null} */
+    /** @member {{playerId: String, action: String, amount: Number, dice: Number} | null} */
     prevBid = {};
     /** @member {Number | null} */
     betsInRound;
@@ -34,7 +34,7 @@ class Room {
 
     /**
      * Get a plyer based on their id  
-     * @param {Number} playerId     The id of the player  
+     * @param {String} playerId     The id of the player  
      * @returns {Player}            The player with id of playerId  
      */
     getPlayer(playerId) {
@@ -52,7 +52,7 @@ class Room {
 
     /**
      * Checking if a plyer exists based on player id  
-     * @param {Number} playerId The id of the player   
+     * @param {String} playerId The id of the player   
      * @returns {Boolean}       True if player exits, false if not  
      */
     playerExistsById(playerId) {
@@ -61,7 +61,7 @@ class Room {
 
     /**
      * Removing player based on id  
-     * @param {Number} playerId         The id of the player  
+     * @param {String} playerId         The id of the player  
      * @returns {Player | undefined}    The removed player if they exits, else undefined  
      */
     removePlayer(playerId) {
@@ -146,7 +146,7 @@ class Room {
     /**
      * Validating that the bid sent from the client is valid  
      * Checking the playerId, action, amount, and dice  
-     * @param {{playerId: Number, action: String, amount: Number, dice: Number}} bid The new bid object
+     * @param {{playerId: String, action: String, amount: Number, dice: Number}} bid The new bid object
      * @returns {{error: String} | undefined}   If the bid passed is not valid, it returns an error, else undefined
      */
     validateBid(bid) {
@@ -172,7 +172,7 @@ class Room {
         }
 
         // Checking if the dice # if valid (1-6)
-        if (1 > bid.dice || bid.dice > 7) {
+        if (((bid.action == 'raise' || bid.action == 'aces')) && 1 > bid.dice || bid.dice > 7) {
             return { error: `Dice must be 1, 2, 3, 4, 5 , or 6. Not ${bid.dice}` };
         }
 
@@ -206,7 +206,7 @@ class Room {
      * Checking for aces rule  
      * If the prev. bid was aces, then we have to make sure the new bid is valid  
      * This function should be called before raises and aces  
-     * @param {{playerId: Number, action: String, amount: Number, dice: Number}} bid The bid object
+     * @param {{playerId: String, action: String, amount: Number, dice: Number}} bid The bid object
      * @returns {{error: String} | undefined}   If the new bid is not valid, it returns an error, else undefined
      */
     checkAces(bid) {
@@ -226,8 +226,8 @@ class Room {
 
     /**
      * Bid action of raising  
-     * @param {{playerId: Number, action: String, amount: Number, dice: Number}} bid The bid object 
-     * @returns {{error: String} | bid: {playerId: Number, action: String, amount: Number, dice: Number}}   If the new bid is not valid, it returns an error, else it returns the new bid
+     * @param {{playerId: String, action: String, amount: Number, dice: Number}} bid The bid object 
+     * @returns {{error: String} | bid: {playerId: String, action: String, amount: Number, dice: Number}}   If the new bid is not valid, it returns an error, else it returns the new bid
      */
     bidRaise(bid) {
         if (bid.amount > this.prevBid.amount) {
@@ -248,8 +248,8 @@ class Room {
 
     /**
      * Bid action of bidding aces  
-     * @param {{playerId: Number, action: String, amount: Number, dice: Number}} bid The bid object 
-     * @returns {{error: String} | bid: {playerId: Number, action: String, amount: Number, dice: Number}}   If the new bid is not valid, it returns an error, else it returns the new bid
+     * @param {{playerId: String, action: String, amount: Number, dice: Number}} bid The bid object 
+     * @returns {{error: String} | bid: {playerId: String, action: String, amount: Number, dice: Number}}   If the new bid is not valid, it returns an error, else it returns the new bid
      */
     bidAces(bid) {
         // check if bid is at least half of the last bid
@@ -269,7 +269,7 @@ class Room {
 
     /**
      * Bid action of calling the previous bid  
-     * @param {{playerId: Number, action: String, amount: Number, dice: Number}} bid The bid object 
+     * @param {{playerId: String, action: String, amount: Number, dice: Number}} bid The bid object 
      * @returns {{endOfRound: String}}   An endOfRound object that states who lost a dice and what the call was
      */
     bidCall(bid) {
@@ -297,7 +297,7 @@ class Room {
 
     /**
      * Bid action of calling the previous bid  
-     * @param {{playerId: Number, action: String, amount: Number, dice: Number}} bid The bid object 
+     * @param {{playerId: String, action: String, amount: Number, dice: Number}} bid The bid object 
      * @returns {{endOfRound: String}}   An endOfRound object that states who lost a dice and what the spot call was
      */
     bidSpot(bid) {
@@ -306,34 +306,29 @@ class Room {
         //the bidder loses the round.
         const dieCount = this.countOfSpecificDie(this.prevBid.dice);
 
-        let return_str = `${this.getPlayer(bid.playerId).playerName} called spot on ${this.prevBid.amount} ${this.prevBid.dice}s. ${this.getPlayer(bid.playerId).playerName}`;
+        let return_str = `${this.getPlayer(bid.playerId).playerName} called spot on ${this.prevBid.amount} ${this.prevBid.dice}s. ${this.getPlayer(bid.playerId).playerName} `;
 
-        if (dieCount == this.prevBid.amount) {
+        if (dieCount === this.prevBid.amount) {
+            // If they do not have 5 dice in hand, ive them dice
             if (this.getPlayer(bid.playerId).dice.length < 5) {
                 this.getPlayer(bid.playerId).dice.push(1);
-                this.newRound()
-                return {
-                    endOfRound: `${return_str} called spot correctly and gets 1 dice back.`
-                }
-            }
-            this.newRound()
-            return {
-                endOfRound: `${return_str} called spot correctly, however, they already have 5 dice.`
+                return_str += 'called spot correctly and gets 1 dice back.';
+            } else {
+                return_str += 'called spot correctly, however, they already have 5 dice.';
             }
         } else {
-            this.getPlayer(this.prevBid.playerId).dice.pop();
-            this.newRound()
-            return {
-                endOfRound: `${return_str} called spot incorrectly and loses 1 dice.`
-            }
+            this.getPlayer(bid.playerId).dice.pop();
+            return_str += 'called spot incorrectly and loses 1 dice.';
         }
+
+        return { endOfRound: return_str };
     }
 
     /**
      * Handles all incoming bids  
      * When a new bid needs to be made, this function should be called  
-     * @param {{playerId: Number, action: String, amount: Number, dice: Number}} bid The bid object 
-     * @returns {{error: String} | bid: {playerId: Number, action: String, amount: Number, dice: Number}}   If the new bid is not valid, it returns an error, else it returns the new bid
+     * @param {{playerId: String, action: String, amount: Number, dice: Number}} bid The bid object 
+     * @returns {{error: String} | bid: {playerId: String, action: String, amount: Number, dice: Number}}   If the new bid is not valid, it returns an error, else it returns the new bid
      */
     bid(bid) {
         if (this.betsInRound == null) {

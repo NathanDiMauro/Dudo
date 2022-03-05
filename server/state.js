@@ -94,7 +94,7 @@ const getPlayers = (roomCode) => {
 // 
 /**
  * Returns the room based on playerId
- * @param {string} playerId     id of the player
+ * @param {String} playerId     id of the player
  * @returns {Room | undefined}  The room that has the player with id of id, if no room ha a player with an id of playerId, then undefined
  */
 const getRoom = (playerId) => rooms.find(r => r.getPlayer(playerId));
