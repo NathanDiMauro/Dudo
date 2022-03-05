@@ -40,7 +40,7 @@ const Player = (props) => {
     return (
         <div id="player">
             <h2>{props.name}:</h2>
-            {hand.map((die, key) => <img src={die} key={key} />)}
+            {hand.map((die, key) => <img src={die} key={key} alt="dice"/>)}
 
             <PlayerActions socket={props.socket} id={props.id}/>
         </div>

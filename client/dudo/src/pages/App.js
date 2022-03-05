@@ -15,10 +15,8 @@ function App() {
   const [room, setRoom] = useState(null);
   const [show, setShow] = useState(true);
   const [player, setPlayer] = useState([]);
-  const [oponents, setOponents] = useState([]);
   const [oponentsComponents, setOponentsComponents] = useState([]);
   const [playerHand, setPlayerHand] = useState(null);
-  const [notification, setNotification] = useState({});
   const [latestBid, setLatestBid] = useState();
   const [startRound, setStartRound] = useState(false);
 
@@ -33,16 +31,14 @@ function App() {
       let oponentsBuilder = [];
 
       for (let i = 0; i < players.length; i++) {
-        console.log(players[i].playerName != name);
-        if (players[i].playerName != name)
+        console.log(players[i].playerName !== name);
+        if (players[i].playerName !== name)
           oponentsBuilder.push(players[i])
         else {
           console.log("Player:", players[i])
           setPlayer(players[i]);
         }
       }
-
-      setOponents(oponentsBuilder);
 
       const oponentComponentBuilder = oponentsBuilder.map((oponent) =>
         <Oponent name={oponent.playerName} key={oponent.playerName} diceNum={oponent.diceCount} />
@@ -63,12 +59,6 @@ function App() {
       console.log("Players dice:", dice);
     });
 
-    socket.on('notification', notification => {
-      console.log(notification);
-      if (notification?.eof) setStartRound(true);
-      setNotification(notification);
-    })
-
     socket.on('newBid', handleNewBid);
 
   }, [socket])
@@ -78,6 +68,8 @@ function App() {
     setRoom(null);
     setOponentsComponents([]);
     setShow(true);
+
+    socket.emit('disconnect')
   }
 
   const showLeave = () => {
@@ -111,7 +103,7 @@ function App() {
       <JoinGame name={name} setName={setName} room={room} setRoom={setRoom}
         show={show} setShow={setShow} socket={socket} />
       {showRoom()}
-      <Notification notification={notification} show={show} />
+      <Notification show={show} socket={socket} setStartRound={setStartRound}/>
       <LatestBid bid={latestBid} show={show} />
       <Player name={name} show={show} diceNum={player.diceCount} socket={socket}
         id={socket.id} playerHand={playerHand} />
