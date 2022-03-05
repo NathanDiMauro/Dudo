@@ -3,12 +3,24 @@ import '../styles/notification.css'
 
 const Notification = (props) => {
     const [notification, setNotification] = useState({});
+    const [notificationLog, setNotificationLog] = useState([]);
 
     useEffect(() => {
        props.socket.on('notification', notification => {
-          console.log(notification);
-          if (notification?.eof) props.setStartRound(true);
-          setNotification(notification)
+            console.log(notification);
+
+            if (notification?.eof) props.setStartRound(true);
+
+             setNotification(notification)
+
+             let notificationLogBuilder = notificationLog;
+
+             notificationLogBuilder.push(notification)
+
+            const notificationLogComponentBuilder = notificationLogBuilder.map((notification) =>
+                <p>{notification.title}: {notification.description}</p>);
+
+            setNotificationLog(notificationLogComponentBuilder)
         })
     
       }, [props.socket])
@@ -17,7 +29,7 @@ const Notification = (props) => {
 
     return (
         <div id='notification'>
-            <p>{notification.description}</p>
+            {notificationLog}
         </div>
     )
 }

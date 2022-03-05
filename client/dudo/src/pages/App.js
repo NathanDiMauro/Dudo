@@ -103,7 +103,6 @@ function App() {
       <JoinGame name={name} setName={setName} room={room} setRoom={setRoom}
         show={show} setShow={setShow} socket={socket} />
       {showRoom()}
-      <Notification show={show} socket={socket} setStartRound={setStartRound}/>
       <LatestBid bid={latestBid} show={show} />
       <Player name={name} show={show} diceNum={player.diceCount} socket={socket}
         id={socket.id} playerHand={playerHand} />
@@ -112,6 +111,8 @@ function App() {
       </div>
       {showStart()}
       {showLeave()}
+      
+      <Notification show={show} socket={socket} setStartRound={setStartRound}/>
     </div>
   );
 }
