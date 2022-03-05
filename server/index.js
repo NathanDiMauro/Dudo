@@ -194,8 +194,9 @@ io.on('connection', (socket) => {
      * When a client is disconnecting, we remove them from a room and notify all other clients in the room
      * @param {String}  message     I do not know what were doing with this currently
      */
-    socket.on('disconnect', message => {
-        console.log('player is disconnecting')
+    socket.on('disconnect', () => {
+        console.log('player is disconnecting');
+        socket.disconnect();
         const { player, roomCode } = removePlayer(socket.id);
         if (player) {
             _sendNotification({ title: 'Someone just left', description: `${player.playerName} just left the room` }, roomCode)

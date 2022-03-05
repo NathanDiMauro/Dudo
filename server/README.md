@@ -39,6 +39,11 @@ Example: `socket.emit('bid', { new_bid: bid_obj }, error => { ... })`
 In the example above, bid_obj is an object that matches the format of bid object. Refer to the [bid format section above](#bid-format).  
 Example new_bid: `{ playerId: '0', action: 'raise', amount: 4, dice: 4 }`  
 
+### Disconnecting
+When a player chooses to leave a room, make sure you let the server know using this event.  
+No variables need to be passed here.  
+Example: `socket.emit('disconnect')`  
+
 ## Client Listen Events
 ### Notification
 `socket.on('notification', notification => { ... })`  
