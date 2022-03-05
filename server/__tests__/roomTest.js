@@ -267,13 +267,15 @@ describe('bid raise', () => {
   test('bid raise higher amount', () => {
     room.prevBid = { playerId: player1.id, action: 'raise', amount: 3, dice: 3 };
     const new_bid = { playerId: player2.id, action: 'raise', amount: 4, dice: 3 };
-    expect(room.bidRaise(new_bid)).toStrictEqual({ bid: new_bid });
+    const new_bid_result = { playerId: player2.id, playerName: player2.playerName, action: 'raise', amount: 4, dice: 3 };
+    expect(room.bidRaise(new_bid)).toStrictEqual({ bid: new_bid_result });
   })
 
   test('bid raise higher dice', () => {
     room.prevBid = { playerId: player1.id, action: 'raise', amount: 3, dice: 3 };
     const new_bid = { playerId: player2.id, action: 'raise', amount: 3, dice: 4 };
-    expect(room.bidRaise(new_bid)).toStrictEqual({ bid: new_bid });
+    const new_bid_result = { playerId: player2.id, playerName: player2.playerName, action: 'raise', amount: 3, dice: 4 };
+    expect(room.bidRaise(new_bid)).toStrictEqual({ bid: new_bid_result });
   })
 
   test('bid raises same amount and same dice', () => {
@@ -305,13 +307,15 @@ describe('bid aces', () => {
   test('bid aces', () => {
     room.prevBid = { playerId: player1.id, action: 'raise', amount: 8, dice: 2 }
     const new_bid = { playerId: player2.id, action: 'aces', amount: 4, dice: 1 }
-    expect(room.bidAces(new_bid)).toStrictEqual({ bid: new_bid });
+    const new_bid_result = { playerId: player2.id, playerName: player2.playerName, action: 'aces', amount: 4, dice: 1 }
+    expect(room.bidAces(new_bid)).toStrictEqual({ bid: new_bid_result });
   })
 
   test('bid aces with previous bid being aces', () => {
     room.prevBid = { playerId: player1.id, action: 'raise', amount: 3, dice: 1 }
     const new_bid = { playerId: player2.id, action: 'aces', amount: 4, dice: 1 }
-    expect(room.bidAces(new_bid)).toStrictEqual({ bid: new_bid });
+    const new_bid_result = { playerId: player2.id, playerName: player2.playerName, action: 'aces', amount: 4, dice: 1 }
+    expect(room.bidAces(new_bid)).toStrictEqual({ bid: new_bid_result });
   })
 
   test('bid aces too low', () => {
@@ -463,8 +467,9 @@ describe('bid', () => {
   test('bid raise', () => {
     const first_bid = { playerId: player1.id, action: 'raise', amount: 3, dice: 3 };
     const second_bid = { playerId: player2.id, action: 'raise', amount: 4, dice: 3 };
+    const second_bid_result = { playerId: player2.id, playerName: player2.playerName, action: 'raise', amount: 4, dice: 3 };
     room.bid(first_bid);
-    expect(room.bid(second_bid)).toStrictEqual({ bid: second_bid });
+    expect(room.bid(second_bid)).toStrictEqual({ bid: second_bid_result });
   })
 
   test('bid raise - invalid', () => {
@@ -477,8 +482,9 @@ describe('bid', () => {
   test('bid aces', () => {
     const first_bid = { playerId: player1.id, action: 'raise', amount: 8, dice: 2 }
     const second_bid = { playerId: player2.id, action: 'aces', amount: 4, dice: 1 }
+    const second_bid_result = { playerId: player2.id, playerName: player2.playerName, action: 'aces', amount: 4, dice: 1 }
     room.bid(first_bid);
-    expect(room.bid(second_bid)).toStrictEqual({ bid: second_bid });
+    expect(room.bid(second_bid)).toStrictEqual({ bid: second_bid_result });
   })
 
   test('bid aces - invalid', () => {
@@ -561,10 +567,11 @@ describe('turn taking', () => {
     const first_bid = { playerId: player1.id, action: 'raise', amount: 2, dice: 2 };
     const second_bid = { playerId: player2.id, action: 'raise', amount: 3, dice: 2 };
     const third_bid = { playerId: player3.id, action: 'raise', amount: 4, dice: 2 };
+    const third_bid_result = { playerId: player3.id, playerName: player3.playerName, action: 'raise', amount: 4, dice: 2 };
 
     room.bid(first_bid)
     room.bid(second_bid)
-    expect(room.bid(third_bid)).toStrictEqual({ bid: third_bid })
+    expect(room.bid(third_bid)).toStrictEqual({ bid: third_bid_result })
   })
 
   test('turn taking - 2 rounds', () => {
@@ -574,6 +581,7 @@ describe('turn taking', () => {
     const fourth_bid = { playerId: player1.id, action: 'raise', amount: 5, dice: 2 };
     const fifth_bid = { playerId: player2.id, action: 'raise', amount: 6, dice: 2 };
     const sixth_bid = { playerId: player3.id, action: 'raise', amount: 7, dice: 2 };
+    const sixth_bid_result = { playerId: player3.id, playerName: player3.playerName, action: 'raise', amount: 7, dice: 2 };
 
 
     room.bid(first_bid)
@@ -581,7 +589,7 @@ describe('turn taking', () => {
     room.bid(third_bid)
     room.bid(fourth_bid)
     room.bid(fifth_bid)
-    expect(room.bid(sixth_bid)).toStrictEqual({ bid: sixth_bid })
+    expect(room.bid(sixth_bid)).toStrictEqual({ bid: sixth_bid_result })
   })
 
   test('turn taking - player 1 goes before player 3', () => {

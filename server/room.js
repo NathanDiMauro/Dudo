@@ -254,24 +254,20 @@ class Room {
     bidRaise(bid) {
         if (bid.amount > this.prevBid.amount) {
             this.prevBid = { playerId: bid.playerId, action: bid.action, amount: bid.amount, dice: bid.dice }
-            // this.prevBid = bid 
-            // We could also do this I think?? I'm not sure
-            // i think we can? - Liam
-            this.betsInRound++;
-            return { bid: this.prevBid }
-        }
-        if (bid.dice > this.prevBid.dice) {
+        } else if (bid.dice > this.prevBid.dice) {
             this.prevBid = { playerId: bid.playerId, action: bid.action, amount: bid.amount, dice: bid.dice }
-            this.betsInRound++;
-            return { bid: this.prevBid }
+        } else {
+            return { error: 'Raise must raise the amount of dice or the dice' };
         }
-        return { error: 'Raise must raise the amount of dice or the dice' };
+        this.betsInRound++;
+        // Appending the player name to the return object
+        return { bid: Object.assign({ playerName: this.getPlayer(bid.playerId).playerName }, this.prevBid) }
     }
 
     /**
      * Bid action of bidding aces  
      * @param {{playerId: String, action: String, amount: Number, dice: Number}} bid The bid object 
-     * @returns {{error: String} | bid: {playerId: String, action: String, amount: Number, dice: Number}}   If the new bid is not valid, it returns an error, else it returns the new bid
+     * @returns {{error: String} | bid: {playerId: String, playerName: String, action: String, amount: Number, dice: Number}}   If the new bid is not valid, it returns an error, else it returns the new bid
      */
     bidAces(bid) {
         // check if bid is at least half of the last bid
@@ -286,7 +282,8 @@ class Room {
 
         this.prevBid = { playerId: bid.playerId, action: bid.action, amount: bid.amount, dice: bid.dice }
         this.betsInRound++;
-        return { bid: this.prevBid }
+        // Appending the playerName to the return object
+        return { bid: Object.assign({ playerName: this.getPlayer(bid.playerId).playerName }, this.prevBid) };
     }
 
     /**
@@ -349,7 +346,7 @@ class Room {
      * Handles all incoming bids  
      * When a new bid needs to be made, this function should be called  
      * @param {{playerId: String, action: String, amount: Number, dice: Number}} bid The bid object 
-     * @returns {{error: String} | bid: {playerId: String, action: String, amount: Number, dice: Number}}   If the new bid is not valid, it returns an error, else it returns the new bid
+     * @returns {{error: String} | bid: {playerId: String, playerName: String, action: String, amount: Number, dice: Number}}   If the new bid is not valid, it returns an error, else it returns the new bid
      */
     bid(bid) {
         if (this.betsInRound == null) {

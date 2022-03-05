@@ -14,6 +14,11 @@ Possible actions are `'raise'`, `'aces'`, `'call'`, `'spot'`.
 `{ playerId: string, action: string, amount: number, dice: number }`  
 Example: `{ playerId: '3', action: 'raise', amount: 5, dice: 5 }`  
 
+### Return bid format
+This object what the server will send to all clients once a bid has been made. It is very similar to the [bid format](#bid-format), however, it includes the players name.  
+`{ playerId: string, playerName: string, action: string, amount: number, dice: number }`  
+Example: `{ playerId: '3', playerName: 'Tom', action: 'raise', amount: 5, dice: 5 }`  
+
 ## Client Emit Events
 
 ### Create a room
@@ -37,7 +42,7 @@ Example new_bid: `{ playerId: '0', action: 'raise', amount: 4, dice: 4 }`
 ## Client Listen Events
 ### Notification
 `socket.on('notification', notification => { ... })`  
-Anytime something happens where platers will need to be notified, and notification event will be emitted to all clients. This could happen when a plyer joins/leaves or a new round starts.  
+Anytime something happens where players will need to be notified, a notification event will be emitted to all clients. This could happen when a player joins/leaves or a new round starts.  
 Example response: `{ title: 'Someone just joined', description: 'Tom just entered the room' }`
 
 ### Players
@@ -48,8 +53,8 @@ Example response:  `[{ playerName: 'joe', diceCount: 5 }, { playerName: 'dave', 
 ### New bids
 `socket.on('newBid, bid => { ... })`  
 Anytime a new bid is made, the new bid will be sent to all clients.  
-The bid is formatted as an object. Refer to the [bid format section above](#bid-format).  
-Example response: `{ playerId: '0', action: 'raise', amount: 4, dice: 5 }`  
+The bid is formatted as an object. Refer to the [bid return format section above](#bid-return-format).  
+Example response: `{ playerId: '0', playerName: 'Tom', action: 'raise', amount: 4, dice: 5 }`  
 
 ### End of round
 `socket.on('endOfRound', endOfRound => { ... })`  
