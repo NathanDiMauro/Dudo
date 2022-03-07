@@ -379,5 +379,14 @@ class Room {
                 return { error: 'Invalid bid action' };
         }
     }
+
+    /**
+     * Formats a bid into a notification
+     * @param {{playerId: String, playerName: String, action: String, amount: Number, dice: Number}}    bid The bid object
+     * @returns {{title: String, description: String}}  The notification
+     */
+    bidToString(bid) {
+        return {title: 'A new bid has been made', description: `${bid.playerName} bet ${bid.amount} ${bid.amount}s`};
+    }
 }
 module.exports = { Room }

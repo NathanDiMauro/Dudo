@@ -160,6 +160,7 @@ io.on('connection', (socket) => {
                 }
                 if (bid) {
                     io.in(room.roomCode).emit('newBid', { bid });
+                    _sendNotification(room.bidToString(bid), room.roomCode);
                 } else if (endOfRound) {
                     io.in(room.roomCode).emit('endOfRound', { endOfRound });
                 } else if (endOfGame) {
