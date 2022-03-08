@@ -201,7 +201,7 @@ io.on('connection', (socket) => {
     socket.on('disconnect', () => {
         console.log('player is disconnecting');
         socket.disconnect();
-        const { player, roomCode } = removePlayer(socket.id);
+        const { player, roomCode } = removePlayer(socket.id) || {};
         if (player) {
             _sendNotification({ title: 'Someone just left', description: `${player.playerName} just left the room` }, roomCode)
             _sendPlayers()
