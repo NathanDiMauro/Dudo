@@ -51,7 +51,7 @@ function App() {
     setOponentsComponents([]);
     setShow(true);
 
-    socket.emit('disconnect')
+    socket.emit('_disconnect')
   }
 
   const showLeave = () => {
@@ -65,7 +65,7 @@ function App() {
   }
 
   const startGame = () => {
-    socket.emit('startRound', { new_game: !startRound });
+    socket.emit('startGame', { new_game: !startRound });
     setStartRound(false)
   }
 

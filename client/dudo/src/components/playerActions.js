@@ -10,7 +10,7 @@ import ReactTooltip from 'react-tooltip';
 
 
 const PlayerActions = (props) => {
-    
+
     const [chosenDice, setChosenDice] = useState(dice1);
 
     const [action, setAction] = useState(null);
@@ -24,7 +24,7 @@ const PlayerActions = (props) => {
     }, [props.socket])
 
     useEffect(() => {
-        if(action){
+        if (action) {
             if (action === 'raise') {
                 if (dice === 1) {
                     setAction('aces')
@@ -45,7 +45,7 @@ const PlayerActions = (props) => {
             const bid_obj = { playerId: props.id, action: action, amount: amount, dice: dice }
             console.log("Placing bid:", bid_obj);
 
-            props.socket.emit('bid', bid_obj);
+            props.socket.emit('bid', { new_bid: bid_obj });
             setAction(null);
             setAmount(null);
             setDice(null);
@@ -81,7 +81,7 @@ const PlayerActions = (props) => {
     return (
         <div id="playerAction">
             <input id='amountInput' />
-            
+
             <button id='dropdownSelect' onClick={showDiceDropdown}>Select Dice</button>
             <div id='diceDropdown' onMouseLeave={hideDiceDropDown}>
                 <img src={dice1} alt='Dice one' onClick={() => selectDice(dice1, 1)} />
@@ -91,8 +91,8 @@ const PlayerActions = (props) => {
                 <img src={dice5} alt='Dice five' onClick={() => selectDice(dice5, 5)} />
                 <img src={dice6} alt='Dice six' onClick={() => selectDice(dice6, 6)} />
             </div>
-            <ReactTooltip place="right" type="dark" effect="solid"/>
-            <img id='diceSelected' onMouseOver={showDiceDropdown} alt='Dice selected' src={chosenDice} data-tip="Change Dice"/>
+            <ReactTooltip place="right" type="dark" effect="solid" />
+            <img id='diceSelected' onMouseOver={showDiceDropdown} alt='Dice selected' src={chosenDice} data-tip="Change Dice" />
             <br />
             <div id="bidButtons">
                 <button id='betButton' onClick={() => setAction('raise')}>Raise</button>

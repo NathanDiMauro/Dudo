@@ -173,6 +173,8 @@ class Room {
             if (error) return { error }
         }
 
+        console.log("Bid:", bid)
+
         // Checking if player exists
         if (!this.playerExistsById(bid.playerId)) {
             return { error: `Player with id of ${bid.playerId} does not exist` };

@@ -140,14 +140,13 @@ io.on('connection', (socket) => {
         } else {
             callback({ error: 'Room does not exists with this player' });
         }
-        callback();
     })
 
     /**
      * Listening for when a client is requesting to make a new bid
      * @param {{playerId: Number, action: String, amount: Number, dice: Number}}    new_bid     The new bid
      */
-    socket.on('bid', new_bid => {
+    socket.on('bid', ({new_bid}, callback) => {
         const room = getRoom(socket.id);
         if (room) {
             const player = room.getPlayer(socket.id);
@@ -155,13 +154,8 @@ io.on('connection', (socket) => {
                 const { bid, error, endOfRound, startOfRound, endOfGame } = room.bid(new_bid);
 
                 console.log(bid, error, endOfRound, startOfRound);
-                if (startOfRound) {
-                    _sendNotification({ title: 'New Round is starting', description: 'The round is starting' }, roomCode);
-                    _startRound(room);
-                }
                 if (bid) {
                     console.log(bid);
-                    io.in(room.roomCode).emit('notification', { title: 'New Bid', description: "New bid entered" });
                     io.in(room.roomCode).emit('newBid', { bid });
                     _sendNotification(room.bidToString(bid), room.roomCode);
                 } else if (endOfRound) {
@@ -177,7 +171,6 @@ io.on('connection', (socket) => {
                 callback({ error: 'Invalid Player id' });
             }
         }
-        callback();
     })
 
 
@@ -198,7 +191,7 @@ io.on('connection', (socket) => {
      * When a client is disconnecting, we remove them from a room and notify all other clients in the room
      * @param {String}  message     I do not know what were doing with this currently
      */
-    socket.on('disconnect', () => {
+    socket.on('_disconnect', () => {
         console.log('player is disconnecting');
         socket.disconnect();
         const { player, roomCode } = removePlayer(socket.id) || {};
