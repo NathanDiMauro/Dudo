@@ -26,7 +26,6 @@ const _addPlayer = (socket, name, roomCode, callback) => {
     // Adding the new player to the room
     socket.join(roomCode);
 
-<<<<<<< HEAD
     // Notifying the entire room, except the sender, that a new player joined
     _sendNotificationWithoutSender(
         { title: 'Someone just joined', description: `${newPlayer.playerName} just entered the room` },
@@ -36,12 +35,6 @@ const _addPlayer = (socket, name, roomCode, callback) => {
     // Sending an updated list of players to the room
     _sendPlayers(roomCode);
 
-=======
-    // Notifying the entire room that a new player joined -- socket.io does not notify the sender
-    socket.in(roomCode).emit('notification', { title: 'Someone just joined', description: `${newPlayer.playerName} just entered the room` });
-    // Sending an updated list of players to the room -- io.in notifies everyone along with the sender
-    io.in(roomCode).emit('players', getPlayers(roomCode));
->>>>>>> frontEndDev
     callback();
 }
 
@@ -53,11 +46,7 @@ const _addPlayer = (socket, name, roomCode, callback) => {
 const _startRound = (room) => {
     console.log("Starting round...")
     // Updating client with list of players
-<<<<<<< HEAD
     _sendPlayers(room.roomCode)
-=======
-    io.in(room.roomCode).emit('players', getPlayers(room.roomCode));
->>>>>>> frontEndDev
     // Starting a new round
     room.players.forEach((player) => {
         // Letting each player know what dice they have
