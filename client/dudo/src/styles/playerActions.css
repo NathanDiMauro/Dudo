@@ -1,0 +1,45 @@
+#playerAction {
+    padding-top: 1%;
+}
+
+#amountInput {
+    width: 28px;
+    margin-left: 0.5em;
+    margin-right: .3%;
+}
+
+#dropdownSelect {
+    cursor: pointer;
+}
+
+#diceDropdown {
+    display: none;
+    position: relative;
+    background-color: #0277bd;
+    box-shadow: 0px 8px 16px 
+        0px rgba(0, 0, 0, 0.2);
+    z-index: 1;
+}
+
+#diceDropdown img {
+    position: relative;
+
+}
+
+#diceDropdown:hover {
+    display: flex;
+    cursor: pointer;
+}
+
+#diceSelected {
+    display: none;
+}
+
+#diceSelected:hover {
+    display: none;
+    cursor: pointer;
+}
+
+#bidButtons {
+    padding-top: 1%;
+}
