@@ -146,16 +146,14 @@ io.on('connection', (socket) => {
      * Listening for when a client is requesting to make a new bid
      * @param {{playerId: Number, action: String, amount: Number, dice: Number}}    new_bid     The new bid
      */
-    socket.on('bid', ({new_bid}, callback) => {
+    socket.on('bid', ({ new_bid }, callback) => {
         const room = getRoom(socket.id);
         if (room) {
             const player = room.getPlayer(socket.id);
             if (player) {
                 const { bid, error, endOfRound, startOfRound, endOfGame } = room.bid(new_bid);
 
-                console.log(bid, error, endOfRound, startOfRound);
                 if (bid) {
-                    console.log(bid);
                     io.in(room.roomCode).emit('newBid', { bid });
                     _sendNotification(room.bidToString(bid), room.roomCode);
                 } else if (endOfRound) {

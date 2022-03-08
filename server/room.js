@@ -365,7 +365,7 @@ class Room {
             }
             this.betsInRound++;
             this.prevBid = { playerId: bid.playerId, action: bid.action, amount: bid.amount, dice: bid.dice }
-            return { bid: this.prevBid, startOfRound: true }
+            return { bid: Object.assign({ playerName: this.getPlayer(bid.playerId).playerName }, this.prevBid), startOfRound: true }
         }
 
         switch (bid.action) {
@@ -388,7 +388,7 @@ class Room {
      * @returns {{title: String, description: String}}  The notification
      */
     bidToString(bid) {
-        return {title: 'A new bid has been made', description: `${bid.playerName} bet ${bid.amount} ${bid.amount}s`};
+        return { title: 'A new bid has been made', description: `${bid.playerName} bet ${bid.amount} ${bid.amount}s` };
     }
 }
 module.exports = { Room }
