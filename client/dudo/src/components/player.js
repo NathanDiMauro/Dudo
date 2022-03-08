@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import dice1 from '../dice/dice1.svg'
-import dice2 from '../dice/dice2.svg'
-import dice3 from '../dice/dice3.svg'
-import dice4 from '../dice/dice4.svg'
-import dice5 from '../dice/dice5.svg'
-import dice6 from '../dice/dice6.svg'
+import dice1 from '../images/dice1.svg'
+import dice2 from '../images/dice2.svg'
+import dice3 from '../images/dice3.svg'
+import dice4 from '../images/dice4.svg'
+import dice5 from '../images/dice5.svg'
+import dice6 from '../images/dice6.svg'
 import '../styles/player.css'
 import PlayerActions from './playerActions';
 import LatestBid from '../components/latestBid';
