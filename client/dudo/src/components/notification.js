@@ -24,8 +24,8 @@ const Notification = (props) => {
 
             notificationLogBuilder.push(notification)
 
-            const notificationLogComponentBuilder = notificationLogBuilder.map((notification) =>
-                <p key={Math.floor(Math.random(Math.random() * 9999))}>{notification.title}: {notification.description}</p>);
+            const notificationLogComponentBuilder = notificationLogBuilder.map((notification, key) =>
+                <p key={Math.floor(key)}>{notification.title}: {notification.description}</p>);
 
             setNotificationLog(notificationLogComponentBuilder)
         })
