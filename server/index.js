@@ -115,7 +115,7 @@ io.on('connection', (socket) => {
 
             _addPlayer(socket, name, roomCode, callback);
         } catch (e) {
-            callback({ error: e.toSting() });
+            callback({ error: e.toString() });
         }
     })
 
@@ -158,7 +158,7 @@ io.on('connection', (socket) => {
                 callback({ error: 'Room does not exists with this player' });
             }
         } catch (e) {
-            callback({ error: e.toSting() });
+            callback({ error: e.toString() });
         }
     })
 
@@ -167,8 +167,6 @@ io.on('connection', (socket) => {
      * @param {{playerId: Number, action: String, amount: Number, dice: Number}}    new_bid     The new bid
      */
     socket.on('bid', ({ newBid }, callback) => {
-        callback('error msg')
-        // callback({error: 'error msg'})
         try {
             const room = getRoom(socket.id);
             if (room) {
