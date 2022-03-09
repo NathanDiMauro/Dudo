@@ -310,9 +310,7 @@ class Room {
      * @returns {{endOfRound: String}}   An endOfRound object that states who lost a dice and what the call was
      */
     bidCall(bid) {
-        console.log(this.prevBid.dice);
         const dieCount = this.countOfSpecificDie(this.prevBid.dice);
-        console.log(dieCount);
 
         let return_str = `${this.getPlayer(bid.playerId).playerName} called ${this.getPlayer(this.prevBid.playerId).playerName} on their bet of ${this.prevBid.amount} ${this.prevBid.dice}s. `;
 
@@ -389,6 +387,7 @@ class Room {
                 return { error: `Cannot call ${bid.action} on initial bet.` };
             }
             this.betsInRound++;
+            this.playerWhoJustLost = null;
             this.prevBid = { playerId: bid.playerId, action: bid.action, amount: bid.amount, dice: bid.dice }
             return { bid: Object.assign({ playerName: this.getPlayer(bid.playerId).playerName }, this.prevBid), startOfRound: true }
         }

@@ -381,12 +381,14 @@ describe('bid spot', () => {
   })
 
   test('bid spot - correct', () => {
-    player1.dice = [2, 3, 1, 5, 6];
-    player2.dice = [2, 1, 5, 2];
-    room.prevBid = { playerId: player1.id, action: 'raise', amount: 5, dice: 2 };
-    room.betsInRound = 4;
-    const new_bid = { playerId: player2.id, action: 'spot', amount: null, dice: null };
-    expect(room.bidSpot(new_bid)).toStrictEqual({ endOfRound: `${player2.playerName} called spot on 5 2s. ${player2.playerName} called spot correctly and gets 1 dice back.` });
+    player1.dice = [2, 3, 1, 5];
+    player2.dice = [2, 1, 5, 2, 6];
+    const first_bet = { playerId: player1.id, action: 'raise', amount: 4, dice: 2 };
+    const second_bet = { playerId: player2.id, action: 'raise', amount: 5, dice: 2 };
+    const spot_bid = { playerId: player1.id, action: 'spot', amount: null, dice: null };
+    room.bid(first_bet);
+    room.bid(second_bet);
+    expect(room.bidSpot(spot_bid)).toStrictEqual({ endOfRound: `${player1.playerName} called spot on 5 2s. ${player1.playerName} called spot correctly and gets 1 dice back.` });
     expect(player2.dice.length).toBe(5);
   })
 
@@ -601,7 +603,7 @@ describe('whose turn', () => {
   test('whose turn after spot', () => {
     player1.dice = [2, 2, 2, 2, 2];
     player2.dice = [2, 2, 2, 2, 2];
-    player3.dice=[];
+    player3.dice = [];
     room.bid({ playerId: player1.id, action: 'raise', amount: 1, dice: 2 });
     room.bid({ playerId: player2.id, action: 'spot', amount: null, dice: null });
     expect(room.whoseTurn()).toBe(player2.id);
