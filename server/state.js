@@ -22,7 +22,7 @@ const createRoom = (roomCode) => {
  * @param {String} id           id of the socket of the new player
  * @param {String} name         name of the new player
  * @param {String} roomCode     roomCode of the room that the player is joining 
- * @returns {{error: String | Player}} If there is an error, it will return an error, else it will return the new player
+ * @returns {{error: String} | {newPlayer: Player}} If there is an error, it will return an error, else it will return the new player
  */
 const addPlayer = (id, name, roomCode) => {
     // Validating the name and roomCode were provided

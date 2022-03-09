@@ -42,8 +42,8 @@ const Player = (props) => {
 
     return (
         <div id="player">
-            <h2>{props.name}:</h2>
-            {hand.map((die, key) => <img src={die} key={key} alt="dice"/>)}
+            <h2>Your name: {props.name}</h2>
+            <h2>Your Hand: {hand.map((die, key) => <img src={die} key={key} alt="dice"/>)}</h2>
   
             <LatestBid show={props.show} socket={props.socket}/>
             <PlayerActions socket={props.socket} id={props.id}/>

@@ -10,44 +10,59 @@ import ReactTooltip from 'react-tooltip';
 
 
 const PlayerActions = (props) => {
-
+    const [display, setDisplay] = useState(false);
     const [chosenDice, setChosenDice] = useState(dice1);
-
     const [action, setAction] = useState(null);
     const [amount, setAmount] = useState(null);
     const [dice, setDice] = useState(null);
-
+    const [bidError, setBidError] = useState(null);
 
     useEffect(() => {
-        if (action) {
-            if (action === 'raise') {
-                if (dice === 1) {
-                    setAction('aces')
+        props.socket.on('turn', () => {
+            setDisplay(true);
+            console.log('my turn');
+            setBidError('Its your bet!');
+        })
+    }, [props.socket])
+
+    function bid() {
+        let bid = undefined;
+        switch (action) {
+            case 'raise':
+            case 'aces':
+                if (!amount || !dice) {
+                    setBidError('Must select amount and dice when raising');
+                } else {
+                    if (dice === 1) {
+                        bid = { playerId: props.id, action: 'aces', amount: amount, dice: dice };
+                    } else {
+                        bid = { playerId: props.id, action: action, amount: amount, dice: dice };
+                    }
                 }
-                setAmount(parseInt(document.getElementById("amountInput").value));  //Get number of dice 
-            }
-            else {
-                console.log('call or spot')
-                setDice(1)
-                setAmount(1)
-            }
+                break;
+            case 'spot':
+            case 'call':
+                bid = { playerId: props.id, action: action, amount: null, dice: null };
+                break;
+            default:
+                setBidError('Must select an action');
         }
-
-    }, [action])
-
-    useEffect(() => {
-        if (amount) {
-            const bid_obj = { playerId: props.id, action: action, amount: amount, dice: dice }
-            console.log("Placing bid:", bid_obj);
-
-            props.socket.emit('bid', { new_bid: bid_obj }, error => {
-                console.log(error);
-            });
-            setAction(null);
-            setAmount(null);
-            setDice(null);
+        console.log(bid);
+        if (bid) {
+            props.socket.emit('bid', { newBid: bid }, error => {
+                if (error) {
+                    console.log(error);
+                    setBidError(error);
+                } else {
+                    setBidError(undefined);
+                    setDisplay(false);
+                    setAction(null);
+                    setAmount(null);
+                    setDice(null);
+                }
+            })
         }
-    }, [amount])
+    }
 
 
     function showDiceDropdown() {
@@ -73,29 +88,49 @@ const PlayerActions = (props) => {
         document.getElementById("diceDropdown").style.display = "none";
     }
 
-
+    // Making sure player can only enter numbers
+    const isNumberKey = (e) => {
+        var charCode = (e.which) ? e.which : e.keyCode
+        if (charCode > 31 && (charCode !== 46 && (charCode < 48 || charCode > 57))) {
+            e.preventDefault();
+            return false;
+        }
+        return true;
+    }
 
     return (
         <div id="playerAction">
-            <input id='amountInput' />
+            {display &&
+                <div>
+                    {bidError &&
+                        <div id="bidErrors">
+                            <h4>{bidError}</h4>
+                        </div>}
+                    <input id='amountInput' type='number' min='1' max='99' autoComplete='off' onKeyPress={isNumberKey} onChange={(e) => setAmount(e.target.value)} />
 
-            <button id='dropdownSelect' onClick={showDiceDropdown}>Select Dice</button>
-            <div id='diceDropdown' onMouseLeave={hideDiceDropDown}>
-                <img src={dice1} alt='Dice one' onClick={() => selectDice(dice1, 1)} />
-                <img src={dice2} alt='Dice two' onClick={() => selectDice(dice2, 2)} />
-                <img src={dice3} alt='Dice three' onClick={() => selectDice(dice3, 3)} />
-                <img src={dice4} alt='Dice four' onClick={() => selectDice(dice4, 4)} />
-                <img src={dice5} alt='Dice five' onClick={() => selectDice(dice5, 5)} />
-                <img src={dice6} alt='Dice six' onClick={() => selectDice(dice6, 6)} />
-            </div>
-            <ReactTooltip place="right" type="dark" effect="solid" />
-            <img id='diceSelected' onMouseOver={showDiceDropdown} alt='Dice selected' src={chosenDice} data-tip="Change Dice" />
-            <br />
-            <div id="bidButtons">
-                <button id='betButton' onClick={() => setAction('raise')}>Raise</button>
-                <button id='callButton' onClick={() => setAction('call')}>Call</button>
-                <button id='spotButton' onClick={() => setAction('spot')}>Spot</button>
-            </div>
+                    <button id='dropdownSelect' onClick={showDiceDropdown}>Select Dice</button>
+                    <div id='diceDropdown' onMouseLeave={hideDiceDropDown}>
+                        <img src={dice1} alt='Dice one' onClick={() => selectDice(dice1, 1)} />
+                        <img src={dice2} alt='Dice two' onClick={() => selectDice(dice2, 2)} />
+                        <img src={dice3} alt='Dice three' onClick={() => selectDice(dice3, 3)} />
+                        <img src={dice4} alt='Dice four' onClick={() => selectDice(dice4, 4)} />
+                        <img src={dice5} alt='Dice five' onClick={() => selectDice(dice5, 5)} />
+                        <img src={dice6} alt='Dice six' onClick={() => selectDice(dice6, 6)} />
+                    </div>
+                    <ReactTooltip place="right" type="dark" effect="solid" />
+                    <img id='diceSelected' onMouseOver={showDiceDropdown} alt='Dice selected' src={chosenDice} data-tip="Change Dice" />
+                    <br />
+                    <div id="bidButtons">
+                        <input type='radio' id='raise' name='action' value='raise' onClick={() => setAction('raise')} />
+                        <label htmlFor='raise'>Raise</label>
+                        <input type='radio' id='call' name='action' value='call' onClick={() => setAction('call')} />
+                        <label htmlFor='call'>Call</label>
+                        <input type='radio' id='spot' name='action' value='spot' onClick={() => setAction('spot')} />
+                        <label htmlFor='spot'>Spot</label>
+                    </div>
+                    <button id='sendBidBtn' onClick={() => bid()}>Send Bid</button>
+                </div>
+            }
         </div>
     );
 }

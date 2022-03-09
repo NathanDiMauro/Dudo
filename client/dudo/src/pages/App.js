@@ -28,11 +28,9 @@ function App() {
       let oponentsBuilder = [];
 
       for (let i = 0; i < players.length; i++) {
-        console.log(players[i].playerName !== name);
         if (players[i].playerName !== name)
           oponentsBuilder.push(players[i])
         else {
-          console.log("Player:", players[i])
           setPlayer(players[i]);
         }
       }

@@ -35,14 +35,14 @@ Example: `socket.emit('join', { name: 'joe', roomCode: 'roomCode' }, error => { 
 Send a new bid to the server.  
 There are some important things to note when making a bid. If a bid is invalid, the server will return an error in the `error` variable. If the bid is valid, then the new bid will be sent to all clients through the [`newBid` event](#new-bids)  
 When sending a bid with an action of `spot` or `call`, you can just pass `null` for both `amount` and `dice`. We do not care what those numbers are since we are comparing the call to the previous bet.  
-Example: `socket.emit('bid', { new_bid: bid_obj }, error => { ... })`  
+Example: `socket.emit('bid', { newBid: bid_obj }, error => { ... })`  
 In the example above, bid_obj is an object that matches the format of bid object. Refer to the [bid format section above](#bid-format).  
 Example new_bid: `{ playerId: '0', action: 'raise', amount: 4, dice: 4 }`  
 
 ### Disconnecting
 When a player chooses to leave a room, make sure you let the server know using this event.  
 No variables need to be passed here.  
-Example: `socket.emit('disconnect')`  
+Example: `socket.emit('_disconnect')`  
 
 ## Client Listen Events
 ### Notification

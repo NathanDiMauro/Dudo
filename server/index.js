@@ -34,8 +34,6 @@ const _addPlayer = (socket, name, roomCode, callback) => {
 
     // Sending an updated list of players to the room
     _sendPlayers(roomCode);
-
-    callback();
 }
 
 
@@ -52,6 +50,16 @@ const _startRound = (room) => {
         // Letting each player know what dice they have
         io.to(player.id).emit('diceForRound', { dice: player.dice });
     })
+    _notifyWhoseTurn(room);
+}
+
+/**
+ * Let the players know whose turn it is
+ * @param {Room} room   The room to let the players know whose turn it is
+ */
+const _notifyWhoseTurn = (room) => {
+    io.to(room.whoseTurn()).emit('turn');
+    _sendNotification({ title: `It is ${room.getPlayer(room.whoseTurn()).playerName}'s turn`, description: '' }, room.roomCode);
 }
 
 
@@ -101,10 +109,14 @@ io.on('connection', (socket) => {
      * @param {String}  roomCode    The roomCode to assign to the new room
      */
     socket.on('createRoom', ({ name, roomCode }, callback) => {
-        const { error } = createRoom(roomCode);
-        if (error) return callback(error);
+        try {
+            const { error } = createRoom(roomCode);
+            if (error) return callback(error);
 
-        _addPlayer(socket, name, roomCode, callback);
+            _addPlayer(socket, name, roomCode, callback);
+        } catch (e) {
+            callback({ error: e.toSting() });
+        }
     })
 
     /**
@@ -113,7 +125,11 @@ io.on('connection', (socket) => {
      * @param {String}  roomCode    The roomCode of the room that the player is trying to join
      */
     socket.on('join', ({ name, roomCode }, callback) => {
-        _addPlayer(socket, name, roomCode, callback);
+        try {
+            _addPlayer(socket, name, roomCode, callback);
+        } catch (e) {
+            callback({ error: e.toString() });
+        }
     })
 
     /**
@@ -121,24 +137,28 @@ io.on('connection', (socket) => {
      * @param {Boolean} newGame     If true, then the client is requesting the start the game, if false, the client is requesting to start a new round
      */
     socket.on('startGame', ({ newGame }, callback) => {
-        const room = getRoom(socket.id);
-        if (room) {
-            // Letting players know the game is starting
-            let notif = { title: 'New Round is Starting', description: 'A new round is starting' }
+        try {
+            const room = getRoom(socket.id);
+            if (room) {
+                // Letting players know the game is starting
+                let notif = { title: 'New Round is Starting', description: 'A new round is starting' }
 
-            if (newGame) {
-                if (room.betsInRound != null) {
-                    callback({ error: 'Game has already been started' });
-                } else {
-                    notif = { title: 'Game is starting', description: 'The game is starting' };
+                if (newGame) {
+                    if (room.betsInRound != null) {
+                        callback({ error: 'Game has already been started' });
+                    } else {
+                        notif = { title: 'Game is starting', description: 'The game is starting' };
+                    }
                 }
-            }
-            _sendNotification(notif, room.roomCode);
-            room.newRound();
-            _startRound(room);
+                _sendNotification(notif, room.roomCode);
+                room.newRound();
+                _startRound(room);
 
-        } else {
-            callback({ error: 'Room does not exists with this player' });
+            } else {
+                callback({ error: 'Room does not exists with this player' });
+            }
+        } catch (e) {
+            callback({ error: e.toSting() });
         }
     })
 
@@ -146,28 +166,38 @@ io.on('connection', (socket) => {
      * Listening for when a client is requesting to make a new bid
      * @param {{playerId: Number, action: String, amount: Number, dice: Number}}    new_bid     The new bid
      */
-    socket.on('bid', ({ new_bid }, callback) => {
-        const room = getRoom(socket.id);
-        if (room) {
-            const player = room.getPlayer(socket.id);
-            if (player) {
-                const { bid, error, endOfRound, startOfRound, endOfGame } = room.bid(new_bid);
+    socket.on('bid', ({ newBid }, callback) => {
+        callback('error msg')
+        // callback({error: 'error msg'})
+        try {
+            const room = getRoom(socket.id);
+            if (room) {
+                const player = room.getPlayer(socket.id);
+                if (player) {
+                    const { bid, error, endOfRound, startOfRound, endOfGame } = room.bid(newBid);
 
-                if (bid) {
-                    io.in(room.roomCode).emit('newBid', { bid });
-                    _sendNotification(room.bidToString(bid), room.roomCode);
-                } else if (endOfRound) {
-                    io.in(room.roomCode).emit('endOfRound', { endOfRound });
-                } else if (endOfGame) {
-                    io.in(room.roomCode).emit('endOfGame', { endOfGame });
-                } else if (error) {
-                    callback(error);
+                    if (bid) {
+                        io.in(room.roomCode).emit('newBid', { bid });
+                        _sendNotification(room.bidToString(bid), room.roomCode);
+                        _notifyWhoseTurn(room);
+                    } else if (endOfRound) {
+                        io.in(room.roomCode).emit('endOfRound', { endOfRound });
+                        _sendNotification({ title: 'Round is over', description: endOfRound }, room.roomCode)
+                    } else if (endOfGame) {
+                        io.in(room.roomCode).emit('endOfGame', { endOfGame });
+                    } else if (error) {
+                        callback(error);
+                    } else {
+                        callback({ error: 'An unexpected error occurred ' });
+                    }
                 } else {
-                    callback({ error: 'An unexpected error occurred ' });
+                    callback({ error: 'Invalid Player id' });
                 }
-            } else {
-                callback({ error: 'Invalid Player id' });
             }
+            callback();
+        } catch (e) {
+            console.error(e);
+            callback({ error: e.toString() });
         }
     })
 
@@ -190,12 +220,16 @@ io.on('connection', (socket) => {
      * @param {String}  message     I do not know what were doing with this currently
      */
     socket.on('_disconnect', () => {
-        console.log('player is disconnecting');
-        socket.disconnect();
-        const { player, roomCode } = removePlayer(socket.id) || {};
-        if (player) {
-            _sendNotification({ title: 'Someone just left', description: `${player.playerName} just left the room` }, roomCode)
-            _sendPlayers()
+        try {
+            console.log('player is disconnecting');
+            socket.disconnect();
+            const { player, roomCode } = removePlayer(socket.id) || {};
+            if (player) {
+                _sendNotification({ title: 'Someone just left', description: `${player.playerName} just left the room` }, roomCode)
+                _sendPlayers()
+            }
+        } catch (e) {
+            callback({ error: e.toString() });
         }
     })
 })

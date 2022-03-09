@@ -12,6 +12,7 @@ class Room {
     prevBid = {};
     /** @member {Number | null} */
     betsInRound;
+    playerWhoJustLost;
 
     /**
      * Create a room
@@ -22,6 +23,7 @@ class Room {
         this.players = [];
         this.prevBid = null;
         this.betsInRound = null;
+        this.playerWhoJustLost = null;
     }
 
     /**
@@ -173,8 +175,6 @@ class Room {
             if (error) return { error }
         }
 
-        console.log("Bid:", bid)
-
         // Checking if player exists
         if (!this.playerExistsById(bid.playerId)) {
             return { error: `Player with id of ${bid.playerId} does not exist` };
@@ -214,16 +214,32 @@ class Room {
      * @returns {error | undefined} If it is not the player with id of playerId's turn, then error, else undefined
      */
     checkTurn(playerId) {
+        // Getting the id of the player whose turn it is
+        const nextPlayerId = this.whoseTurn();
+        if (nextPlayerId !== playerId) {
+            return { error: `It is not ${this.getPlayer(playerId).playerName}s turn` }
+        }
+    }
+
+    /**
+     * Check whose turn it is
+     * @returns {String} the playerId of whose turn it is
+     */
+    whoseTurn() {
+        if (this.playerWhoJustLost) {
+            return this.playerWhoJustLost
+        }
+
+        if (this.prevBid === null) {
+            return this.players[0].id;
+        }
         // Getting the index of the player who last went
         const indexOfLast = this.players.findIndex((player) => player.id === this.prevBid.playerId);
         // If were at the end of the array
         if (indexOfLast >= this.players.length - 1) {
-            if (this.players[0].id !== playerId) {
-                return { error: `It is not ${this.getPlayer(playerId).playerName}s turn` }
-            }
-        } else if (this.players[indexOfLast + 1].id !== playerId) {
-            return { error: `It is not ${this.getPlayer(playerId).playerName}s turn` }
+            return this.players[0].id
         }
+        return this.players[indexOfLast + 1].id;
     }
 
     /**
@@ -294,18 +310,25 @@ class Room {
      * @returns {{endOfRound: String}}   An endOfRound object that states who lost a dice and what the call was
      */
     bidCall(bid) {
+        console.log(this.prevBid.dice);
         const dieCount = this.countOfSpecificDie(this.prevBid.dice);
+        console.log(dieCount);
 
         let return_str = `${this.getPlayer(bid.playerId).playerName} called ${this.getPlayer(this.prevBid.playerId).playerName} on their bet of ${this.prevBid.amount} ${this.prevBid.dice}s. `;
 
         // Player who called loses a dice
         if (dieCount >= this.prevBid.amount) {
+            console.log('Player who called loses');
             this.getPlayer(bid.playerId).dice.pop();
             return_str += `${this.getPlayer(bid.playerId).playerName} loses a dice.`;
+            this.playerWhoJustLost = bid.playerId;
         } else {
+            console.log('Player who got called loses');
+
             // Player who got called (prevBid) loses a dice
             this.getPlayer(this.prevBid.playerId).dice.pop();
             return_str += `${this.getPlayer(this.prevBid.playerId).playerName} loses a dice.`
+            this.playerWhoJustLost = this.prevBid.playerId;
         }
         const winner = this.getWinner();
         if (winner) {
@@ -340,6 +363,8 @@ class Room {
             this.getPlayer(bid.playerId).dice.pop();
             return_str += 'called spot incorrectly and loses 1 dice.';
         }
+
+        this.playerWhoJustLost = bid.playerId;
 
         return { endOfRound: return_str };
     }

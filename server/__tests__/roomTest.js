@@ -449,7 +449,8 @@ describe('bid', () => {
   test('initial bet', () => {
     const bid = { playerId: player1.id, action: 'raise', amount: 4, dice: 4 };
     const actual = room.bid(bid);
-    expect(actual).toStrictEqual({ bid: bid, startOfRound: true });
+    const expectedBid = { playerId: player1.id, playerName: player1.playerName, action: 'raise', amount: 4, dice: 4 };
+    expect(actual).toStrictEqual({ bid: expectedBid, startOfRound: true });
   })
 
   test('initial bet - call', () => {
@@ -552,6 +553,59 @@ describe('bid', () => {
     expect(room.bid(second_bid)).toStrictEqual({ endOfGame: `${player1.playerName} has won the game.` })
   })
 
+})
+
+describe('whose turn', () => {
+  beforeEach(() => {
+    room.addPlayer(player1);
+    room.addPlayer(player2);
+    player3 = new Player('3', 'name3');
+    room.addPlayer(player3);
+    room.newRound();
+  })
+
+  test('whose turn initial bet', () => {
+    expect(room.whoseTurn()).toBe(player1.id);
+  })
+
+  test('whose turn second bet', () => {
+    room.bid({ playerId: player1.id, action: 'raise', amount: 1, dice: 2 });
+    expect(room.whoseTurn()).toBe(player2.id);
+  })
+
+  test('whose turn going back to start', () => {
+    room.bid({ playerId: player1.id, action: 'raise', amount: 1, dice: 2 });
+    room.bid({ playerId: player2.id, action: 'raise', amount: 2, dice: 2 });
+    room.bid({ playerId: player3.id, action: 'raise', amount: 3, dice: 2 });
+    expect(room.whoseTurn()).toBe(player1.id);
+  })
+
+  test('whose turn after call - lose', () => {
+    player1.dice = [2, 2, 2, 2, 2];
+    player2.dice = [2, 2, 2, 2, 2];
+    player3.dice = [];
+    room.bid({ playerId: player1.id, action: 'raise', amount: 1, dice: 2 });
+    room.bid({ playerId: player2.id, action: 'call', amount: null, dice: null });
+    expect(room.whoseTurn()).toBe(player2.id);
+  })
+
+  test('whose turn after call - win', () => {
+    player1.dice = [2, 2, 2, 2, 2];
+    player2.dice = [2, 2, 2, 2, 2];
+    player3.dice = [];
+    room.bid({ playerId: player1.id, action: 'raise', amount: 1, dice: 3 });
+    room.bid({ playerId: player2.id, action: 'call', amount: null, dice: null });
+    expect(room.whoseTurn()).toBe(player1.id);
+  })
+
+  test('whose turn after spot', () => {
+    player1.dice = [2, 2, 2, 2, 2];
+    player2.dice = [2, 2, 2, 2, 2];
+    player3.dice=[];
+    room.bid({ playerId: player1.id, action: 'raise', amount: 1, dice: 2 });
+    room.bid({ playerId: player2.id, action: 'spot', amount: null, dice: null });
+    expect(room.whoseTurn()).toBe(player2.id);
+  })
 })
 
 describe('turn taking', () => {
