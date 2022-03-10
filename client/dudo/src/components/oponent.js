@@ -34,8 +34,8 @@ const Oponent = (props) => {
         <div id="oponent">
             <h2>{props.name}</h2>
             {hand.map((die, key) => <img src={die} key={key} />)}
-            <button onClick={showDice}>Show</button>
-            <button onClick={hideDice}>Hide</button>
+            {/* <button onClick={showDice}>Show</button>
+            <button onClick={hideDice}>Hide</button> */}
         </div>
     );
 }

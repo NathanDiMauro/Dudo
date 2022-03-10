@@ -10,7 +10,7 @@ import ReactTooltip from 'react-tooltip';
 
 
 const PlayerActions = (props) => {
-    const [display, setDisplay] = useState(false);
+    const [canBid, setCanBid] = useState(false);
     const [chosenDice, setChosenDice] = useState(dice1);
     const [action, setAction] = useState(null);
     const [amount, setAmount] = useState(null);
@@ -19,7 +19,7 @@ const PlayerActions = (props) => {
 
     useEffect(() => {
         props.socket.on('turn', () => {
-            setDisplay(true);
+            setCanBid(true);
             console.log('my turn');
             setBidError('Its your bet!');
         })
@@ -34,9 +34,9 @@ const PlayerActions = (props) => {
                     setBidError('Must select amount and dice when raising');
                 } else {
                     if (dice === 1) {
-                        bid = { playerId: props.id, action: 'aces', amount: amount, dice: dice };
+                        bid = { playerId: props.id, action: 'aces', amount: parseInt(amount), dice: parseInt(dice) };
                     } else {
-                        bid = { playerId: props.id, action: action, amount: amount, dice: dice };
+                        bid = { playerId: props.id, action: action, amount: parseInt(amount), dice: parseInt(dice) };
                     }
                 }
                 break;
@@ -55,7 +55,7 @@ const PlayerActions = (props) => {
                     setBidError(error);
                 } else {
                     setBidError(undefined);
-                    setDisplay(false);
+                    setCanBid(false);
                     setAction(null);
                     setAmount(null);
                     setDice(null);
@@ -100,7 +100,7 @@ const PlayerActions = (props) => {
 
     return (
         <div id="playerAction">
-            {display &&
+            {canBid &&
                 <div>
                     {bidError &&
                         <div id="bidErrors">

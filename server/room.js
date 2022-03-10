@@ -78,7 +78,16 @@ class Room {
      * @returns {[{playerName: String, diceCount: Number}]} An array of an object with a playerName and diceCount  
      */
     getPlayersBrief() {
-        return this.players.map((player) => ({ playerName: player.playerName, diceCount: player.dice.length }))
+        return this.players.map((player) => ({ playerName: player.playerName, diceCount: player.dice.length }));
+    }
+
+    /**
+     * Get all players dice  
+     * This is to reveal all the dice at the end of each round
+     * @returns {[{playerName: String, dice: [Number]}]}    An Array of an object with playerName and an array if dice
+     */
+    getAllDice() {
+        return this.players.map((player) => ({ playerName: player.playerName, dice: player.dice }));
     }
 
     /**
@@ -307,22 +316,20 @@ class Room {
     /**
      * Bid action of calling the previous bid  
      * @param {{playerId: String, action: String, amount: Number, dice: Number}} bid The bid object 
-     * @returns {{endOfRound: String}}   An endOfRound object that states who lost a dice and what the call was
+     * @returns {{endOfRound: String, dice: [{playerName: String, dice: [Number]}]}}   An endOfRound object that states who lost a dice and what the call was, and a dice array that contains all dice in the round
      */
     bidCall(bid) {
         const dieCount = this.countOfSpecificDie(this.prevBid.dice);
+        const dice = this.getAllDice()
 
         let return_str = `${this.getPlayer(bid.playerId).playerName} called ${this.getPlayer(this.prevBid.playerId).playerName} on their bet of ${this.prevBid.amount} ${this.prevBid.dice}s. `;
 
         // Player who called loses a dice
         if (dieCount >= this.prevBid.amount) {
-            console.log('Player who called loses');
             this.getPlayer(bid.playerId).dice.pop();
             return_str += `${this.getPlayer(bid.playerId).playerName} loses a dice.`;
             this.playerWhoJustLost = bid.playerId;
         } else {
-            console.log('Player who got called loses');
-
             // Player who got called (prevBid) loses a dice
             this.getPlayer(this.prevBid.playerId).dice.pop();
             return_str += `${this.getPlayer(this.prevBid.playerId).playerName} loses a dice.`
@@ -330,21 +337,26 @@ class Room {
         }
         const winner = this.getWinner();
         if (winner) {
-            return { endOfGame: `${winner.playerName} has won the game.` }
+            return { endOfGame: `${winner.playerName} has won the game.`, dice: dice }
         }
         this.newRound();
-        return { endOfRound: return_str };
+        return { endOfRound: return_str, dice: dice };
     }
 
     /**
      * Bid action of calling the previous bid  
      * @param {{playerId: String, action: String, amount: Number, dice: Number}} bid The bid object 
-     * @returns {{endOfRound: String}}   An endOfRound object that states who lost a dice and what the spot call was
+     * @returns {{endOfRound: String,  dice: [{playerName: String, dice: [Number]}]}}   An endOfRound object that states who lost a dice and what the spot call was,  and a dice array that contains all dice in the round
      */
     bidSpot(bid) {
         //player claims that the previous bidder's bid is exactly right
         //f the number is higher or lower, the claimant loses the round; otherwise, 
         //the bidder loses the round.
+
+        const dice = this.getAllDice()
+
+        console.log(this.prevBid);
+
         const dieCount = this.countOfSpecificDie(this.prevBid.dice);
 
         let return_str = `${this.getPlayer(bid.playerId).playerName} called spot on ${this.prevBid.amount} ${this.prevBid.dice}s. ${this.getPlayer(bid.playerId).playerName} `;
@@ -364,7 +376,7 @@ class Room {
 
         this.playerWhoJustLost = bid.playerId;
 
-        return { endOfRound: return_str };
+        return { endOfRound: return_str, dice: dice };
     }
 
     /**
