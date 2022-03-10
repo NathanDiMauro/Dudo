@@ -87,7 +87,7 @@ class Room {
      * @returns {[{playerName: String, dice: [Number]}]}    An Array of an object with playerName and an array if dice
      */
     getAllDice() {
-        return this.players.map((player) => ({ playerName: player.playerName, dice: player.dice }));
+        return JSON.parse(JSON.stringify(this.players.map((player) => ({ playerName: player.playerName, dice: player.dice }))));
     }
 
     /**
@@ -320,7 +320,7 @@ class Room {
      */
     bidCall(bid) {
         const dieCount = this.countOfSpecificDie(this.prevBid.dice);
-        const dice = this.getAllDice()
+        const dice = this.getAllDice();
 
         let return_str = `${this.getPlayer(bid.playerId).playerName} called ${this.getPlayer(this.prevBid.playerId).playerName} on their bet of ${this.prevBid.amount} ${this.prevBid.dice}s. `;
 
@@ -339,8 +339,8 @@ class Room {
         if (winner) {
             return { endOfGame: `${winner.playerName} has won the game.`, dice: dice }
         }
-        this.newRound();
-        return { endOfRound: return_str, dice: dice };
+        
+        return { endOfRound: return_str, dice };
     }
 
     /**
@@ -354,8 +354,6 @@ class Room {
         //the bidder loses the round.
 
         const dice = this.getAllDice()
-
-        console.log(this.prevBid);
 
         const dieCount = this.countOfSpecificDie(this.prevBid.dice);
 
@@ -401,7 +399,7 @@ class Room {
             this.betsInRound++;
             this.playerWhoJustLost = null;
             this.prevBid = { playerId: bid.playerId, action: bid.action, amount: bid.amount, dice: bid.dice }
-            return { bid: Object.assign({ playerName: this.getPlayer(bid.playerId).playerName }, this.prevBid), startOfRound: true }
+            return { bid: Object.assign({ playerName: this.getPlayer(bid.playerId).playerName }, this.prevBid) }
         }
 
         switch (bid.action) {

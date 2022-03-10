@@ -355,20 +355,20 @@ describe('bid call', () => {
     const new_bid = { playerId: player2.id, action: 'call', amount: 8, dice: 2 };
     const expected = {
       endOfRound: `${player2.playerName} called ${player1.playerName} on their bet of 8 2s. ${player1.playerName} loses a dice.`,
-      dice: [{ playerName: player1.playerName, dice: player1.dice }, { playerName: player2.playerName, dice: player2.dice }]
+      dice: [{ playerName: player1.playerName, dice:  [2, 3, 1, 5, 6] }, { playerName: player2.playerName, dice: [2, 1, 5, 2, 3] }]
     }
     expect(room.bidCall(new_bid)).toStrictEqual(expected);
   })
 
   test('bid call - not first round - person who called loses dice', () => {
     player1.dice = [2, 3, 1, 5, 6];
-    player2.dice = [2, 1, 5, 2, 3];
+    player2.dice = [2, 3, 1, 2, 3];
     room.prevBid = { playerId: player1.id, action: 'raise', amount: 5, dice: 2 };
     room.betsInRound = 4;
     const new_bid = { playerId: player2.id, action: 'call', amount: null, dice: null };
     const expected = {
       endOfRound: `${player2.playerName} called ${player1.playerName} on their bet of 5 2s. ${player2.playerName} loses a dice.`,
-      dice: [{ playerName: player1.playerName, dice: player1.dice }, { playerName: player2.playerName, dice: player2.dice }]
+      dice: [{ playerName: player1.playerName, dice:  [2, 3, 1, 5, 6] }, { playerName: player2.playerName, dice: [2, 3, 1, 2, 3] }]
     }
     expect(room.bidCall(new_bid)).toStrictEqual(expected);
   })
@@ -381,7 +381,7 @@ describe('bid call', () => {
     const new_bid = { playerId: player2.id, action: 'call', amount: 4, dice: 2 };
     const expected = {
       endOfRound: `${player2.playerName} called ${player1.playerName} on their bet of 4 2s. ${player1.playerName} loses a dice.`,
-      dice: [{ playerName: player1.playerName, dice: player1.dice }, { playerName: player2.playerName, dice: player2.dice }]
+      dice: [{ playerName: player1.playerName, dice:  [2, 3, 1, 5, 6] }, { playerName: player2.playerName, dice: [2, 1, 5, 2, 3] }]
     }
     expect(room.bidCall(new_bid)).toStrictEqual(expected);
   })
@@ -394,7 +394,7 @@ describe('bid call', () => {
     const new_bid = { playerId: player2.id, action: 'call', amount: null, dice: null };
     const expected = {
       endOfRound: `${player2.playerName} called ${player1.playerName} on their bet of 3 2s. ${player2.playerName} loses a dice.`,
-      dice: [{ playerName: player1.playerName, dice: player1.dice }, { playerName: player2.playerName, dice: player2.dice }]
+      dice: [{ playerName: player1.playerName, dice:  [2, 3, 1, 5, 6] }, { playerName: player2.playerName, dice: [2, 1, 5, 2, 3] }]
     }
     expect(room.bidCall(new_bid)).toStrictEqual(expected);
   })
@@ -418,7 +418,7 @@ describe('bid spot', () => {
     room.bid(second_bet);
     const expected = {
       endOfRound: `${player1.playerName} called spot on 5 2s. ${player1.playerName} called spot correctly and gets 1 dice back.`,
-      dice: [{ playerName: player1.playerName, dice: player1.dice }, { playerName: player2.playerName, dice: player2.dice }]
+      dice: [{ playerName: player1.playerName, dice: [2, 3, 1, 5] }, { playerName: player2.playerName, dice: [2, 1, 5, 2, 6] }]
     }
     expect(room.bidSpot(spot_bid)).toStrictEqual(expected);
     expect(player2.dice.length).toBe(5);
@@ -434,7 +434,7 @@ describe('bid spot', () => {
     room.bid(second_bet);
     const expected = {
       endOfRound: `${player2.playerName} called spot on 5 2s. ${player2.playerName} called spot correctly, however, they already have 5 dice.`,
-      dice: [{ playerName: player1.playerName, dice: player1.dice }, { playerName: player2.playerName, dice: player2.dice }]
+      dice: [{ playerName: player1.playerName, dice: [2, 3, 1, 5, 6] }, { playerName: player2.playerName, dice: [2, 1, 5, 2, 4] }]
     }
     expect(room.bidSpot(spot_bid)).toStrictEqual(expected);
     expect(player2.dice.length).toBe(5);
@@ -448,7 +448,7 @@ describe('bid spot', () => {
     room.bid(first_bet);
     const expected = {
       endOfRound: `${player2.playerName} called spot on 5 2s. ${player2.playerName} called spot incorrectly and loses 1 dice.`,
-      dice: [{ playerName: player1.playerName, dice: player1.dice }, { playerName: player2.playerName, dice: player2.dice }]
+      dice: [{ playerName: player1.playerName, dice: [2, 3, 1, 5, 6] }, { playerName: player2.playerName, dice: [2, 1, 5, 2, 4] }]
     }
     expect(room.bidSpot(spot_bid)).toStrictEqual(expected);
     expect(player2.dice.length).toBe(4);
@@ -462,7 +462,7 @@ describe('bid spot', () => {
     room.bid(first_bet);
     const expected = {
       endOfRound: `${player2.playerName} called spot on 3 2s. ${player2.playerName} called spot correctly and gets 1 dice back.`,
-      dice: [{ playerName: player1.playerName, dice: player1.dice }, { playerName: player2.playerName, dice: player2.dice }]
+      dice: [{ playerName: player1.playerName, dice: [2, 3, 1, 5, 6] }, { playerName: player2.playerName, dice: [2, 1, 5, 2] }]
     }
     expect(room.bidSpot(spot_bid)).toStrictEqual(expected);
     expect(player2.dice.length).toBe(5);
@@ -481,7 +481,7 @@ describe('bid spot', () => {
     room.bid(third_bet);
     const expected = {
       endOfRound: `${player2.playerName} called spot on 6 2s. ${player2.playerName} called spot incorrectly and loses 1 dice.`,
-      dice: [{ playerName: player1.playerName, dice: player1.dice }, { playerName: player2.playerName, dice: player2.dice }]
+      dice: [{ playerName: player1.playerName, dice:[2, 3, 1, 5, 6] }, { playerName: player2.playerName, dice: [2, 1, 5, 2, 4] }]
     }
     expect(room.bidSpot(spot_bid)).toStrictEqual(expected);
     expect(player2.dice.length).toBe(4);
@@ -506,7 +506,7 @@ describe('bid', () => {
     const bid = { playerId: player1.id, action: 'raise', amount: 4, dice: 4 };
     const actual = room.bid(bid);
     const expectedBid = { playerId: player1.id, playerName: player1.playerName, action: 'raise', amount: 4, dice: 4 };
-    expect(actual).toStrictEqual({ bid: expectedBid, startOfRound: true });
+    expect(actual).toStrictEqual({ bid: expectedBid });
   })
 
   test('initial bet - call', () => {
@@ -560,7 +560,7 @@ describe('bid', () => {
     room.bid(first_bid);
     const expected = {
       endOfRound: `${player2.playerName} called ${player1.playerName} on their bet of 8 2s. ${player1.playerName} loses a dice.`,
-      dice: [{ playerName: player1.playerName, dice: player1.dice }, { playerName: player2.playerName, dice: player2.dice }]
+      dice: [{ playerName: player1.playerName, dice: [2, 3, 1, 5, 6] }, { playerName: player2.playerName, dice: player2.dice }]
     }
     expect(room.bid(second_bid)).toStrictEqual(expected);
   })
@@ -574,7 +574,7 @@ describe('bid', () => {
     room.bid(first_bid);
     const expected = {
       endOfRound: `${player2.playerName} called spot on 5 2s. ${player2.playerName} called spot correctly and gets 1 dice back.`,
-      dice: [{ playerName: player1.playerName, dice: player1.dice }, { playerName: player2.playerName, dice: player2.dice }]
+      dice: [{ playerName: player1.playerName, dice: [2, 3, 1, 5, 6] }, { playerName: player2.playerName, dice: [2, 1, 5, 2] }]
     }
     expect(room.bid(second_bid)).toStrictEqual(expected);
   })
@@ -588,7 +588,7 @@ describe('bid', () => {
     room.bid(first_bid);
     const expected = {
       endOfRound: `${player2.playerName} called spot on 2 2s. ${player2.playerName} called spot incorrectly and loses 1 dice.`,
-      dice: [{ playerName: player1.playerName, dice: player1.dice }, { playerName: player2.playerName, dice: player2.dice }]
+      dice: [{ playerName: player1.playerName, dice: [2, 3, 3] }, { playerName: player2.playerName, dice: [2, 1] }]
     }
     expect(room.bid(second_bid)).toStrictEqual(expected);
   })
@@ -601,7 +601,7 @@ describe('bid', () => {
     room.bid(first_bid);
     const expected = {
       endOfRound: `${player2.playerName} called spot on 2 2s. ${player2.playerName} called spot correctly and gets 1 dice back.`,
-      dice: [{ playerName: player1.playerName, dice: player1.dice }, { playerName: player2.playerName, dice: player2.dice }]
+      dice: [{ playerName: player1.playerName, dice: [2, 3, 3] }, { playerName: player2.playerName, dice: [2, 1] }]
     }
     expect(room.bid(second_bid)).toStrictEqual(expected);
   })
@@ -624,7 +624,7 @@ describe('bid', () => {
     room.bid(first_bid);
     const expected = {
       endOfGame: `${player1.playerName} has won the game.`,
-      dice: [{ playerName: player1.playerName, dice: player1.dice }, { playerName: player2.playerName, dice: player2.dice }]
+      dice: [{ playerName: player1.playerName, dice: [2, 3] }, { playerName: player2.playerName, dice: [2] }]
     }
     expect(room.bid(second_bid)).toStrictEqual(expected);
   })

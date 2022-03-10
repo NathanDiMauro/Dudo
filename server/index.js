@@ -172,17 +172,17 @@ io.on('connection', (socket) => {
             if (room) {
                 const player = room.getPlayer(socket.id);
                 if (player) {
-                    const { bid, error, endOfRound, startOfRound, endOfGame } = room.bid(newBid);
+                    const { bid, error, endOfRound, dice, endOfGame } = room.bid(newBid);
 
                     if (bid) {
                         io.in(room.roomCode).emit('newBid', { bid });
                         _sendNotification(room.bidToString(bid), room.roomCode);
                         _notifyWhoseTurn(room);
                     } else if (endOfRound) {
-                        io.in(room.roomCode).emit('endOfRound', { endOfRound });
+                        io.in(room.roomCode).emit('endOfRound', { endOfRound, dice });
                         _sendNotification({ title: 'Round is over', description: endOfRound }, room.roomCode)
                     } else if (endOfGame) {
-                        io.in(room.roomCode).emit('endOfGame', { endOfGame });
+                        io.in(room.roomCode).emit('endOfGame', { endOfRound, dice });
                     } else if (error) {
                         callback(error);
                     } else {
