@@ -1,0 +1,99 @@
+#playerAction {
+    padding-top: 1%;
+}
+
+#amountInput {
+    width: 50px;
+    height: 40px;
+    padding: 5px;
+    margin-left: 0.5em;
+    margin-right: .3%;
+    border-radius: 5px;
+    border: none;
+    font-size: 20px;
+}
+
+#bidErrors {
+    border: 2px solid red;
+    border-radius: 5px;
+    padding: 5px;
+    background-color: darksalmon;
+    color: black;
+    font-weight: bold;
+    margin-bottom: 10px;
+    width: 35%;
+}
+
+#dropdownSelect {
+    cursor: pointer;
+}
+
+#diceDropdown {
+    display: none;
+    position: relative;
+    background-color: #0277bd;
+    box-shadow: 0px 8px 16px 
+        0px rgba(0, 0, 0, 0.2);
+    z-index: 1;
+}
+
+#diceDropdown img {
+    position: relative;
+
+}
+
+#diceDropdown:hover {
+    display: flex;
+    cursor: pointer;
+}
+
+#diceSelected {
+    display: none;
+}
+
+#diceSelected:hover {
+    display: none;
+    cursor: pointer;
+}
+
+#bidButtons {
+    margin: 10px;
+}
+
+/* #bidButtons label, #bidButton input {
+ */
+/* } */
+
+#bidButtons input[type="radio"] {
+    opacity: 0;
+    position: fixed;
+    width: 0;
+}
+
+#bidButtons label {
+    display: inline-block;
+    background-color: pink;
+    padding: 10px 20px;
+    border: 1px solid black;
+    border-radius: 5px;
+    margin-right: 5px;
+}
+
+#bidButtons label:hover {
+    background-color: salmon;
+}
+
+#bidButtons input[type="radio"]:focus + label  {
+    border: 2px solid #444;
+}
+
+#bidButtons input[type="radio"]:checked + label {
+    background-color: blue;
+    border-color: red;
+}
+
+#playerAction #sendBidBtn {
+    border: 2px solid green;
+    border-radius: 5px;
+    background-color: darkseagreen;
+}
