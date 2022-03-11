@@ -213,7 +213,6 @@ class Room {
         if ((bid.action === 'raise' || bid.action === 'aces') && this.prevBid != null) {
             // Checking for the aces rule
             const { error } = this.checkAces(bid);
-            console.log(`Check aces error: ${error}`);
             if (error) return { error };
         }
     }
