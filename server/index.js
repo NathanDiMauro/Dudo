@@ -195,7 +195,7 @@ io.on('connection', (socket) => {
             callback();
         } catch (e) {
             console.error(e);
-            callback({ error: e.toString() });
+            callback({ error: e });
         }
     })
 

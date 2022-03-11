@@ -181,7 +181,7 @@ class Room {
         // Checking if the same player has bid 2 times in a row
         if (this.prevBid) {
             const { error } = this.checkTurn(bid.playerId) || {};
-            if (error) return { error }
+            if (error) return error;
         }
 
         // Checking if player exists
@@ -212,7 +212,8 @@ class Room {
         // Only ned to check aces if they are bidding aces or raising
         if ((bid.action === 'raise' || bid.action === 'aces') && this.prevBid != null) {
             // Checking for the aces rule
-            const error = this.checkAces(bid);
+            const { error } = this.checkAces(bid);
+            console.log(`Check aces error: ${error}`);
             if (error) return { error };
         }
     }
@@ -339,7 +340,7 @@ class Room {
         if (winner) {
             return { endOfGame: `${winner.playerName} has won the game.`, dice: dice }
         }
-        
+
         return { endOfRound: return_str, dice };
     }
 

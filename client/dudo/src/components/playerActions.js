@@ -51,7 +51,6 @@ const PlayerActions = (props) => {
         if (bid) {
             props.socket.emit('bid', { newBid: bid }, error => {
                 if (error) {
-                    console.log(error);
                     setBidError(error);
                 } else {
                     setBidError(undefined);
