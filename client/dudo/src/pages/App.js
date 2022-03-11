@@ -3,6 +3,7 @@ import React, { useContext, useState, useEffect } from 'react';
 import JoinGame from '../components/join';
 import HostGame from '../components/host';
 import Player from "../components/player";
+import EndGame from "../components/endGame"
 import { SocketContext } from '../components/socketContext';
 import Notification from '../components/notification';
 import Opponents from '../components/opponents';
@@ -14,13 +15,13 @@ function App() {
   const [room, setRoom] = useState(null);
   const [show, setShow] = useState(true);
   const [player, setPlayer] = useState([]);
-  // const [oponentsComponents, setOponentsComponents] = useState([]);
+  const [oponentsComponents, setOponentsComponents] = useState([]);
   const [startRound, setStartRound] = useState(false);
 
   const leaveGame = () => {
     setName(null);
     setRoom(null);
-    // setOponentsComponents([]);
+    setOponentsComponents([]);
     setShow(true);
 
     socket.emit('_disconnect')
@@ -51,6 +52,7 @@ function App() {
 
   return (
     <div id="game">
+      <EndGame socket={socket} setShow={setShow}/>
       <HostGame name={name} setName={setName} room={room} setRoom={setRoom}
         show={show} setShow={setShow} socket={socket} />
 
