@@ -1,19 +1,13 @@
 #foot {
+    margin-top: 2%;
     background-color: #58a5f0;
     color: #ffffff;
     font-size: 15pt;
-    height: 3vh;
-    min-height:1.4em;
 }
 
 .fLink {
     color: #ffffff;   
     margin-right: 1%;
-    text-decoration: none;
-}
-
-.fLink:hover {
-    color: #004c8c;
 }
 
 #first{
