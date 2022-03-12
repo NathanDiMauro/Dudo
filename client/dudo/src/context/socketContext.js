@@ -15,7 +15,7 @@ const SocketProvider = ({ children }) => {
     const [room, setRoom] = useState(undefined);
     const [players, setPlayers] = useState([]);
     const [notificationLog, setNotificationLog] = useState([]);
-    const [canBid, setCanBid] = useState(false);
+    const [playersTurn, setPlayersTurn] = useState(undefined);
 
     socket.on('players', (players) => {
         setPlayers(players.filter(p => p.playerName !== name));
@@ -33,8 +33,8 @@ const SocketProvider = ({ children }) => {
             setNotificationLog(prev => [...prev, notification]);
         })
 
-        socket.on('turn', () => {
-            setCanBid(true);
+        socket.on('turn', playerName => {
+            setPlayersTurn(playerName);
         })
     }, [])
 
@@ -47,7 +47,7 @@ const SocketProvider = ({ children }) => {
             room, setRoom,
             players,
             notificationLog,
-            canBid, setCanBid
+            playersTurn
         }} >
             {children}
         </SocketContext.Provider>

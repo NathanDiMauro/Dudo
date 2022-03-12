@@ -33,8 +33,8 @@ const HostGame = () => {
         <div id="join">
             <h2>Host Game</h2>
             <div id="jInput">
-                <h4>Name:</h4>
-                <input type="text" id="nameInput" onChange={(e) => setInputName(e.target.value)} />
+                <h4><label for='nameInput'>Name:</label></h4>
+                <input type="text" id="nameInput" autoComplete="off" onChange={(e) => setInputName(e.target.value)} />
                 <button onClick={hostGame}>Host</button>
                 <br />
             </div>

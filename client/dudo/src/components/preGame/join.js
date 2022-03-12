@@ -1,5 +1,6 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useContext } from 'react';
 import { SocketContext } from '../../context/socketContext';
+import { isNumberKey } from '../../utils';
 import '../../styles/join.css'
 
 const JoinGame = () => {
@@ -31,10 +32,10 @@ const JoinGame = () => {
         <div id="join">
             <h2>Join Game</h2>
             <div id="jInput">
-                <h4>Name:</h4>
-                <input type="text" id="joinNameInput" onChange={(e) => setInputName(e.target.value)} />
-                <h4>Room code:</h4>
-                <input type="text" id="joinRoomInput" onChange={(e) => setInputRoom(e.target.value)} />
+                <h4><label for='joinNameInput'>Name:</label></h4>
+                <input type="text" id="joinNameInput" autoComplete="off" onChange={(e) => setInputName(e.target.value)} />
+                <h4><label for='joinRoomInput'>Room code:</label></h4>
+                <input type="text" id="joinRoomInput" autoComplete="off" onChange={(e) => setInputRoom(e.target.value)} onKeyPress={isNumberKey} />
                 <button onClick={joinGame}>Join</button>
                 <br />
             </div>

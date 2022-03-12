@@ -1,5 +1,6 @@
 const express = require('express');
 const { createServer } = require('http');
+const { emit } = require('process');
 const { Server } = require('socket.io');
 const { addPlayer, getPlayer, getPlayers, removePlayer, getRoom, createRoom } = require('./state');
 
@@ -59,7 +60,7 @@ const _startRound = (room) => {
  * @param {Room} room   The room to let the players know whose turn it is
  */
 const _notifyWhoseTurn = (room) => {
-    io.to(room.whoseTurn()).emit('turn');
+    io.in(room.roomCode).emit('turn', room.getPlayer(room.whoseTurn()).playerName)
     _sendNotification({ title: `It is ${room.getPlayer(room.whoseTurn()).playerName}'s turn`, description: '' }, room.roomCode);
 }
 

@@ -5,20 +5,26 @@ import dice3 from '../images/dice3.svg'
 import dice4 from '../images/dice4.svg'
 import dice5 from '../images/dice5.svg'
 import dice6 from '../images/dice6.svg'
+import { isNumberKey } from '../utils';
 import '../styles/playerActions.css'
 import ReactTooltip from 'react-tooltip';
 import { SocketContext } from '../context/socketContext';
 
 
 const PlayerActions = () => {
-    const { socket, canBid, setCanBid } = useContext(SocketContext);
-
+    const { socket, name, playersTurn } = useContext(SocketContext);
 
     const [chosenDice, setChosenDice] = useState(dice1);
     const [action, setAction] = useState(null);
     const [amount, setAmount] = useState(null);
     const [dice, setDice] = useState(null);
     const [bidError, setBidError] = useState(null);
+    const [canBid, setCanBid] = useState(false);
+
+    useEffect(() => {
+        setCanBid(() => playersTurn === name);
+    }, [playersTurn, name])
+
 
     function bid() {
         let bid = undefined;
@@ -82,15 +88,6 @@ const PlayerActions = () => {
         document.getElementById("diceDropdown").style.display = "none";
     }
 
-    // Making sure player can only enter numbers
-    const isNumberKey = (e) => {
-        var charCode = (e.which) ? e.which : e.keyCode
-        if (charCode > 31 && (charCode !== 46 && (charCode < 48 || charCode > 57))) {
-            e.preventDefault();
-            return false;
-        }
-        return true;
-    }
 
     return (
         <div id="playerAction">

@@ -1,16 +1,16 @@
-#oponent {
+#opponent {
     background-color: #0277bd;
     color: white;
     padding-left: 5%;
     padding-bottom: 5%;
 }
 
-#oponent img {
+#opponent img {
     height: 60px;
     width: 60px;
 }
 
-#oponent button {
+#opponent button {
     margin-top: 5px;
     height: 28px;
     margin-left: 10px;
@@ -21,8 +21,13 @@
     border-radius: 3px;
 }
 
-#oponent button:hover {
+#opponent button:hover {
     background-color: #58a5f0;
     color: white;
     box-shadow: 0 12px 16px 0 rgba(0,0,0,0.24), 0 17px 50px 0 rgba(0,0,0,0.19);
+}
+
+#opponent .turn {
+    color: red;
+    font-weight: bold;
 }
