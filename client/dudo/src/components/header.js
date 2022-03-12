@@ -11,7 +11,6 @@ class Header extends React.Component {
           <Nav>
             <Link to="/" className='links' id='first'><h3>Play</h3></Link>
             <Link to="/about" className='links'><h3>About</h3></Link>
-            <Link to="/login" className='links'><h3>Login</h3></Link>
           </Nav>
       </Navbar>
       )}

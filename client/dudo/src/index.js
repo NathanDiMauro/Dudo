@@ -11,7 +11,6 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import Header from './components/header'
 import Footer from './components/footer'
 import License from './pages/license'
-import Login from './pages/login'
 import { SocketProvider } from './components/socketContext';
 
 ReactDOM.render(
@@ -26,7 +25,6 @@ ReactDOM.render(
           <Route path="/" element={<App />} />
           <Route path="/about" element={<About />} />
           <Route path="/license" element={<License />} />
-          <Route path="/login" element={<Login />} />
         </Routes>
         <Footer />
       </BrowserRouter>
