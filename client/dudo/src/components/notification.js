@@ -1,8 +1,9 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useContext } from "react";
+import { SocketContext } from "../context/socketContext";
 import '../styles/notification.css'
 
-const Notification = (props) => {
-    const [notificationLog, setNotificationLog] = useState([]);
+const Notification = () => {
+    const { notificationLog } = useContext(SocketContext);
 
     const messagesEndRef = useRef(null);
 
@@ -14,31 +15,15 @@ const Notification = (props) => {
         scrollToBottom()
     }, [notificationLog]);
 
-    useEffect(() => {
-       props.socket.on('notification', notification => {
-            console.log(notification);
-
-            if (notification?.eof) props.setStartRound(true);
-
-            let notificationLogBuilder = notificationLog;
-
-            notificationLogBuilder.push(notification)
-
-            const notificationLogComponentBuilder = notificationLogBuilder.map((notification, key) =>
-                <p key={Math.floor(key)}>{notification.title}: {notification.description}</p>);
-
-            setNotificationLog(notificationLogComponentBuilder)
-        })
-    }, [props.socket])
-
-    if (props.show || !notificationLog[0]) return null;
 
     return (
         <div>
-            <div id='notification'>
-                {notificationLog}
-                <div ref={messagesEndRef} />
-            </div>
+            {notificationLog &&
+                <div id='notification'>
+                    {notificationLog.map((notification, key) => <p key={key}>{notification.title}: {notification.description}</p>)}
+                    <div ref={messagesEndRef} />
+                </div>
+            }
         </div>
     )
 }

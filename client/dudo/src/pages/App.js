@@ -1,71 +1,33 @@
 import '../styles/App.css';
 import React, { useContext, useState, useEffect } from 'react';
-import JoinGame from '../components/join';
-import HostGame from '../components/host';
-import Player from "../components/player";
+import PreGame from '../components/preGame/preGame';
 import EndGame from "../components/endGame"
-import { SocketContext } from '../components/socketContext';
-import Notification from '../components/notification';
-import Opponents from '../components/opponents';
+import { SocketContext } from '../context/socketContext';
+import Game from '../components/game';
+import dice1 from '../images/dice1.svg'
+import dice2 from '../images/dice2.svg'
+import dice3 from '../images/dice3.svg'
+import dice4 from '../images/dice4.svg'
+import dice5 from '../images/dice5.svg'
+import dice6 from '../images/dice6.svg'
+
+
+export const ALL_DICE = [dice1, dice2, dice3, dice4, dice5, dice6];
+
 
 function App() {
 
-  const socket = useContext(SocketContext);
-  const [name, setName] = useState(null);
-  const [room, setRoom] = useState(null);
+  const { room, name } = useContext(SocketContext);
   const [show, setShow] = useState(true);
-  const [player, setPlayer] = useState([]);
-  const [oponentsComponents, setOponentsComponents] = useState([]);
-  const [startRound, setStartRound] = useState(false);
-
-  const leaveGame = () => {
-    setName(null);
-    setRoom(null);
-    setOponentsComponents([]);
-    setShow(true);
-
-    socket.emit('_disconnect')
-  }
-
-  const showLeave = () => {
-    if (!show)
-      return <button onClick={leaveGame}>Leave Game</button>
-  }
-
-  const showRoom = () => {
-    if (!show)
-      return <h1>Room Code: {room}</h1>
-  }
-
-  const startGame = () => {
-    socket.emit('startGame', { new_game: !startRound });
-    setStartRound(false)
-  }
-
-  const showStart = () => {
-    if (!show) {
-      let text = 'Start Round'
-      if (!startRound) text = 'Start Game'
-      return <button onClick={startGame}>{text}</button>
-    }
-  }
 
   return (
     <div id="game">
-      <EndGame socket={socket} setShow={setShow}/>
-      <HostGame name={name} setName={setName} room={room} setRoom={setRoom}
-        show={show} setShow={setShow} socket={socket} />
-
-      <JoinGame name={name} setName={setName} room={room} setRoom={setRoom}
-        show={show} setShow={setShow} socket={socket} />
-      {showRoom()}
-      <Player name={name} show={show} diceNum={player.diceCount} socket={socket}
-        id={socket.id} />
-      {!show && <Opponents name={name} />}
-
-      <Notification show={show} socket={socket} setStartRound={setStartRound} />
-      {showStart()}
-      {showLeave()}
+      {/* <EndGame setShow={setShow} /> */}
+      {!room && !name ?
+        <PreGame />
+        :
+        <Game />
+      }
     </div>
   );
 }

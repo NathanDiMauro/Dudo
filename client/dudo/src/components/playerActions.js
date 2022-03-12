@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import dice1 from '../images/dice1.svg'
 import dice2 from '../images/dice2.svg'
 import dice3 from '../images/dice3.svg'
@@ -7,23 +7,18 @@ import dice5 from '../images/dice5.svg'
 import dice6 from '../images/dice6.svg'
 import '../styles/playerActions.css'
 import ReactTooltip from 'react-tooltip';
+import { SocketContext } from '../context/socketContext';
 
 
-const PlayerActions = (props) => {
-    const [canBid, setCanBid] = useState(false);
+const PlayerActions = () => {
+    const { socket, canBid, setCanBid } = useContext(SocketContext);
+
+
     const [chosenDice, setChosenDice] = useState(dice1);
     const [action, setAction] = useState(null);
     const [amount, setAmount] = useState(null);
     const [dice, setDice] = useState(null);
     const [bidError, setBidError] = useState(null);
-
-    useEffect(() => {
-        props.socket.on('turn', () => {
-            setCanBid(true);
-            console.log('my turn');
-            setBidError('Its your bet!');
-        })
-    }, [props.socket])
 
     function bid() {
         let bid = undefined;
@@ -34,22 +29,22 @@ const PlayerActions = (props) => {
                     setBidError('Must select amount and dice when raising');
                 } else {
                     if (dice === 1) {
-                        bid = { playerId: props.id, action: 'aces', amount: parseInt(amount), dice: parseInt(dice) };
+                        bid = { playerId: socket.id, action: 'aces', amount: parseInt(amount), dice: parseInt(dice) };
                     } else {
-                        bid = { playerId: props.id, action: action, amount: parseInt(amount), dice: parseInt(dice) };
+                        bid = { playerId: socket.id, action: action, amount: parseInt(amount), dice: parseInt(dice) };
                     }
                 }
                 break;
             case 'spot':
             case 'call':
-                bid = { playerId: props.id, action: action, amount: null, dice: null };
+                bid = { playerId: socket.id, action: action, amount: null, dice: null };
                 break;
             default:
                 setBidError('Must select an action');
         }
         console.log(bid);
         if (bid) {
-            props.socket.emit('bid', { newBid: bid }, error => {
+            socket.emit('bid', { newBid: bid }, error => {
                 if (error) {
                     setBidError(error);
                 } else {
@@ -101,6 +96,7 @@ const PlayerActions = (props) => {
         <div id="playerAction">
             {canBid &&
                 <div>
+                    <h3>Its your turn to bid!</h3>
                     {bidError &&
                         <div id="bidErrors">
                             <h4>{bidError}</h4>

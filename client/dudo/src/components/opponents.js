@@ -1,28 +1,11 @@
 import '../styles/App.css';
 import { useContext, useEffect, useState } from 'react';
 import Opponent from './opponent';
-import { SocketContext } from './socketContext';
+import { SocketContext } from '../context/socketContext';
 
 
-const Opponents = (props) => {
-    const socket = useContext(SocketContext);
-    const [players, setPlayers] = useState([]);
-
-    useEffect(() => {
-        const handleEndOfRound = (data) => {
-            console.log(data);
-            setPlayers(data.dice.filter((player) => player.playerName !== props.name ));
-        }
-
-        const handleNewPlayers = (players) => {
-            setPlayers(players.filter((player) => player.playerName !== props.name ));
-        }
-
-        socket.on('endOfRound', handleEndOfRound);
-        socket.on('players', handleNewPlayers)
-
-    }, [socket, props.name])
-
+const Opponents = () => {
+    const { players } = useContext(SocketContext);
 
     return (
         <div id='players'>

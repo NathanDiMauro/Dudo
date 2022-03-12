@@ -1,22 +1,22 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
+import { SocketContext } from "../context/socketContext";
 import '../styles/latestBid.css'
 
-const LatestBid = (props) => {
-    const [bid, setBid] = useState();
+const LatestBid = () => {
+    const { socket } = useContext(SocketContext);
+    const [bid, setBid] = useState(undefined);
 
     useEffect(() => {
-        const handleNewBid = (newBid) => {
-            setBid(newBid);
-        }
-
-        props.socket.on('newBid', handleNewBid);
-    }, [props.socket])
-
-    if (props.show || !bid) return null;
+        socket.on('newBid', newBid => {
+            setBid(newBid)
+        });
+    }, [socket])
 
     return (
         <div id="latestBid">
-            <h4>Current Bid: {bid.bid.amount} {bid.bid.dice}s</h4>
+            {bid &&
+                <h4>Current Bid: {bid.bid.amount} {bid.bid.dice}s</h4>
+            }
         </div>
     )
 }

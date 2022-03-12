@@ -34,6 +34,7 @@ const _addPlayer = (socket, name, roomCode, callback) => {
 
     // Sending an updated list of players to the room
     _sendPlayers(roomCode);
+    callback(null)
 }
 
 
@@ -102,7 +103,6 @@ const _sendPlayers = (roomCode) => {
  * @param {Socket} socket   The socket of the client connecting
  */
 io.on('connection', (socket) => {
-
     /**
      * Listening for a client requesting to create a new room
      * @param {String}  name        The name of the player creating the room
@@ -112,7 +112,6 @@ io.on('connection', (socket) => {
         try {
             const { error } = createRoom(roomCode);
             if (error) return callback(error);
-
             _addPlayer(socket, name, roomCode, callback);
         } catch (e) {
             callback({ error: e.toString() });
@@ -158,7 +157,8 @@ io.on('connection', (socket) => {
                 callback({ error: 'Room does not exists with this player' });
             }
         } catch (e) {
-            callback({ error: e.toString() });
+            console.log(e);
+            // callback({ error: e.toString() });
         }
     })
 

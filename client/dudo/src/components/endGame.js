@@ -1,4 +1,5 @@
-import React, {useEffect, useState} from "react";
+import React, {useContext, useEffect, useState} from "react";
+import { SocketContext } from "../context/socketContext";
 import column1 from "../images/column1.svg"
 import column2 from "../images/column2.svg"
 import column3 from "../images/column3.svg"
@@ -6,11 +7,13 @@ import "../styles/endGame.css"
 
 const EndGame = (props) => {
 
+    const { socket } = useContext(SocketContext);
+
     const [winners, setWinners] = useState([])
     const [endGame, setEndGame] = useState(false);
 
     useEffect(() => {
-        props.socket.on('endOfGame', (dice) => {
+        socket.on('endOfGame', (dice) => {
             dice.dice.sort(function(p1, p2){return p2.dice.length - p1.dice.length})
 
             let winnersBuilder = []
@@ -44,7 +47,7 @@ const EndGame = (props) => {
             props.setShow(true)
             setEndGame(true)
         })
-    }, [props.socket])
+    }, [socket])
 
     if(!endGame) return null
 

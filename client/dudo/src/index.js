@@ -11,7 +11,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import Header from './components/header'
 import Footer from './components/footer'
 import License from './pages/license'
-import { SocketProvider } from './components/socketContext';
+import { SocketProvider } from './context/socketContext';
 
 ReactDOM.render(
   <React.StrictMode>
