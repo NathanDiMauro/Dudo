@@ -212,7 +212,7 @@ class Room {
         // Only ned to check aces if they are bidding aces or raising
         if ((bid.action === 'raise' || bid.action === 'aces') && this.prevBid != null) {
             // Checking for the aces rule
-            const { error } = this.checkAces(bid);
+            const { error } = this.checkAces(bid) || {};
             if (error) return { error };
         }
     }

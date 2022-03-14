@@ -11,8 +11,6 @@ const JoinGame = () => {
 
     const joinGame = () => {
         if (inputName && inputRoom) {
-            console.log('trying to join', inputName, "to room", inputRoom);
-            console.log("room:", inputRoom)
             socket.emit('join', { name: inputName, roomCode: parseInt(inputRoom) }, error => {
                 if (error) {
                     console.log(error);
@@ -32,9 +30,9 @@ const JoinGame = () => {
         <div id="join">
             <h2>Join Game</h2>
             <div id="jInput">
-                <h4><label for='joinNameInput'>Name:</label></h4>
+                <h4><label htmlFor='joinNameInput'>Name:</label></h4>
                 <input type="text" id="joinNameInput" autoComplete="off" onChange={(e) => setInputName(e.target.value)} />
-                <h4><label for='joinRoomInput'>Room code:</label></h4>
+                <h4><label htmlFor='joinRoomInput'>Room code:</label></h4>
                 <input type="text" id="joinRoomInput" autoComplete="off" onChange={(e) => setInputRoom(e.target.value)} onKeyPress={isNumberKey} />
                 <button onClick={joinGame}>Join</button>
                 <br />

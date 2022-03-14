@@ -34,6 +34,7 @@ const SocketProvider = ({ children }) => {
         })
 
         socket.on('turn', playerName => {
+            console.log(`got players turn: ${playerName}`)
             setPlayersTurn(playerName);
         })
     }, [])

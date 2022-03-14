@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useContext } from 'react';
-import cup from '../images/cup.png';
-import '../styles/opponent.css';
-import { ALL_DICE } from '../pages/App';
-import { SocketContext } from '../context/socketContext';
+import cup from '../../images/cup.png';
+import '../../styles/opponent.css'
+import { ALL_DICE } from '../../pages/App';
+import { SocketContext } from '../../context/socketContext';
 
 const Opponent = (props) => {
     const { playersTurn } = useContext(SocketContext);
@@ -19,7 +19,7 @@ const Opponent = (props) => {
 
     return (
         <div id="opponent">
-            <h2 className={playersTurn === props.name && 'turn'}>{props.name} <small>({props.diceCount})</small></h2>
+            <h2 className={playersTurn === props.name ? 'turn' : undefined}>{props.name} <small>({props.diceCount})</small></h2>
             {hand.map((die, key) => <img src={die} key={key} />)}
         </div>
     );

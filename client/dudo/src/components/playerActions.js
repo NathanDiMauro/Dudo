@@ -19,11 +19,12 @@ const PlayerActions = () => {
     const [amount, setAmount] = useState(null);
     const [dice, setDice] = useState(null);
     const [bidError, setBidError] = useState(null);
-    const [canBid, setCanBid] = useState(false);
+    const [canBid, setCanBid] = useState(true);
 
-    useEffect(() => {
-        setCanBid(() => playersTurn === name);
-    }, [playersTurn, name])
+    // useEffect(() => {
+    //     console.log(playersTurn === name);
+    //     setCanBid(() => playersTurn === name);
+    // }, [playersTurn])
 
 
     function bid() {
@@ -48,7 +49,6 @@ const PlayerActions = () => {
             default:
                 setBidError('Must select an action');
         }
-        console.log(bid);
         if (bid) {
             socket.emit('bid', { newBid: bid }, error => {
                 if (error) {
@@ -91,7 +91,8 @@ const PlayerActions = () => {
 
     return (
         <div id="playerAction">
-            {canBid &&
+            <p style={{color: 'red'}}>{canBid.toString()}</p>
+            {playersTurn === name  && canBid &&
                 <div>
                     <h3>Its your turn to bid!</h3>
                     {bidError &&

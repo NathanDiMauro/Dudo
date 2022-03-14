@@ -1,7 +1,7 @@
 import { useContext } from "react";
 import { SocketContext } from "../context/socketContext";
 import Player from "./player";
-import Opponents from "./opponents";
+import Opponents from "./opponents/opponents";
 import Notification from "./notification";
 
 const Game = () => {

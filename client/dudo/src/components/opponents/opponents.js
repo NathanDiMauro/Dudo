@@ -1,7 +1,7 @@
-import '../styles/App.css';
-import { useContext, useEffect, useState } from 'react';
+import '../../styles/App.css';
+import { useContext } from 'react';
 import Opponent from './opponent';
-import { SocketContext } from '../context/socketContext';
+import { SocketContext } from '../../context/socketContext';
 
 
 const Opponents = () => {
