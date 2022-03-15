@@ -16,6 +16,7 @@ const SocketProvider = ({ children }) => {
     const [players, setPlayers] = useState([]);
     const [notificationLog, setNotificationLog] = useState([]);
     const [playersTurn, setPlayersTurn] = useState(undefined);
+    const [canBid, setCanBid] = useState(false);
 
     socket.on('players', (players) => {
         setPlayers(players.filter(p => p.playerName !== name));
@@ -36,8 +37,9 @@ const SocketProvider = ({ children }) => {
         socket.on('turn', playerName => {
             console.log(`got players turn: ${playerName}`)
             setPlayersTurn(playerName);
+            setCanBid(() => playerName === name);
         })
-    }, [])
+    }, [name])
 
 
     // Exposing to the entire app so the socket can be accessed from anywhere
@@ -48,7 +50,8 @@ const SocketProvider = ({ children }) => {
             room, setRoom,
             players,
             notificationLog,
-            playersTurn
+            playersTurn,
+            canBid, setCanBid
         }} >
             {children}
         </SocketContext.Provider>

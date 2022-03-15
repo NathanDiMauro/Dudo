@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useContext } from 'react';
 import dice1 from '../images/dice1.svg'
 import dice2 from '../images/dice2.svg'
 import dice3 from '../images/dice3.svg'
@@ -12,20 +12,13 @@ import { SocketContext } from '../context/socketContext';
 
 
 const PlayerActions = () => {
-    const { socket, name, playersTurn } = useContext(SocketContext);
+    const { socket, canBid, setCanBid } = useContext(SocketContext);
 
     const [chosenDice, setChosenDice] = useState(dice1);
     const [action, setAction] = useState(null);
     const [amount, setAmount] = useState(null);
     const [dice, setDice] = useState(null);
     const [bidError, setBidError] = useState(null);
-    const [canBid, setCanBid] = useState(true);
-
-    // useEffect(() => {
-    //     console.log(playersTurn === name);
-    //     setCanBid(() => playersTurn === name);
-    // }, [playersTurn])
-
 
     function bid() {
         let bid = undefined;
@@ -91,8 +84,7 @@ const PlayerActions = () => {
 
     return (
         <div id="playerAction">
-            <p style={{color: 'red'}}>{canBid.toString()}</p>
-            {playersTurn === name  && canBid &&
+            {canBid &&
                 <div>
                     <h3>Its your turn to bid!</h3>
                     {bidError &&
