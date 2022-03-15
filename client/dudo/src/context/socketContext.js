@@ -22,6 +22,13 @@ const SocketProvider = ({ children }) => {
         setPlayers(players.filter(p => p.playerName !== name));
     })
 
+    useEffect(() => {
+        socket.on('notification', notification => {
+            setNotificationLog(prev => [...prev, notification]);
+        })
+    }, [])
+
+
     // The reason we need this useEffect is because for our socket.on('players') event, name could be undefined when the first players event sent out
     // So we just need to filter the players anytime name changes (which is only on join room)
     useEffect(() => {
@@ -30,10 +37,6 @@ const SocketProvider = ({ children }) => {
 
 
     useEffect(() => {
-        socket.on('notification', notification => {
-            setNotificationLog(prev => [...prev, notification]);
-        })
-
         socket.on('turn', playerName => {
             console.log(`got players turn: ${playerName}`)
             setPlayersTurn(playerName);

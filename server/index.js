@@ -44,7 +44,6 @@ const _addPlayer = (socket, name, roomCode, callback) => {
  * @param {String} room     The room object to start the round for
  */
 const _startRound = (room) => {
-    console.log("Starting round...")
     // Updating client with list of players
     _sendPlayers(room.roomCode)
     // Starting a new round
