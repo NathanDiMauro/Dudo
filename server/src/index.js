@@ -1,13 +1,23 @@
 const express = require('express');
 const { createServer } = require('http');
-const { emit } = require('process');
 const { Server } = require('socket.io');
 const { addPlayer, getPlayer, getPlayers, removePlayer, getRoom, createRoom } = require('./state');
+const { defaultConfig: config } = require('../config/default');
+
+const port = config['port'];
+const host = config['host'];
+const corsOrigin = config['corsOrigin'];
+const methods = config['methods'];
 
 const app = express();
 const http = createServer();
-const io = new Server(http, { options: { cors: { origin: ['http://localhost:3000'], methods: ['GET', 'POST'] } } })
-const PORT = process.env.PORT || 5000
+
+const io = new Server(http, {
+    cors: {
+        origin: corsOrigin,
+        methods: methods
+    }
+})
 
 
 /**  
@@ -35,7 +45,7 @@ const _addPlayer = (socket, name, roomCode, callback) => {
 
     // Sending an updated list of players to the room
     _sendPlayers(roomCode);
-    callback(null)
+    callback(null);
 }
 
 
@@ -45,7 +55,7 @@ const _addPlayer = (socket, name, roomCode, callback) => {
  */
 const _startRound = (room) => {
     // Updating client with list of players
-    _sendPlayers(room.roomCode)
+    _sendPlayers(room.roomCode);
     // Starting a new round
     room.players.forEach((player) => {
         // Letting each player know what dice they have
@@ -59,7 +69,7 @@ const _startRound = (room) => {
  * @param {Room} room   The room to let the players know whose turn it is
  */
 const _notifyWhoseTurn = (room) => {
-    io.in(room.roomCode).emit('turn', room.getPlayer(room.whoseTurn()).playerName)
+    io.in(room.roomCode).emit('turn', room.getPlayer(room.whoseTurn()).playerName);
     _sendNotification({ title: `It is ${room.getPlayer(room.whoseTurn()).playerName}'s turn`, description: '' }, room.roomCode);
 }
 
@@ -72,7 +82,7 @@ const _notifyWhoseTurn = (room) => {
  * @param {Socket}                                  socket          The socket of the user to not send the notification to
  */
 const _sendNotificationWithoutSender = (notification, roomCode, socket) => {
-    socket.in(roomCode).emit('notification', notification)
+    socket.in(roomCode).emit('notification', notification);
 }
 
 
@@ -140,7 +150,7 @@ io.on('connection', (socket) => {
             const room = getRoom(socket.id);
             if (room) {
                 // Letting players know the game is starting
-                let notif = { title: 'New Round is Starting', description: 'A new round is starting' }
+                let notif = { title: 'New Round is Starting', description: 'A new round is starting' };
 
                 if (newGame) {
                     if (room.betsInRound != null) {
@@ -180,7 +190,7 @@ io.on('connection', (socket) => {
                         _notifyWhoseTurn(room);
                     } else if (endOfRound) {
                         io.in(room.roomCode).emit('endOfRound', { endOfRound, dice });
-                        _sendNotification({ title: 'Round is over', description: endOfRound }, room.roomCode)
+                        _sendNotification({ title: 'Round is over', description: endOfRound }, room.roomCode);
                     } else if (endOfGame) {
                         io.in(room.roomCode).emit('endOfGame', { endOfRound, dice });
                     } else if (error) {
@@ -223,8 +233,8 @@ io.on('connection', (socket) => {
             socket.disconnect();
             const { player, roomCode } = removePlayer(socket.id) || {};
             if (player) {
-                _sendNotification({ title: 'Someone just left', description: `${player.playerName} just left the room` }, roomCode)
-                _sendPlayers()
+                _sendNotification({ title: 'Someone just left', description: `${player.playerName} just left the room` }, roomCode);
+                _sendPlayers();
             }
         } catch (e) {
             callback({ error: e.toString() });
@@ -236,6 +246,6 @@ app.get('/', (req, res) => {
     req.setEncoding('Server is running');
 })
 
-http.listen(PORT, () => {
-    console.log(`Listening on port ${PORT}`);
+http.listen(port, host, () => {
+    console.log(`Listening on port ${port}`);
 })
