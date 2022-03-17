@@ -181,7 +181,7 @@ class Room {
         // Checking if the same player has bid 2 times in a row
         if (this.prevBid) {
             const { error } = this.checkTurn(bid.playerId) || {};
-            if (error) return error;
+            if (error) return { error };
         }
 
         // Checking if player exists
@@ -200,8 +200,13 @@ class Room {
         }
 
         // Checking if the dice # if valid (1-6)
-        if (((bid.action === 'raise' || bid.action === 'aces')) && 1 > bid.dice || bid.dice > 7) {
-            return { error: `Dice must be 1, 2, 3, 4, 5 , or 6. Not ${bid.dice}` };
+        if ((bid.action === 'raise' || bid.action === 'aces')) {
+            if (bid.amount === undefined || bid.amount === null)
+                return { error: 'Bid amount cannot be undefined on raises' }
+            if (bid.dice === undefined || bid.dice === null)
+                return { error: 'Bid dice cannot be undefined on raises' }
+            if (1 > bid.dice || bid.dice > 7)
+                return { error: `Dice must be 1, 2, 3, 4, 5 , or 6. Not ${bid.dice}` };
         }
 
         // Can only call spot in the first half of the game
