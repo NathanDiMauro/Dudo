@@ -1,0 +1,16 @@
+.playerHeader {
+    display: flex;   
+    flex-direction: row;
+    justify-content: space-evenly;
+    background-color: var(--aqua);
+    align-items: center;
+    padding: 5px;
+    /* border-bottom-left-radius: 5px;
+    border-bottom-right-radius: 5px; */
+}
+
+.playerHeader h4 {
+    margin: 0;
+    padding-left: 30px;
+    padding-right: 30px;
+}

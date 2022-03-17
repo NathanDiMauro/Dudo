@@ -3,14 +3,16 @@ import { SocketContext } from "../context/socketContext";
 import Player from "./player";
 import Opponents from "./opponents/opponents";
 import Notification from "./notification";
+import { PlayerHeader } from "./playerHeader";
+import '../styles/game.css';
 
 const Game = () => {
-    const { room, socket, setName, setRoom } = useContext(SocketContext);
+    const { socket, setName, setRoom } = useContext(SocketContext);
 
     const leaveGame = () => {
         setName(undefined);
         setRoom(undefined);
-        socket.emit('_disconnect')
+        socket.emit('_disconnect');
     }
 
     const startGame = () => {
@@ -21,14 +23,19 @@ const Game = () => {
 
     return (
         <div>
-            <h1>Room Code: {room}</h1>
-            <Player />
-            <Opponents />
-
-            <Notification />
-            <button onClick={startGame}>Start Round</button>
-            <button onClick={leaveGame}>Leave Game</button>
-        </div>
+            <PlayerHeader />
+            <div className="gameContainer">
+                <div id="gameContainerLeft">
+                    <Player />
+                    <Opponents />
+                    <button onClick={startGame}>Start Round</button>
+                    <button onClick={leaveGame}>Leave Game</button>
+                </div>
+                <div id="gameContainerRight">
+                    <Notification />
+                </div>
+            </div>
+        </div >
     )
 }
 

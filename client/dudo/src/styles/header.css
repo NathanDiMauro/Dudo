@@ -1,5 +1,5 @@
 #header {
-    background-color: #004c8c;
+    background-color: var(--orange);
     font-family: 'Bitter', serif;
     height:8vh;
     min-height: 3em;

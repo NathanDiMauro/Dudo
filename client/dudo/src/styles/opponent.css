@@ -1,5 +1,4 @@
 #opponent {
-    background-color: #0277bd;
     color: white;
     padding-left: 5%;
     padding-bottom: 5%;
@@ -8,17 +7,6 @@
 #opponent img {
     height: 60px;
     width: 60px;
-}
-
-#opponent button {
-    margin-top: 5px;
-    height: 28px;
-    margin-left: 10px;
-    background-color: #004c8c;
-    color: white;
-    transition-duration: 0.4s;
-    border: none;
-    border-radius: 3px;
 }
 
 #opponent button:hover {

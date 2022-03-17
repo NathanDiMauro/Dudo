@@ -1,7 +1,7 @@
 #game {
   height: auto;
   min-height:88.75vh;
-  background-color: #0277bd;
+  background-color: var(--light-orange);
   color: white;
 }
 
@@ -13,12 +13,11 @@
 #players {
   display: flex;
   justify-content: center;
-  background-color: #0277bd;
 }
 
 #game button {
   height: 28px;
-  background-color: #004c8c;
+  background-color: var(--grey);
   color: white;
   transition-duration: 0.4s;
   border: none;
@@ -28,7 +27,12 @@
 }
 
 #game button:hover {
-  background-color: #58a5f0;
+  background-color: var(--aqua);
   color: white;
-  box-shadow: 0 12px 16px 0 rgba(0,0,0,0.24), 0 17px 50px 0 rgba(0,0,0,0.19);
+  /* box-shadow: 0 12px 16px 0 rgba(0,0,0,0.24), 0 17px 50px 0 rgba(0,0,0,0.19); */
+}
+
+.die {
+  height: 60px;
+  width: 60px;
 }

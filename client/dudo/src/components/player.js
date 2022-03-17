@@ -4,10 +4,12 @@ import PlayerActions from './playerActions';
 import LatestBid from '../components/latestBid';
 import { SocketContext } from '../context/socketContext';
 import { ALL_DICE } from '../pages/App';
-const Player = () => {
-    const { socket, name } = useContext(SocketContext);
 
-    const [hand, setHand] = useState([]);
+
+const Player = () => {
+    const { socket } = useContext(SocketContext);
+
+    const [hand, setHand] = useState(ALL_DICE);
 
     useEffect(() => {
         socket.on('diceForRound', dice => {
@@ -17,8 +19,9 @@ const Player = () => {
 
     return (
         <div id="player">
-            <h2>Your name: {name}</h2>
-            <h2>Your Hand: {hand.map((die, key) => <img src={die} key={key} alt="dice" />)}</h2>
+            {hand.length > 0 &&
+                <h3>Your Hand: {hand.map((die, key) => <img className="die" src={die} key={key} alt="dice" />)}</h3>
+            }
 
             <LatestBid />
             <PlayerActions />

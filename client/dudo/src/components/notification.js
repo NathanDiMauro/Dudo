@@ -18,7 +18,7 @@ const Notification = () => {
 
     return (
         <div>
-            {notificationLog &&
+            {notificationLog.length > 0 &&
                 <div id='notification'>
                     {notificationLog.map((notification, key) => <p key={key}>{notification.title}: {notification.description}</p>)}
                     <div ref={messagesEndRef} />

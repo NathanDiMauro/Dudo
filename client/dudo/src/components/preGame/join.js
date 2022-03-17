@@ -27,15 +27,14 @@ const JoinGame = () => {
     }
 
     return (
-        <div id="join">
+        <div className="join">
             <h2>Join Game</h2>
-            <div id="jInput">
+            <div className="joinInput">
                 <h4><label htmlFor='joinNameInput'>Name:</label></h4>
                 <input type="text" id="joinNameInput" autoComplete="off" onChange={(e) => setInputName(e.target.value)} />
                 <h4><label htmlFor='joinRoomInput'>Room code:</label></h4>
                 <input type="text" id="joinRoomInput" autoComplete="off" onChange={(e) => setInputRoom(e.target.value)} onKeyPress={isNumberKey} />
                 <button onClick={joinGame}>Join</button>
-                <br />
             </div>
         </div>
     );
