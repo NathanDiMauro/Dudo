@@ -18,9 +18,13 @@ const Opponent = (props) => {
     }, [props.dice])
 
     return (
-        <div id="opponent">
-            <h2 className={playersTurn === props.name ? 'turn' : undefined}>{props.name} <small>({props.diceCount})</small></h2>
-            {hand.map((die, key) => <img src={die} key={key} />)}
+        <div className={`${playersTurn === props.name ? 'turn' : ''} opponent`}>
+            <div className="opponentName">
+                <h2>{props.name}</h2>
+                &nbsp;
+                <p>({props.diceCount})</p>
+            </div>
+            {hand.map((die, key) => <img src={die} key={key} alt={`${props.name}'s cup`} />)}
         </div>
     );
 }

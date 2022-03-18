@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useContext } from "react";
+import React, { useEffect, useRef, useContext } from "react";
 import { SocketContext } from "../context/socketContext";
 import '../styles/notification.css'
 
@@ -19,8 +19,13 @@ const Notification = () => {
     return (
         <div>
             {notificationLog.length > 0 &&
-                <div id='notification'>
-                    {notificationLog.map((notification, key) => <p key={key}>{notification.title}: {notification.description}</p>)}
+                <div class='notification'>
+                    {notificationLog.map((notification, key) =>
+                        <p key={key}>
+                            <strong>{notification.title}</strong>
+                            <small>{notification.description && `: ${notification.description}`}</small>
+                        </p>
+                    )}
                     <div ref={messagesEndRef} />
                 </div>
             }

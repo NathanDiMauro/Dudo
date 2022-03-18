@@ -1,5 +1,5 @@
 #foot {
-    background-color: #58a5f0;
+    background-color: var(--orange);
     color: #ffffff;
     font-size: 15pt;
     height: 3vh;
@@ -13,7 +13,7 @@
 }
 
 .fLink:hover {
-    color: #004c8c;
+    color: var(--aqua);
 }
 
 #first{

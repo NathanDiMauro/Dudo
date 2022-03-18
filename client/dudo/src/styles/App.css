@@ -1,6 +1,6 @@
 #game {
   height: auto;
-  min-height:88.75vh;
+  min-height: 88.75vh;
   background-color: var(--light-orange);
   color: white;
 }
@@ -16,14 +16,15 @@
 }
 
 #game button {
-  height: 28px;
   background-color: var(--grey);
   color: white;
   transition-duration: 0.4s;
   border: none;
-  border-radius: 3px;
-  margin-bottom: 1%;
+  border-radius: 5px;
   margin-left: 5%;
+  overflow: visible;
+  white-space: nowrap;
+  padding: 10px 20px;
 }
 
 #game button:hover {

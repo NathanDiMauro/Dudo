@@ -14,3 +14,11 @@
     padding-left: 30px;
     padding-right: 30px;
 }
+
+.playerHeader button {
+    padding: 5px 10px !important;
+}
+
+.playerHeader button:hover {
+    background-color: var(--orange) !important;
+}

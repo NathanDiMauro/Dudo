@@ -93,7 +93,7 @@ const PlayerActions = () => {
                             <label htmlFor='call'>Call</label>
                             <input type='radio' id='spot' name='action' value='spot' onClick={() => setAction('spot')} />
                             <label htmlFor='spot'>Spot</label>
-                            <button id='sendBidBtn' onClick={() => bid()}>Send Bid</button>
+                            <button onClick={() => bid()}>Send Bid</button>
 
                         </div>
                     </div>

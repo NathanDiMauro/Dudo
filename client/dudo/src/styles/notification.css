@@ -1,39 +1,31 @@
-#notification {
-    color: white;
+.notification {
     margin-left: 5%;
-    border-color: #004c8c;
+    border: 5px solid var(--grey);
     border-radius: 5px;
-    border-style: solid;
-    border-width: 5px;
     padding: 5px;
     width: 85%;
     margin-bottom: 10;
-    height: 150px;
+    height: 200px;
     overflow: auto;
-    background-color: #58a5f0;
-    margin-bottom: 1%;
-}
-
-#notification #title {
-    color: #004c8c;
+    background-color: var(--orange);
 }
 
 /* width */
-#notification::-webkit-scrollbar {
+.notification::-webkit-scrollbar {
     width: 10px;
 }
 
 /* Track */
-#notification::-webkit-scrollbar-track {
-    background: #58a5f0;
+.notification::-webkit-scrollbar-track {
+    background: var(--orange);
 }
 
 /* Handle */
-#notification::-webkit-scrollbar-thumb {
-    background: #1d66af;
+.notification::-webkit-scrollbar-thumb {
+    background: var(--aqua)
 }
 
 /* Handle on hover */
-#notification::-webkit-scrollbar-thumb:hover {
-    background: #004c8c;
+.notification::-webkit-scrollbar-thumb:hover {
+    background: var(--grey);
 }

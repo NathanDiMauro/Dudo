@@ -45,13 +45,6 @@
 }
 
 
-.join button {
-    flex: 1;
-    margin-top: 5px;
-    width: 55px;
-    color: white;
-}
-
 #pLog {
     margin-top: 10px;
 }
