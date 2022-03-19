@@ -16,7 +16,6 @@ export const ALL_DICE = [dice1, dice2, dice3, dice4, dice5, dice6];
 
 
 function App() {
-
   const { room, name } = useContext(SocketContext);
   const [show, setShow] = useState(true);
 

@@ -38,12 +38,21 @@ const SocketProvider = ({ children }) => {
 
     useEffect(() => {
         socket.on('turn', playerName => {
-            console.log(`got players turn: ${playerName}`)
             setPlayersTurn(playerName);
             setCanBid(() => playerName === name);
         })
     }, [name])
 
+    useEffect(() => {
+        const confirmClose = (e) => {
+            e.preventDefault();
+            return e.returnValue = "Are you sure you want to leave?";
+        }
+
+        window.addEventListener('beforeunload', confirmClose)
+
+        return () => window.removeEventListener('beforeunload', confirmClose);
+    }, [])
 
     // Exposing to the entire app so the socket can be accessed from anywhere
     return (

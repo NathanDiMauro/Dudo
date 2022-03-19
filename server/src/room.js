@@ -9,10 +9,11 @@ class Room {
     /** @member {String} */
     roomCode;
     /** @member {{playerId: String, action: String, amount: Number, dice: Number} | null} */
-    prevBid = {};
+    prevBid;
     /** @member {Number | null} */
     betsInRound;
     playerWhoJustLost;
+    roundStarted;
 
     /**
      * Create a room
@@ -24,6 +25,7 @@ class Room {
         this.prevBid = null;
         this.betsInRound = null;
         this.playerWhoJustLost = null;
+        this.roundStarted = false;
     }
 
     /**
@@ -169,6 +171,7 @@ class Room {
         this.populatePlayerDice();
         this.prevBid = null;
         this.betsInRound = 0;
+        this.roundStarted = true;
     }
 
     /**
@@ -284,16 +287,13 @@ class Room {
      * @returns {{error: String} | bid: {playerId: String, action: String, amount: Number, dice: Number}}   If the new bid is not valid, it returns an error, else it returns the new bid
      */
     bidRaise(bid) {
-        if (bid.amount > this.prevBid.amount) {
-            this.prevBid = { playerId: bid.playerId, action: bid.action, amount: bid.amount, dice: bid.dice }
-        } else if (bid.dice > this.prevBid.dice) {
-            this.prevBid = { playerId: bid.playerId, action: bid.action, amount: bid.amount, dice: bid.dice }
-        } else {
-            return { error: 'Raise must raise the amount of dice or the dice' };
+        if (bid.amount > this.prevBid.amount || bid.dice > this.prevBid.dice) {
+            this.prevBid = { playerId: bid.playerId, action: bid.action, amount: bid.amount, dice: bid.dice };
+            this.betsInRound++;
+            // Appending the player name to the return object
+            return { bid: Object.assign({ playerName: this.getPlayer(bid.playerId).playerName }, this.prevBid) }
         }
-        this.betsInRound++;
-        // Appending the player name to the return object
-        return { bid: Object.assign({ playerName: this.getPlayer(bid.playerId).playerName }, this.prevBid) }
+        return { error: 'Raise must raise the amount of dice or the dice' };
     }
 
     /**
@@ -413,8 +413,10 @@ class Room {
             case 'aces':
                 return this.bidAces(bid);
             case 'call':
+                this.roundStarted = false;
                 return this.bidCall(bid);
             case 'spot':
+                this.roundStarted = false;
                 return this.bidSpot(bid);
             default:
                 return { error: 'Invalid bid action' };

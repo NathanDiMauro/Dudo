@@ -19,7 +19,7 @@ const Notification = () => {
     return (
         <div>
             {notificationLog.length > 0 &&
-                <div class='notification'>
+                <div className='notification'>
                     {notificationLog.map((notification, key) =>
                         <p key={key}>
                             <strong>{notification.title}</strong>

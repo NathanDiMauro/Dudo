@@ -124,7 +124,7 @@ io.on('connection', (socket) => {
             if (error) return callback(error);
             _addPlayer(socket, name, roomCode, callback);
         } catch (e) {
-            callback({ error: e.toString() });
+            console.log(e);
         }
     })
 
@@ -142,29 +142,25 @@ io.on('connection', (socket) => {
     })
 
     /**
-     * Listening for clients requesting to start a new game
-     * @param {Boolean} newGame     If true, then the client is requesting the start the game, if false, the client is requesting to start a new round
+     * Listening for clients requesting to start a new round
      */
-    socket.on('startGame', ({ newGame }, callback) => {
+    socket.on('startGame', (callback) => {
         try {
             const room = getRoom(socket.id);
             if (room) {
+                if (room.roundStarted) {
+                    return callback({ error: 'Round is in progress.' });
+                }
                 // Letting players know the game is starting
                 let notif = { title: 'New Round is Starting', description: 'A new round is starting' };
-
-                if (newGame) {
-                    if (room.betsInRound != null) {
-                        callback({ error: 'Game has already been started' });
-                    } else {
-                        notif = { title: 'Game is starting', description: 'The game is starting' };
-                    }
+                if (!room.playerWhoJustLost) {
+                    notif = { title: 'Game is starting', description: 'The game is starting' };
                 }
+
                 _sendNotification(notif, room.roomCode);
                 room.newRound();
                 _startRound(room);
 
-            } else {
-                callback({ error: 'Room does not exists with this player' });
             }
         } catch (e) {
             console.log(e);
@@ -223,21 +219,16 @@ io.on('connection', (socket) => {
     //     }
     // })
 
-    /**
-     * When a client is disconnecting, we remove them from a room and notify all other clients in the room
-     * @param {String}  message     I do not know what were doing with this currently
-     */
-    socket.on('_disconnect', () => {
+    socket.on('disconnect', () => {
         try {
-            console.log('player is disconnecting');
-            socket.disconnect();
             const { player, roomCode } = removePlayer(socket.id) || {};
             if (player) {
                 _sendNotification({ title: 'Someone just left', description: `${player.playerName} just left the room` }, roomCode);
                 _sendPlayers();
             }
+            socket.disconnect();
         } catch (e) {
-            callback({ error: e.toString() });
+            console.log(error);
         }
     })
 })

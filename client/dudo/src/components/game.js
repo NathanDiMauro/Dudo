@@ -5,6 +5,7 @@ import { PlayerHeader } from "./playerHeader";
 import '../styles/game.css';
 
 const Game = () => {
+
     return (
         <div>
             <PlayerHeader />
