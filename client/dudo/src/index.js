@@ -8,7 +8,6 @@ import {
   Routes,
   Route } from "react-router-dom";
 import About from './pages/about';
-import 'bootstrap/dist/css/bootstrap.min.css';
 import Header from './components/header'
 import Footer from './components/footer'
 import License from './pages/license'
@@ -27,7 +26,7 @@ ReactDOM.render(
           <Route path="/about" element={<About />} />
           <Route path="/license" element={<License />} />
         </Routes>
-        <Footer />
+        {/* <Footer /> */}
       </BrowserRouter>
     </SocketProvider>
   </React.StrictMode>,

@@ -1,34 +1,32 @@
-#header {
-    background-color: var(--orange);
-    font-family: 'Bitter', serif;
-    height:8vh;
-    min-height: 3em;
+nav {
+    background-color: var(--felt);
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    height: 3vw;
 }
 
 #brand {
     color: #ffffff;
     font-size: 200%;
     text-decoration: none;
-    margin-left: 10%;
+    margin-left: 3%;
+    font-weight: 700;
 }
 
 .links, .links:visited {
     color: #ffffff;
-    margin-left: 10%;
     text-decoration: none;
-    padding-top: 5%;
-    padding-left: 7%;
-    padding-right: 7%;
     border-radius: 5px;
 }
 
-#first {
-    margin-left: 1%;
+#aboutLink {
+    margin-right: 3%;
 }
 
-.links:hover {
-    color: #58a5f0;
-    background-color: #ffffff;
+.links:hover, #brand:hover {
+    color: var(--cue);
 }
 
 

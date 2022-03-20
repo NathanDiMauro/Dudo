@@ -43,16 +43,17 @@ const SocketProvider = ({ children }) => {
         })
     }, [name])
 
-    useEffect(() => {
-        const confirmClose = (e) => {
-            e.preventDefault();
-            return e.returnValue = "Are you sure you want to leave?";
-        }
+    // Disabled for development
+    // useEffect(() => {
+    //     const confirmClose = (e) => {
+    //         e.preventDefault();
+    //         return e.returnValue = "Are you sure you want to leave?";
+    //     }
 
-        window.addEventListener('beforeunload', confirmClose)
+    //     window.addEventListener('beforeunload', confirmClose)
 
-        return () => window.removeEventListener('beforeunload', confirmClose);
-    }, [])
+    //     return () => window.removeEventListener('beforeunload', confirmClose);
+    // }, [])
 
     // Exposing to the entire app so the socket can be accessed from anywhere
     return (

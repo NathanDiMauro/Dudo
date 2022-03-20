@@ -1,13 +1,14 @@
 #game {
-  height: auto;
-  min-height: 88.75vh;
-  background-color: var(--light-orange);
+  display: flex;
+  justify-content: center;
+  height: 93.9vh;
+  background-color: var(--dark-felt);
   color: white;
 }
 
 #game h1 {
   padding-left: 5%;
-  padding-top: 1%;
+  /* padding-top: 1%; */
 }
 
 #players {
@@ -16,7 +17,7 @@
 }
 
 #game button {
-  background-color: var(--grey);
+  background-color: var(--light-felt);
   color: white;
   transition-duration: 0.4s;
   border: none;
@@ -28,7 +29,7 @@
 }
 
 #game button:hover {
-  background-color: var(--aqua);
+  background-color: var(--billiards-wood);
   color: white;
   /* box-shadow: 0 12px 16px 0 rgba(0,0,0,0.24), 0 17px 50px 0 rgba(0,0,0,0.19); */
 }

@@ -1,14 +1,53 @@
-.notification {
-    margin-left: 5%;
-    border: 5px solid var(--grey);
+.notificationContainer {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    border: none;
     border-radius: 5px;
     padding: 5px;
-    width: 85%;
-    margin-bottom: 10;
-    height: 200px;
+    margin-bottom: 1%;
     overflow: auto;
-    background-color: var(--orange);
 }
+
+.notification {
+    overflow: auto;
+    display: flex;
+    flex-direction: column;
+    min-height: min-content;
+    flex: 1;
+}
+
+.notification p {
+    margin: 7px;
+    font-size: 110%;
+}
+
+
+.chatInput {
+    display: flex;
+    flex-direction: row;
+}
+
+.chatInput input {
+    flex: 9;
+    margin-right: 10px;
+    border-radius: 5px;
+    border: none;
+    font-size: 120%;
+}
+
+.chatInput img {
+    flex: 1;
+    height: 30px;
+    width: 30px;
+    aspect-ratio: 1;
+}
+
+.chatInput img:hover {
+    cursor: pointer;
+}
+
+
 
 /* width */
 .notification::-webkit-scrollbar {
@@ -17,15 +56,15 @@
 
 /* Track */
 .notification::-webkit-scrollbar-track {
-    background: var(--orange);
+    background: var(--dark-felt);
 }
 
 /* Handle */
 .notification::-webkit-scrollbar-thumb {
-    background: var(--aqua)
+    background: var(--cue)
 }
 
 /* Handle on hover */
 .notification::-webkit-scrollbar-thumb:hover {
-    background: var(--grey);
+    background: var(--billiards-wood);
 }

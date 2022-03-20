@@ -1,25 +1,20 @@
 import Player from "./player";
 import Opponents from "./opponents/opponents";
 import Notification from "./notification";
-import { PlayerHeader } from "./playerHeader";
+import { PlayerFooter } from "./playerFooter";
 import '../styles/game.css';
 
-const Game = () => {
-
-    return (
-        <div>
-            <PlayerHeader />
-            <div className="gameContainer">
-                <div id="gameContainerLeft">
-                    <Player />
-                    <Opponents />
-                </div>
-                <div id="gameContainerRight">
-                    <Notification />
-                </div>
+const Game = () => (
+        <div className="gameContainer">
+            <div id="gameContainerLeft">
+                <Player />
+                <Opponents />
+                <PlayerFooter />
             </div>
-        </div >
-    )
-}
+            <div id="gameContainerRight">
+                <Notification />
+            </div>
+        </div>
+)
 
 export default Game;

@@ -1,5 +1,15 @@
+.preGame {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 5%;
+}
+
+
+
 .join {
-    padding-top: 20px;
+    /* padding-top: 20px; */
     display: flex;
     justify-content: center;
     flex-direction: column;
@@ -10,24 +20,18 @@
     font-weight: 700;
 }
 
-.join hr {
-    border: 2px solid var(--grey);
+.preGame hr {
+    border: 2px solid var(--cue);
     border-radius: 5px;
-    width: 35%;
+    width: 100%;
     margin-bottom: 20px;
     margin-top: 20px;
 }
 
-.hostInput {
+.hostInput, .joinInput {
     display: flex;
     flex-direction: row;
     justify-content: space-between;
-}
-
-.joinInput {
-    display: flex;
-    flex-direction: row;
-    justify-content: center;
     align-items: center;
 }
 
@@ -41,7 +45,8 @@
 .join input {
     border: none;
     border-radius: 5px;
-    padding: 5px;
+    padding: 10px;
+    font-size: 20px;
 }
 
 

@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { SocketContext } from '../../context/socketContext';
-import '../../styles/join.css'
 
 const HostGame = () => {
     const [inputName, setInputName] = useState(undefined);
@@ -33,7 +32,6 @@ const HostGame = () => {
                 <input type="text" id="nameInput" autoComplete="off" onChange={(e) => setInputName(e.target.value)} />
                 <button onClick={hostGame}>Host</button>
             </div>
-            <hr />
         </div>
     );
 }

@@ -1,7 +1,6 @@
 import React, { useState, useContext } from 'react';
 import { SocketContext } from '../../context/socketContext';
 import { isNumberKey } from '../../utils';
-import '../../styles/join.css'
 
 const JoinGame = () => {
     const { socket, setRoom, setName } = useContext(SocketContext);
