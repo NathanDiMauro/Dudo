@@ -1,4 +1,4 @@
-import Player from "./player";
+import Player from "./player/player";
 import Opponents from "./opponents/opponents";
 import Notification from "./notification";
 import { PlayerFooter } from "./playerFooter";

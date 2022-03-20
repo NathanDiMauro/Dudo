@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useContext } from "react";
-import { SocketContext } from "../context/socketContext";
-import '../styles/latestBid.css'
+import { SocketContext } from "../../context/socketContext";
+import '../../styles/latestBid.css'
 
 const LatestBid = () => {
     const { socket } = useContext(SocketContext);

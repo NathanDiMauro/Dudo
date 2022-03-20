@@ -1,0 +1,30 @@
+.handContainer {
+    flex: 5;
+    display: flex;
+    flex-direction: column;
+    background-color: var(--felt);
+    border: none;
+    border-radius: 5px;
+    margin-right: 10px;
+    justify-content: space-between;
+    text-align: center;
+    color: var(--cue);
+}
+
+.hand {
+    display: flex;
+    flex-direction: row;
+    padding: 20%;
+    align-self: center;
+}
+
+
+.handFooter {
+    background-color: var(--light-felt);
+    border-bottom-left-radius: 5px;
+    border-bottom-right-radius: 5px;
+}
+
+.handFooter h2 {
+    margin: 0;
+}

@@ -1,3 +1,8 @@
-#player {
-    padding-left: 5%;
+.player {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    margin-left: 5%;
+    margin-right: 5%;
+    margin-top: 1%;
 }
