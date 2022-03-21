@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useContext } from 'react';
 import cup from '../../images/cup.png';
-import '../../styles/opponent.css'
 import { ALL_DICE } from '../../pages/App';
 import { SocketContext } from '../../context/socketContext';
 
@@ -19,12 +18,11 @@ const Opponent = (props) => {
 
     return (
         <div className={`${playersTurn === props.name ? 'turn' : ''} opponent`}>
-            <div className="opponentName">
-                <h2>{props.name}</h2>
-                &nbsp;
-                <p>({props.diceCount})</p>
+            <h3>{props.name} <br />{props.diceCount}</h3>
+            <div className="opponentCup">
+                <img src={hand} alt="Cup" />
             </div>
-            {hand.map((die, key) => <img src={die} key={key} alt={`${props.name}'s cup`} />)}
+            {/* {hand.map((die, key) => <img src={die} key={key} alt={`${props.name}'s cup`} />)} */}
         </div>
     );
 }
