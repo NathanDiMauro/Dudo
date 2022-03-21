@@ -51,6 +51,19 @@ const PlayerActions = () => {
         }
     }
 
+
+    const yourBid = () => {
+        if (action === 'raise') {
+            if (amount && dice) {
+                return `${amount} ${dice}s`;
+            }
+        } else if (action === 'spot') {
+            return `Calling spot on 3 4s`;
+        } else if (action === 'call') {
+            return `Calling 3 4s`; // Maybe we include player name here EX: calling Joe in 3 4s
+        }
+    }
+
     return (
         <div className="playerAction">
             <div id="bidButtonsContainer">
@@ -62,40 +75,47 @@ const PlayerActions = () => {
                     <input type='radio' id='spot' name='action' value='spot' onClick={() => setAction('spot')} />
                     <label htmlFor='spot'>Spot</label>
                 </div>
-                {bidError && 
-                                <div id="bidErrors">
-                                <h4>{bidError}</h4>
-                            </div>
+                {bidError &&
+                    <div id="bidErrors">
+                        <h4>{bidError}</h4>
+                    </div>
                 }
             </div>
-            <div className="bidContainer">
-                <div id="diceAmount">
-                    <p><label htmlFor='amountInput'>Amount</label></p>
-                    <input
-                        id='amountInput'
-                        type='number'
-                        min='1'
-                        max='99'
-                        autoComplete='off'
-                        onKeyPress={isNumberKey}
-                        onChange={(e) => setAmount(e.target.value)} />
+            {action === 'raise' &&
+
+                <div className="bidContainer">
+                    <div id="diceAmount">
+                        <p><label htmlFor='amountInput'>Amount</label></p>
+                        <input
+                            id='amountInput'
+                            type='number'
+                            min='1'
+                            max='99'
+                            autoComplete='off'
+                            onKeyPress={isNumberKey}
+                            onChange={(e) => setAmount(e.target.value)} />
+                    </div>
+                    <div id='selectDice'>
+                        <>{ALL_DICE.map((die, key) => <div key={key} onClick={() => setDice(key + 1)}>
+                            <img className="die" id={key + 1 === dice ? 'selectedDice' : undefined} src={die} alt={`Dice ${key + 1}`} />
+                            <p>{key + 1}</p>
+                        </div>)}</>
+                    </div>
+                    <ReactTooltip place="right" type="dark" effect="solid" />
+                    <br />
                 </div>
-                <div id='selectDice'>
-                    <>{ALL_DICE.map((die, key) => <div key={key} onClick={() => setDice(key + 1)}>
-                        <img className="die" id={key + 1 === dice ? 'selectedDice' : undefined} src={die} alt={`Dice ${key + 1}`} />
-                        <p>{key + 1}</p>
-                    </div>)}</>
+            }
+            {action &&
+
+                <div className="bidFooter">
+                    <div className="bidFooterBid">
+                        <p>Your Bet:&ensp;</p>
+                        <h2>{yourBid()}</h2>
+                    </div>
+                    <button onClick={() => bid()}>Make Bet</button>
                 </div>
-                <ReactTooltip place="right" type="dark" effect="solid" />
-                <br />
-            </div>
-            <div className="bidFooter">
-                <div className="bidFooterBid">
-                    <p>Your Bet:&ensp;</p>
-                    <h2>3 4s</h2>
-                </div>
-                <button onClick={() => bid()}>Make Bet</button>
-            </div>
+            }
+
         </div >
     );
 }
