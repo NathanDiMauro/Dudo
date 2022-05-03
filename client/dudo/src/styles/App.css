@@ -33,3 +33,11 @@
   height: 60px;
   width: 60px;
 }
+
+.dieCue {
+  filter: invert(96%) sepia(10%) saturate(925%) hue-rotate(2deg) brightness(90%) contrast(90%);
+}
+
+.dieWhite {
+  filter: invert(100%) sepia(100%) saturate(0%) hue-rotate(71deg) brightness(103%) contrast(101%); 
+}

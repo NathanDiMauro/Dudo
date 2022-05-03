@@ -106,9 +106,9 @@
     text-align: center;
 }
 
-#selectedDice {
-    border: 4px solid var(--cue);
-    border-radius: 5px;
+.selectedDice {
+    border: 4px solid black;
+    border-radius: 10px;
     padding: 0;
 }
 

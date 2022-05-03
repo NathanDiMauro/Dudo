@@ -22,7 +22,7 @@ const Hand = () => {
         <div className="handContainer">
             <div className="hand">
                 {hand.length > 0 &&
-                    <>{hand.map((die, key) => <div key={key}><img className="die" src={die} alt={`Dice ${key + 1}`} /><p>{key + 1}</p></div>)}</>
+                    <>{hand.map((die, key) => <div key={key}><img className="die dieCue" src={die} alt={`Dice ${key + 1}`} /><p>{key + 1}</p></div>)}</>
                 }
             </div>
 

@@ -62,10 +62,10 @@ const PlayerActions = () => {
                     <input type='radio' id='spot' name='action' value='spot' onClick={() => setAction('spot')} />
                     <label htmlFor='spot'>Spot</label>
                 </div>
-                {bidError && 
-                                <div id="bidErrors">
-                                <h4>{bidError}</h4>
-                            </div>
+                {bidError &&
+                    <div id="bidErrors">
+                        <h4>{bidError}</h4>
+                    </div>
                 }
             </div>
             <div className="bidContainer">
@@ -82,7 +82,7 @@ const PlayerActions = () => {
                 </div>
                 <div id='selectDice'>
                     <>{ALL_DICE.map((die, key) => <div key={key} onClick={() => setDice(key + 1)}>
-                        <img className="die" id={key + 1 === dice ? 'selectedDice' : undefined} src={die} alt={`Dice ${key + 1}`} />
+                        <img className={`die ${key + 1 === dice ? "dieCue selectedDice" : "dieWhite"}`} src={die} alt={`Dice ${key + 1}`} />
                         <p>{key + 1}</p>
                     </div>)}</>
                 </div>

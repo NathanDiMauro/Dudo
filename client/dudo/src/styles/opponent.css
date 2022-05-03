@@ -3,6 +3,26 @@
     justify-content: center;
 }
 
+.opponentContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-left: 5px;
+    margin-right: 5px;
+
+}
+
+.opponentDiceContainer {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    /* align-items: center; */
+}
+
+.opponentDiceContainer img {
+    width: 30px;
+    height: 30px;
+}
 
 .opponent {
     padding: 5px;
