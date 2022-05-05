@@ -5,6 +5,8 @@
     justify-content: center;
     place-items: center;
     margin: 15px;
+    margin-top: 50px;
+    margin-bottom: 50px;
     border-radius: 50%;
 }
 
