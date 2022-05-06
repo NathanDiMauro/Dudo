@@ -205,19 +205,20 @@ io.on('connection', (socket) => {
         }
     })
 
-
-    // Not using this currently
-    // socket.on('sendMessage', message => {
-    //     const room = getRoom(socket.id);
-    //     if (room) {
-    //         const player = room.getPlayer(socket.id)
-    //         console.log(player, room.roomCode)
-    //         // Placeholder for now
-    //         io.in(room.roomCode).emit('message', { player: player.playerName, text: message });
-    //     } else {
-    //         socket.emit('error', { error: 'Invalid Player id' });
-    //     }
-    // })
+    socket.on('sendMessage', ({ message }, callback) => {
+        try {
+            const room = getRoom(socket.id);
+            if (room) {
+                const player = room.getPlayer(socket.id)
+                _sendNotification({title: player.playerName, description: message}, room.roomCode);
+                callback();
+            } else {
+                callback({ error: "Invalid player id" });
+            }
+        } catch (e) {
+            callback({ error: e })
+        }
+    })
 
     socket.on('disconnect', () => {
         try {
