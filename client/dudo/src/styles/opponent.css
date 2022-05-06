@@ -10,7 +10,18 @@
     border-radius: 50%;
 }
 
-.opponents ul {
+.opponentsCircle {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    place-items: center;
+    margin: 15px;
+    margin-top: 50px;
+    margin-bottom: 50px;
+    border-radius: 50%;
+}
+
+.opponentsCircle ul {
     list-style-type: none;
     margin: 0;
     padding: 0;
@@ -21,7 +32,7 @@
 
 }
 
-.opponents ul>li {
+.opponentsCircle ul>li {
     display: block;
     position: absolute;
     top: 0;
