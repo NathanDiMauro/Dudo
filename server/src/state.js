@@ -72,7 +72,6 @@ const removePlayer = (id) => {
     // First we have to get the room
     const room = getRoom(id);
     if (room) {
-        console.log("removing player...");
         // Then we can remove the player
         return { player: room.removePlayer(id), roomCode: room.roomCode }
     }

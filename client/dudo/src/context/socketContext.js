@@ -3,6 +3,7 @@ import React, { createContext, useEffect, useState } from 'react';
 // Initializing an instance of socket from socket.io-client
 import io from 'socket.io-client';
 
+const LOCAL_STORAGE_SOCKET_ID = 'socket-id';
 const ENDPOINT = '127.0.0.1:5000';
 // Calling io, passing ENDPOINT and some other configs -- transports is to avoid CORS issues
 const socket = io(ENDPOINT, { transports: ['websocket', 'polling'] })
@@ -17,6 +18,31 @@ const SocketProvider = ({ children }) => {
     const [notificationLog, setNotificationLog] = useState([]);
     const [playersTurn, setPlayersTurn] = useState(undefined);
     const [canBid, setCanBid] = useState(false);
+
+    // Saving socket id to local storage
+    useEffect(() => {
+        window.addEventListener('beforeunload', () => {
+            localStorage.setItem(LOCAL_STORAGE_SOCKET_ID, socket.id);
+        })
+    })
+
+    useEffect(() => {
+        const prevSocketId = localStorage.getItem(LOCAL_STORAGE_SOCKET_ID);
+        if (prevSocketId === null || prevSocketId === undefined) return;
+
+        socket.emit('reconnect', { socketId: prevSocketId }, res => {
+            if (res.error) {
+
+            } else {
+                setName(res.name);
+                setRoom(res.roomCode);
+                localStorage.setItem(LOCAL_STORAGE_SOCKET_ID, socket.id);
+            }
+        })
+    }, [])
+
+
+
 
     socket.on('players', (players) => {
         setPlayers(players.filter(p => p.playerName !== name));
@@ -54,6 +80,7 @@ const SocketProvider = ({ children }) => {
 
     //     return () => window.removeEventListener('beforeunload', confirmClose);
     // }, [])
+
 
     // Exposing to the entire app so the socket can be accessed from anywhere
     return (

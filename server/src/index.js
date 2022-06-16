@@ -210,7 +210,7 @@ io.on('connection', (socket) => {
             const room = getRoom(socket.id);
             if (room) {
                 const player = room.getPlayer(socket.id)
-                _sendNotification({title: player.playerName, description: message}, room.roomCode);
+                _sendNotification({ title: player.playerName, description: message }, room.roomCode);
                 callback();
             } else {
                 callback({ error: "Invalid player id" });
@@ -220,17 +220,52 @@ io.on('connection', (socket) => {
         }
     })
 
-    socket.on('disconnect', () => {
+    socket.on('reconnect', ({ socketId }, callback) => {
         try {
-            const { player, roomCode } = removePlayer(socket.id) || {};
-            if (player) {
-                _sendNotification({ title: 'Someone just left', description: `${player.playerName} just left the room` }, roomCode);
-                _sendPlayers();
+            const room = getRoom(socketId);
+            if (room) {
+                const player = room.getPlayer(socketId); // prev player object
+                player.id = socket.id;
+                player.disconnected = false;
+                socket.join(room.roomCode);
+                _sendPlayers(room.roomCode);
+                _sendNotification({ title: `${player.playerName} reconnected`, description: '' }, room.roomCode);
+                callback({ name: player.playerName, roomCode: room.roomCode });
+            } else {
+                callback({ error: "Player already deleted" });
             }
-            socket.disconnect();
         } catch (e) {
-            console.log(error);
+            callback({ error: e });
         }
+    })
+
+    socket.on('disconnect', () => {
+        const room = getRoom(socket.id);
+        if (room === null || room === undefined) {
+            socket.disconnect();
+            return;
+        }
+        const player = room.getPlayer(socket.id);
+        if (player === null || player === undefined) {
+            socket.disconnect();
+            return;
+        }
+
+        player.disconnected = true;
+        _sendNotification({ title: `${player.playerName} just disconnected`, description: 'They have 10 seconds to reconnect' }, room.roomCode);
+        _sendPlayers(room.roomCode);
+
+        setTimeout(() => {
+            try {
+                if (!player.disconnected) return;
+                const removedPlayer = room.removePlayer(player.id);
+                _sendNotification({ title: 'Someone just left', description: `${removedPlayer.playerName} just left the room` }, room.roomCode);
+                _sendPlayers(room.roomCode);
+                socket.disconnect();
+            } catch (e) {
+                console.log(e);
+            }
+        }, 10000)
     })
 })
 

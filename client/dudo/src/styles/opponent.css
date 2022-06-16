@@ -96,3 +96,8 @@
 .turn {
     border-color: var(--aqua);
 }
+
+.disconnectedIcon {
+    height: 15px;
+    width: 15px;
+}

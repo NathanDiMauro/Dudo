@@ -21,7 +21,7 @@ describe('add player', () => {
         const { newPlayer } = addPlayer(player1.id, player1.playerName, roomCode);
         expect(newPlayer.id).toBe(player1.id);
         expect(newPlayer.playerName).toBe(player1.playerName);
-        expect(getPlayers(roomCode)).toStrictEqual([{ playerName: player1.playerName, diceCount: 5 }])
+        expect(getPlayers(roomCode)).toStrictEqual([{ playerName: player1.playerName, diceCount: 5, disconnected: false }])
     })
 
     describe('incorrect', () => {
@@ -59,7 +59,7 @@ describe('get player', () => {
 
 describe('get players', () => {
     test('correct', () => {
-        expect(getPlayers(roomCode)).toStrictEqual([{ playerName: player1.playerName, diceCount: 5 }]);
+        expect(getPlayers(roomCode)).toStrictEqual([{ playerName: player1.playerName, diceCount: 5, disconnected: false }]);
     })
 
     test('invalid room code', () => {

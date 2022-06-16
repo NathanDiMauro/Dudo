@@ -80,7 +80,7 @@ class Room {
      * @returns {[{playerName: String, diceCount: Number}]} An array of an object with a playerName and diceCount  
      */
     getPlayersBrief() {
-        return this.players.map((player) => ({ playerName: player.playerName, diceCount: player.dice.length }));
+        return this.players.map((player) => ({ playerName: player.playerName, diceCount: player.dice.length, disconnected: player.disconnected }));
     }
 
     /**

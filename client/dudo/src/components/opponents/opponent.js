@@ -1,7 +1,8 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useContext } from 'react';
 import cup from '../../images/cup.png';
 import { ALL_DICE } from '../../pages/App';
 import { SocketContext } from '../../context/socketContext';
+import disconnectedIcon from '../../images/disconnected.png';
 
 const Opponent = (props) => {
     const { playersTurn } = useContext(SocketContext);
@@ -14,7 +15,7 @@ const Opponent = (props) => {
                 </div>
             }
             <div className={`${playersTurn === props.name ? 'turn' : ''} opponent`}>
-                <h3>{props.name} <br />{props.diceCount}</h3>
+                <h3>{props.name} {props.disconnected && <img className="disconnectedIcon" src={disconnectedIcon} alt='disconnected icon' />} <br />{props.diceCount}</h3>
                 <div className="opponentCup">
                     <img src={cup} alt="Cup" />
                 </div>

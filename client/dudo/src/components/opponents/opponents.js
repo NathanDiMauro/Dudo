@@ -18,7 +18,7 @@ const Opponents = () => {
 
     return (
         <div className='opponents'>
-                {players.map((player, key) => <Opponent key={key} name={player.playerName} diceCount={player?.diceCount} dice={player?.dice} />)}
+            {players.map((player, key) => <Opponent key={key} name={player.playerName} diceCount={player?.diceCount} dice={player?.dice} disconnected={player.disconnected} />)}
         </div>
     )
 }
