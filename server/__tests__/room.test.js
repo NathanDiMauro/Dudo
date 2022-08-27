@@ -521,15 +521,17 @@ describe('bid', () => {
       const first_bid = { playerId: player1.id, action: 'raise', amount: 3, dice: 3 };
       const second_bid = { playerId: player2.id, action: 'raise', amount: 4, dice: 3 };
       const second_bid_result = { playerId: player2.id, playerName: player2.playerName, action: 'raise', amount: 4, dice: 3 };
-      room.bid(first_bid);
-      expect(room.bid(second_bid)).toStrictEqual({ bid: second_bid_result });
+      const actual = room.bid(second_bid);
+      expect(actual).toStrictEqual({ bid: second_bid_result });
     })
 
     test('invalid', () => {
       const first_bid = { playerId: player1.id, action: 'raise', amount: 3, dice: 3 };
       const second_bid = { playerId: player2.id, action: 'raise', amount: 2, dice: 3 };
       room.bid(first_bid);
-      expect(room.bid(second_bid)).toStrictEqual({ error: 'Raise must raise the amount of dice or the dice' });
+      const actual = room.bid(second_bid);
+      console.log(actual);
+      expect(actual).toStrictEqual({ error: 'Raise must raise the amount of dice or the dice' });
     })
   })
 

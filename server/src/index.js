@@ -1,7 +1,7 @@
 const express = require('express');
 const { createServer } = require('http');
 const { Server } = require('socket.io');
-const { addPlayer, getPlayer, getPlayers, removePlayer, getRoom, createRoom } = require('./state');
+const { addPlayer, getPlayer, getPlayers, removePlayer, getRoom, createRoom, getTimeLeft } = require('./state');
 const { defaultConfig: config } = require('../config/default');
 
 const port = config['port'];
@@ -108,6 +108,19 @@ const _sendPlayers = (roomCode) => {
 }
 
 /**
+ * Sending the amount of time left for the bid to everyone in the room
+ * @param {String} roomCode
+ */
+const _sendTimer = (time) => {
+    // I am not sure if this should be sent every second, or at the start of the timer.
+    // Since the timer doesn't need to be true for every player, 
+    // I am leaning towards just sending it out at the start of each bid.
+    // Of course, we will validate all timers.
+    io.in(room.roomCode).emit('timer', time)
+}
+
+
+/**
  * Listening for new connections  
  * In this on event, we set all other events for this socket.
  * @param {Socket} socket   The socket of the client connecting
@@ -120,7 +133,8 @@ io.on('connection', (socket) => {
      */
     socket.on('createRoom', ({ name, roomCode }, callback) => {
         try {
-            const { error } = createRoom(roomCode);
+            const timerCallback = _sendTimer(getTimeLeft(roomCode));
+            const { error } = createRoom(roomCode, timerCallback, null);
             if (error) return callback(error);
             _addPlayer(socket, name, roomCode, callback);
         } catch (e) {
@@ -153,7 +167,7 @@ io.on('connection', (socket) => {
                 }
                 // Letting players know the game is starting
                 let notif = { title: 'New Round is Starting', description: 'A new round is starting' };
-                if (!room.playerWhoJustLost) {
+                if (!room.playerWhoJustLostId) {
                     notif = { title: 'Game is starting', description: 'The game is starting' };
                 }
 

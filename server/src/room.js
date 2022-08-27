@@ -1,10 +1,15 @@
 const { Player } = require('./player');
+const { Timer } = require('./timer');
 
 /** Class representing a room */
 class Room {
-    /** @type {['raise', 'aces', 'call', 'spot']} */
+    /** An array of valid list actions
+     * @type {['raise', 'aces', 'call', 'spot']} 
+     * */
     static validBidActions = ['raise', 'aces', 'call', 'spot'];
-    /** @member {[Player]} */
+    /** An array of player objects
+     * @member {[Player]}
+     *  */
     players;
     /** @member {String} */
     roomCode;
@@ -12,20 +17,26 @@ class Room {
     prevBid;
     /** @member {Number | null} */
     betsInRound;
-    playerWhoJustLost;
+    /** @member {String} */
+    playerWhoJustLostId;
+    /** @member {Boolean} */
     roundStarted;
+    /** A timer object
+     * @member {Timer} */
+    timer;
 
     /**
      * Create a room
      * @param {String} roomCode Room code  
      */
-    constructor(roomCode) {
+    constructor(roomCode, timerCallback, bidTime) {
         this.roomCode = roomCode;
         this.players = [];
         this.prevBid = null;
         this.betsInRound = null;
         this.playerWhoJustLost = null;
         this.roundStarted = false;
+        this.timer = new Timer(bidTime, timerCallback);
     }
 
     /**
@@ -166,12 +177,14 @@ class Room {
      * Generates new dice for each player  
      * Sets the prevBid to null  
      * Sets betsInRound to 0  
+     * Resets the timer
      */
     newRound() {
         this.populatePlayerDice();
         this.prevBid = null;
         this.betsInRound = 0;
         this.roundStarted = true;
+        this.timer.resetTimer();
     }
 
     /**
@@ -243,8 +256,8 @@ class Room {
      * @returns {String} the playerId of whose turn it is
      */
     whoseTurn() {
-        if (this.playerWhoJustLost) {
-            return this.playerWhoJustLost
+        if (this.playerWhoJustLostId) {
+            return this.playerWhoJustLostId
         }
 
         if (this.prevBid === null) {
@@ -407,20 +420,25 @@ class Room {
             return { bid: Object.assign({ playerName: this.getPlayer(bid.playerId).playerName }, this.prevBid) }
         }
 
+        let newBid = null;
+
         switch (bid.action) {
             case 'raise':
-                return this.bidRaise(bid);
+                // ({newBid, bidError} = this.bidRaise(bid));
+                newBid = this.bidRaise(bid);
             case 'aces':
-                return this.bidAces(bid);
+                newBid = this.bidAces(bid);
             case 'call':
                 this.roundStarted = false;
-                return this.bidCall(bid);
+                newBid = this.bidCall(bid);
             case 'spot':
                 this.roundStarted = false;
-                return this.bidSpot(bid);
-            default:
-                return { error: 'Invalid bid action' };
+                newBid = this.bidSpot(bid);
         }
+
+        if (newBid === null) return { error: 'Invalid bid action' };
+
+        return newBid;
     }
 
     /**

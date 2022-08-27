@@ -5,17 +5,17 @@ class Timer {
     /** @member Number */
     bidTime;
     timeLeft;
-    alertFunc;
+    callbackFunc;
     timer;
 
-    constructor(bidTime, alertFunc) {
+    constructor(bidTime, callbackFunc) {
         if (bidTime === null) {
             this.bidTime = defaultBidTime;
         } else {
             this.bidTime = bidTime;
         }
         this.resetTimer();
-        this.alertFunc = alertFunc;
+        this.callbackFunc = callbackFunc;
     }
 
 
@@ -30,7 +30,7 @@ class Timer {
     startTimer = () => {
         this.timer = setInterval(() => {
             if (this.timeLeft <= 0) {
-                this.alertFunc();
+                this.callbackFunc();
                 clearInterval(this.timer);
                 return;
             }

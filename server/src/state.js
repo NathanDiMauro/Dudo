@@ -6,14 +6,16 @@ const rooms = [] // Array of Room class
 
 /**
  * Creates a new room with roomCode of roomCode 
- * @param {String}      roomCode    Room code for new new room to create
+ * @param {String}      roomCode                Room code for new new room to create
+ * @param {Function}    timerCallback           Callback function for the room's timer
+ * @param {Number}      bidTime                 Time for each bid in the game
  * @returns {{error: String} | undefined}       If there is an error, it will return an error, else undefined
  */
-const createRoom = (roomCode) => {
+const createRoom = (roomCode, timerCallback, bidTime) => {
     if (rooms.find(room => room.roomCode === roomCode)) {
         return { error: 'Room already exists' };
     }
-    rooms.push(new Room(roomCode));
+    rooms.push(new Room(roomCode, timerCallback, bidTime));
     return {};
 }
 
@@ -91,7 +93,6 @@ const getPlayers = (roomCode) => {
     }
 }
 
-// 
 /**
  * Returns the room based on playerId
  * @param {String} playerId     id of the player
@@ -99,4 +100,18 @@ const getPlayers = (roomCode) => {
  */
 const getRoom = (playerId) => rooms.find(r => r.getPlayer(playerId));
 
-module.exports = { addPlayer, getPlayer, removePlayer, getPlayers, getRoom, createRoom }
+/**
+ * Returns the time left on the timer for a room
+ * @param {String} roomCode
+ * @returns {Number}
+ */
+const getTimeLeft = (roomCode) => {
+    const room = rooms.find(r => r.roomCode === roomCode);
+    if (room) {
+        // Not sure if I want to be calling `room.timer` here.
+        // It might be a better idea to add timer methods to room.
+        return room.timer.getTimeLeft();
+    }
+};
+
+module.exports = { addPlayer, getPlayer, removePlayer, getPlayers, getRoom, createRoom, getTimeLeft }
