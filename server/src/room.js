@@ -34,7 +34,7 @@ class Room {
         this.players = [];
         this.prevBid = null;
         this.betsInRound = null;
-        this.playerWhoJustLost = null;
+        this.playerWhoJustLostId = null;
         this.roundStarted = false;
         this.timer = new Timer(bidTime, timerCallback);
     }
@@ -256,19 +256,24 @@ class Room {
      * @returns {String} the playerId of whose turn it is
      */
     whoseTurn() {
+        console.log('prevBid = ', this.prevBid)
+        // If there is a player who just lost, it's their turn
         if (this.playerWhoJustLostId) {
             return this.playerWhoJustLostId
         }
 
+        // Start of game
         if (this.prevBid === null) {
             return this.players[0].id;
         }
         // Getting the index of the player who last went
         const indexOfLast = this.players.findIndex((player) => player.id === this.prevBid.playerId);
-        // If were at the end of the array
+        console.log(indexOfLast);
+        // If we're at the end of the array
         if (indexOfLast >= this.players.length - 1) {
             return this.players[0].id
         }
+
         return this.players[indexOfLast + 1].id;
     }
 
@@ -346,12 +351,12 @@ class Room {
         if (dieCount >= this.prevBid.amount) {
             this.getPlayer(bid.playerId).dice.pop();
             return_str += `${this.getPlayer(bid.playerId).playerName} loses a dice.`;
-            this.playerWhoJustLost = bid.playerId;
+            this.playerWhoJustLostId = bid.playerId;
         } else {
             // Player who got called (prevBid) loses a dice
             this.getPlayer(this.prevBid.playerId).dice.pop();
             return_str += `${this.getPlayer(this.prevBid.playerId).playerName} loses a dice.`
-            this.playerWhoJustLost = this.prevBid.playerId;
+            this.playerWhoJustLostId = this.prevBid.playerId;
         }
         const winner = this.getWinner();
         if (winner) {
@@ -390,7 +395,7 @@ class Room {
             return_str += 'called spot incorrectly and loses 1 dice.';
         }
 
-        this.playerWhoJustLost = bid.playerId;
+        this.playerWhoJustLostId = bid.playerId;
 
         return { endOfRound: return_str, dice: dice };
     }
@@ -415,7 +420,7 @@ class Room {
                 return { error: `Cannot call ${bid.action} on initial bet.` };
             }
             this.betsInRound++;
-            this.playerWhoJustLost = null;
+            this.playerWhoJustLostId = null;
             this.prevBid = { playerId: bid.playerId, action: bid.action, amount: bid.amount, dice: bid.dice }
             return { bid: Object.assign({ playerName: this.getPlayer(bid.playerId).playerName }, this.prevBid) }
         }
@@ -424,16 +429,19 @@ class Room {
 
         switch (bid.action) {
             case 'raise':
-                // ({newBid, bidError} = this.bidRaise(bid));
                 newBid = this.bidRaise(bid);
+                break;
             case 'aces':
                 newBid = this.bidAces(bid);
+                break;
             case 'call':
                 this.roundStarted = false;
                 newBid = this.bidCall(bid);
+                break;
             case 'spot':
                 this.roundStarted = false;
                 newBid = this.bidSpot(bid);
+                break;
         }
 
         if (newBid === null) return { error: 'Invalid bid action' };
