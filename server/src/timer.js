@@ -1,20 +1,21 @@
 // One minute in milliseconds
-const defaultBidTime = 60000
+const defaultBidTime = 60
 
 class Timer {
     /** @member Number */
     bidTime;
     timeLeft;
     alertFunc;
-    // timer;
+    timer;
 
     constructor(bidTime, alertFunc) {
         if (bidTime === null) {
             this.bidTime = defaultBidTime;
         } else {
-            this.bidTime = bidTime
+            this.bidTime = bidTime;
         }
-        this.resetTimer()
+        this.resetTimer();
+        this.alertFunc = alertFunc;
     }
 
 
@@ -27,10 +28,19 @@ class Timer {
     }
 
     startTimer = () => {
+        this.timer = setInterval(() => {
+            if (this.timeLeft <= 0) {
+                this.alertFunc();
+                clearInterval(this.timer);
+                return;
+            }
+            this.timeLeft -= 1;
+        }, 1000)
     }
 
     stopTimer = () => {
-
+        clearInterval(this.timer);
+        return this.timeLeft;
     }
 }
 
