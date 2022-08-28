@@ -231,6 +231,11 @@ describe('validate bid', () => {
       const bid = { playerId: player1.id, action: 'raise', amount: 4, dice: 10 };
       expect(room.validateBid(bid)).toStrictEqual({ error: 'Dice must be 1, 2, 3, 4, 5 , or 6. Not 10' });
     })
+
+    test('validate bid with null dice', () => {
+      const bid = { playerId: player1.id, action: 'raise', amount: 4, dice: null };
+      expect(room.validateBid(bid)).toStrictEqual({ error: 'Bid dice cannot be undefined on raises' });
+    })
   })
 
   test('validate bid with player going 2 times in a row', () => {
@@ -501,6 +506,11 @@ describe('bid', () => {
     room.addPlayer(player1);
     room.addPlayer(player2);
     room.newRound();
+  })
+
+  test('before round/game has started', () => {
+    room.betsInRound = null;
+    expect(room.bid({})).toStrictEqual({ error: 'Game has not been started yet.' })
   })
 
   // We do not need to test all invalid bids because we already wrote more detailed test for validateBid()
@@ -799,7 +809,7 @@ describe('timer', () => {
     return room;
   }
 
-  test("timer over, test callback", () => {
+  test('timer over, test callback', () => {
     // My way of testing the timers callback
     let counter = 0;
     callbackFunc = () => {
@@ -812,15 +822,15 @@ describe('timer', () => {
     expect(counter).toBe(1);
   })
 
-  test("player made bid, timer should be reset", () => {
-    const room = newRoom(() => {});
+  test('player made bid, timer should be reset', () => {
+    const room = newRoom(() => { });
     room.newRound();
     const bid1 = { playerId: player1.id, action: 'raise', amount: 4, dice: 3 };
     room.bid(bid1);
     expect(room.timer.getTimeLeft()).toBe(bidTime);
   })
 
-  test("one player bid, next player waited too long to bid", () => {
+  test('one player bid, next player waited too long to bid', () => {
     // My way of testing the timers callback
     let counter = 0;
     callbackFunc = () => {
@@ -833,5 +843,47 @@ describe('timer', () => {
     jest.advanceTimersByTime((bidTime + 1) * 1000);
     expect(room.timer.getTimeLeft()).toBe(0);
     expect(counter).toBe(1);
+  })
+})
+
+describe('bid for player', () => {
+  beforeEach(() => {
+    room.addPlayer(player1);
+    room.addPlayer(player2);
+    room.newRound();
+  })
+  test('at start of round', () => {
+    const expectedBid = { playerId: player1.id, playerName: player1.playerName, action: 'raise', amount: 1, dice: 2 };
+    expect(room.bidForPlayer()).toStrictEqual({ bid: expectedBid })
+  })
+
+  test('second turn', () => {
+    room.prevBid = { playerId: player1.id, action: 'raise', amount: 1, dice: 2 };
+    const expectedBid = { playerId: player2.id, playerName: player2.playerName, action: 'raise', amount: 1, dice: 3 };
+    expect(room.bidForPlayer()).toStrictEqual({ bid: expectedBid });
+  })
+
+  test('previous bid with die of 6', () => {
+    room.prevBid = { playerId: player1.id, action: 'raise', amount: 4, dice: 6 };
+    const expectedBid = { playerId: player2.id, playerName: player2.playerName, action: 'raise', amount: 5, dice: 2 };
+    expect(room.bidForPlayer()).toStrictEqual({ bid: expectedBid });
+  })
+
+  test('previous bid is 1s', () => {
+    room.prevBid = { playerId: player1.id, action: 'aces', amount: 2, dice: 1 };
+    const expectedBid = { playerId: player2.id, playerName: player2.playerName, action: 'aces', amount: 3, dice: 1 };
+    expect(room.bidForPlayer()).toStrictEqual({ bid: expectedBid })
+  })
+})
+
+describe('bid to string', () => {
+  beforeEach(() => {
+    room.addPlayer(player1);
+  })
+
+  test('ok', () => {
+    const bid = { player1Id: player1.id, playerName: player1.playerName, action: 'raise', amount: 2, dice: 2 };
+    const expected = { title: 'A new bid has been made', description: `${bid.playerName} bet ${bid.amount} ${bid.amount}s` };
+    expect(room.bidToString(bid)).toStrictEqual(expected);
   })
 })

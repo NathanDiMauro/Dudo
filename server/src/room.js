@@ -406,7 +406,7 @@ class Room {
      * @returns {{error: String} | bid: {playerId: String, playerName: String, action: String, amount: Number, dice: Number}}   If the new bid is not valid, it returns an error, else it returns the new bid
      */
     bid(bid) {
-        if (this.betsInRound == null) {
+        if (this.betsInRound === null) {
             return { error: 'Game has not been started yet.' };
         }
 
@@ -443,8 +443,6 @@ class Room {
                 this.roundStarted = false;
                 newBid = this.bidSpot(bid);
                 break;
-            default:
-                return { error: 'Invalid bid action' };
         }
 
         // I'm not the biggest fan of this.
@@ -464,5 +462,36 @@ class Room {
     bidToString(bid) {
         return { title: 'A new bid has been made', description: `${bid.playerName} bet ${bid.amount} ${bid.amount}s` };
     }
+
+    /**
+     * Makes a bid for a player
+     * @returns {{error: String} | bid: {playerId: String, playerName: String, action: String, amount: Number, dice: Number}}   Returns the value of the call to `bid()`
+     */
+    bidForPlayer() {
+        if (this.prevBid === null) {
+            return this.bid({playerId: this.whoseTurn(), action: 'raise', amount: 1, dice: 2});
+        };
+        const { amount, dice } = this.prevBid;
+
+        // For now, this function will only raise bids
+        const newBid = { playerId: this.whoseTurn(), action: 'raise', amount: amount, dice: dice };
+        
+        if (dice === 1) {
+            newBid.action = 'aces';
+            newBid.amount = amount + 1;
+        }
+
+        if (dice >= 2 && dice <= 5) {
+            newBid.dice = dice + 1;
+        }
+
+        if (dice === 6) {
+            newBid.amount = amount + 1;
+            newBid.dice = 2;
+        }   
+        
+        return this.bid(newBid);
+    }
 }
+
 module.exports = { Room }

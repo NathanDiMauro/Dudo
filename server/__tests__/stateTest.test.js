@@ -1,18 +1,18 @@
-const { createRoom, addPlayer, getPlayer, removePlayer, getPlayers, getRoom } = require('../src/state');
+const { createRoom, addPlayer, getPlayer, removePlayer, getPlayers, getRoom, getTimeLeft } = require('../src/state');
 const { Player } = require("../src/player");
-const { Room } = require('../src/room');
+
+const timeAmount = 10;
 
 const roomCode = 'room';
 const player1 = new Player(0, 'player1');
-const player2 = new Player(1, 'player2');
 
 describe('create room', () => {
     test('correct', () => {
-        expect(createRoom(roomCode)).toStrictEqual({});
+        expect(createRoom(roomCode, () => {}, timeAmount)).toStrictEqual({});
     })
 
     test('incorrect - duplicate', () => {
-        expect(createRoom(roomCode)).toStrictEqual({ error: 'Room already exists' });
+        expect(createRoom(roomCode, () => {}, timeAmount)).toStrictEqual({ error: 'Room already exists' });
     })
 })
 
@@ -84,5 +84,11 @@ describe('remove player', () => {
 
     test('player does not exists', () => {
         expect(removePlayer(player1.id)).toBe(undefined);
+    })
+})
+
+describe('get time left', () => {
+    test('ok', () => {
+        expect(getTimeLeft(roomCode)).toBe(timeAmount);
     })
 })

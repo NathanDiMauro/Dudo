@@ -1,7 +1,7 @@
 const express = require('express');
 const { createServer } = require('http');
 const { Server } = require('socket.io');
-const { addPlayer, getPlayer, getPlayers, removePlayer, getRoom, createRoom, getTimeLeft } = require('./state');
+const { addPlayer, getPlayers, getRoom, createRoom, getTimeLeft } = require('./state');
 const { defaultConfig: config } = require('../config/default');
 
 const port = config['port'];

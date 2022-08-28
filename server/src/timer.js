@@ -1,7 +1,11 @@
 // One minute in milliseconds
-const defaultBidTime = 60
 
 class Timer {
+    /** Default time amount, in seconds
+     *  @type 60
+     */
+    static defaultTimeAmount = 60;
+
     /** Number, in seconds, of how long each bid will be 
      * @member Number 
      * */
@@ -25,10 +29,12 @@ class Timer {
      * @param {Function} callback Function to alert of a time event. For now, this will just be when the timer ends. 
      */
     constructor(timeAmount, callbackFunc) {
-        if (timeAmount === null) {
-            this.timeAmount = defaultBidTime;
+        const parsedTimeAmount = parseInt(timeAmount);
+        if (isNaN(parsedTimeAmount) || parsedTimeAmount === 0) {
+            console.log(Timer.defaultTimeAmount);
+            this.timeAmount = Timer.defaultTimeAmount;
         } else {
-            this.timeAmount = timeAmount;
+            this.timeAmount = parsedTimeAmount;
         }
         this.resetTimer();
         this.callbackFunc = callbackFunc;

@@ -17,6 +17,23 @@ beforeEach(() => {
     timer.resetTimer();
 })
 
+describe('create timer', () => {
+    test('null time passed in', () => {
+        const _timer = new Timer(null, () => { });
+        expect(_timer.timeAmount).toBe(Timer.defaultTimeAmount);
+    })
+    
+    test('string passed in', () => {
+        const _timer = new Timer('string', () => { });
+        expect(_timer.timeAmount).toBe(Timer.defaultTimeAmount);
+    })
+
+    test('0 passed in', () => {
+        const _timer = new Timer(0, () => { });
+        expect(_timer.timeAmount).toBe(Timer.defaultTimeAmount);
+    })
+})
+
 describe('get time left', () => {
     test('at start', () => {
         expect(timer.getTimeLeft()).toBe(bidTime);
