@@ -4,7 +4,7 @@ const { Player } = require("../src/player");
 let room, player1, player2, player3;
 
 beforeEach(() => {
-  room = new Room('1234');
+  room = new Room('1234', () => { }, 1000);
   player1 = new Player('0', 'name');
   player2 = new Player('1', 'name2');
 })
@@ -530,7 +530,6 @@ describe('bid', () => {
       const second_bid = { playerId: player2.id, action: 'raise', amount: 2, dice: 3 };
       room.bid(first_bid);
       const actual = room.bid(second_bid);
-      console.log(actual);
       expect(actual).toStrictEqual({ error: 'Raise must raise the amount of dice or the dice' });
     })
   })
@@ -783,5 +782,56 @@ describe('turn taking', () => {
     room.bid(first_bid)
     expect(room.bid(second_bid)).toStrictEqual({ error: `It is not ${player1.playerName}s turn` })
   })
+})
 
+describe('timer', () => {
+  jest.useFakeTimers();
+  jest.spyOn(global, 'setInterval');
+
+  const bidTime = 1;
+
+  const newRoom = (callbackFunc) = () => {
+    const room = new Room('1234', callbackFunc, bidTime);
+    player1 = new Player('0', 'name');
+    player2 = new Player('1', 'name2');
+    room.addPlayer(player1);
+    room.addPlayer(player2);
+    return room;
+  }
+
+  test("timer over, test callback", () => {
+    // My way of testing the timers callback
+    let counter = 0;
+    callbackFunc = () => {
+      counter += 1;
+    }
+    const room = newRoom(callbackFunc);
+    room.timer.startTimer();
+    jest.advanceTimersByTime((bidTime + 1) * 1000);
+    expect(room.timer.getTimeLeft()).toBe(0);
+    expect(counter).toBe(1);
+  })
+
+  test("player made bid, timer should be reset", () => {
+    const room = newRoom(() => {});
+    room.newRound();
+    const bid1 = { playerId: player1.id, action: 'raise', amount: 4, dice: 3 };
+    room.bid(bid1);
+    expect(room.timer.getTimeLeft()).toBe(bidTime);
+  })
+
+  test("one player bid, next player waited too long to bid", () => {
+    // My way of testing the timers callback
+    let counter = 0;
+    callbackFunc = () => {
+      counter += 1;
+    }
+    const room = newRoom(callbackFunc);
+    room.newRound();
+    const bid1 = { playerId: player1.id, action: 'raise', amount: 4, dice: 3 };
+    room.bid(bid1)
+    jest.advanceTimersByTime((bidTime + 1) * 1000);
+    expect(room.timer.getTimeLeft()).toBe(0);
+    expect(counter).toBe(1);
+  })
 })

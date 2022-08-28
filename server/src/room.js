@@ -185,6 +185,7 @@ class Room {
         this.betsInRound = 0;
         this.roundStarted = true;
         this.timer.resetTimer();
+        this.timer.startTimer();
     }
 
     /**
@@ -256,7 +257,6 @@ class Room {
      * @returns {String} the playerId of whose turn it is
      */
     whoseTurn() {
-        console.log('prevBid = ', this.prevBid)
         // If there is a player who just lost, it's their turn
         if (this.playerWhoJustLostId) {
             return this.playerWhoJustLostId
@@ -268,7 +268,6 @@ class Room {
         }
         // Getting the index of the player who last went
         const indexOfLast = this.players.findIndex((player) => player.id === this.prevBid.playerId);
-        console.log(indexOfLast);
         // If we're at the end of the array
         if (indexOfLast >= this.players.length - 1) {
             return this.players[0].id
@@ -410,10 +409,12 @@ class Room {
         if (this.betsInRound == null) {
             return { error: 'Game has not been started yet.' };
         }
+
         const { error } = this.validateBid(bid) || {};
         if (error) {
             return { error };
         }
+
         // initial round bet
         if (this.prevBid == null) {
             if (bid.action === 'call' || bid.action === 'spot') {
@@ -442,9 +443,15 @@ class Room {
                 this.roundStarted = false;
                 newBid = this.bidSpot(bid);
                 break;
+            default:
+                return { error: 'Invalid bid action' };
         }
 
-        if (newBid === null) return { error: 'Invalid bid action' };
+        // I'm not the biggest fan of this.
+        // I think we'll eventually have to come up with a better way to handle this.
+        this.timer.stopTimer();
+        this.timer.resetTimer();
+        this.timer.startTimer();
 
         return newBid;
     }
