@@ -9,19 +9,18 @@
   });
 </script>
 
-<div
-  class="mr-2 flex basis-1/2 flex-col justify-between rounded bg-felt text-center text-cue"
->
+<div class="flex basis-1/2 flex-col justify-between rounded text-white">
+  <div class="rounded-b bg-light-felt p-1 font-bold"><h2>Your Hand</h2></div>
   <div class="flex flex-row self-center p-5">
     {#if hand.length > 0}
       {#each hand as die, index}
         <div>
-          <img class="dieCue h-14 w-14" src={die} alt={`Dice ${index}`} />
+          <img class="dieCue h-14 w-14" src={die} alt={`Dice ${index + 1}`} />
+          <p class="m-0 p-0 text-sm text-cue">{index + 1}</p>
         </div>
       {/each}
     {/if}
   </div>
-  <div class="rounded-b bg-light-felt"><h2>Your Hand</h2></div>
 </div>
 
 <style>

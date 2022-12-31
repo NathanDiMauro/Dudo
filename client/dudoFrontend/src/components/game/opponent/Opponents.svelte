@@ -1,6 +1,5 @@
 <script lang="ts">
   import SocketStore from "../../../stores/socketStore";
-  import Player from "../player/Player.svelte";
   import Opponent from "./Opponent.svelte";
 </script>
 

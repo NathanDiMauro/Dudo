@@ -18,7 +18,7 @@
   }
 
   const leaveGame = () => {
-    localStorage.setItem(LOCAL_STORAGE_SOCKET_ID, undefined);
+    localStorage.setItem(LOCAL_STORAGE_SOCKET_ID, null);
     $SocketStore.socket.disconnect();
     SocketStore.update((old) => {
       old.name = "";

@@ -4,7 +4,6 @@
   import Navbar from "./components/Navbar.svelte";
   import Home from "./pages/Home.svelte";
   import SocketStore from "./stores/socketStore";
-  import type { Notification } from "./stores/socketStore";
   import { onDestroy, onMount } from "svelte";
   import { LOCAL_STORAGE_SOCKET_ID } from "./main";
 
@@ -35,6 +34,12 @@
           old.name = res.name;
           old.roomCode = res.roomCode;
           return old;
+        });
+
+        // Append a message in the chat (for this user only), that they reconnected.
+        SocketStore.addNotification({
+          title: "You have reconnected",
+          description: undefined,
         });
 
         localStorage.setItem(LOCAL_STORAGE_SOCKET_ID, $SocketStore.socket.id);

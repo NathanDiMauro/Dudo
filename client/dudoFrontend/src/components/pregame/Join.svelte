@@ -20,11 +20,7 @@
         }
 
         // On success, update the name and room code in context.
-        SocketStore.update((old) => {
-          old.name = name;
-          old.roomCode = roomCode;
-          return old;
-        });
+        SocketStore.setPlayerInfo(name, roomCode);
       }
     );
   };

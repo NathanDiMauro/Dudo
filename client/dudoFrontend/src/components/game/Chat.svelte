@@ -1,6 +1,6 @@
 <script lang="ts">
-  import SocketStore from "../../stores/socketStore";
   import sendIcon from "../../assets/images/tanSend.png";
+  import SocketStore from "../../stores/socketStore";
   let message: string = "";
 
   const sendMessage = () => {
@@ -20,10 +20,21 @@
 <div
   class="mb-1 flex flex-col justify-end overflow-auto rounded border-none p-1"
 >
-  <div class="flex min-h-min basis-11/12 flex-col overflow-auto text-white">
+  <div
+    class="flex min-h-min basis-11/12 flex-col content-center overflow-auto text-white"
+  >
     {#each $SocketStore.notificationLog as item}
       <p>
-        <strong class="text-lg">{item.title}:</strong>
+        <!-- Need this funky if checks to display the message correctly /: -->
+        <strong class="text-lg">
+          {#if item.title == $SocketStore.name}
+            <span class="text-cue">{item.title} (you):</span>
+          {:else if item.description}
+            {item.title}:
+          {:else}
+            {item.title}
+          {/if}
+        </strong>
         <small>
           {#if item.description}
             {item.description}

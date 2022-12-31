@@ -1,31 +1,45 @@
 <script lang="ts">
+  import cup from "../../../assets/images/cup.png";
+  import disconnectedIcon from "../../../assets/images/disconnected.png";
   import { ALL_DICE } from "../../../main";
   import SocketStore from "../../../stores/socketStore";
-  import disconnectedIcon from "../../../assets/images/disconnected.png";
-  import cup from "../../../assets/images/cup.png";
-  import type { Player } from "../../../stores/socketStore";
+  import type { Player } from "../../../types/types";
   export let player: Player;
+
+  const borderColor = (opponent: Player): string => {
+	if (opponent.playerName === $SocketStore.playersTurn) {
+			return "light-felt";
+		}
+		if (opponent.playerName === $SocketStore.name) {
+			return "cue";
+		}
+
+		return "felt"
+  }
 </script>
 
 <div class="mx-2 flex flex-col items-center">
   {#if player.dice}
-    {#each player.dice as die}
-      <div>
-        <img
-          class="dieCue h-14 w-14"
-          src={ALL_DICE[parseInt(die) - 1]}
-          alt={`${player.name}'s cup`}
-        />
-      </div>
-    {/each}
+    <div class="flex flex-row">
+      {#each player.dice as die}
+        <div>
+          <img
+            class="dieCue h-6 w-6"
+            src={ALL_DICE[die - 1]}
+            alt={`${player.playerName}'s cup`}
+          />
+        </div>
+      {/each}
+    </div>
   {/if}
   <div
-    class={`m-2 h-28 w-28 bg-felt p-1 text-center ${
-      $SocketStore.playersTurn === player.name ? "border-4 border-aqua" : ""
-    }`}
+    class={`m-2 h-28 w-28 bg-felt p-1 text-center border-8 border-${borderColor(player)}`}
   >
     <h3 class="m-0 mb-6 font-bold text-white">
-      {player.name}
+      {player.playerName}
+	  {#if player.playerName === $SocketStore.name}
+		<span class="font-light text-sm">(you)</span>
+	  {/if}
       {#if player.disconnected}
         <img
           class="mx-1 inline h-3 w-3"
@@ -45,5 +59,9 @@
 <style>
   .rotate {
     transform: rotateY(0deg) rotate(45deg);
+  }
+  .dieCue {
+    filter: invert(96%) sepia(10%) saturate(925%) hue-rotate(2deg)
+      brightness(90%) contrast(90%);
   }
 </style>

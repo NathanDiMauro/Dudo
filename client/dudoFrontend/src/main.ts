@@ -11,13 +11,6 @@ export const ALL_DICE: string[] = [dice1, dice2, dice3, dice4, dice5, dice6];
 
 export const LOCAL_STORAGE_SOCKET_ID = "socket-id";
 
-export type Bid = {
-  playerId: string;
-  action: string;
-  amount?: number;
-  dice?: number;
-};
-
 const app = new App({
   target: document.getElementById("app"),
 });
