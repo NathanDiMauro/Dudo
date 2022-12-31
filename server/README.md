@@ -64,7 +64,7 @@ Example response: `{ playerId: '0', playerName: 'Tom', action: 'raise', amount: 
 ### End of round
 `socket.on('endOfRound', endOfRound => { ... })`  
 Anytime the round ends, the server will send an endOfRound object to all clients.  
-Example response: `{ endOfRound: 'Joe called paul on their bet of 4 4s. Joe loses a dice' }`  
+Example response: `{ msg: 'Joe called paul on their bet of 4 4s. Joe loses a dice', dice: [{playerName: "Tom", dice: [1, 2, 3]}, ...] }`  
 
 ### End of game
 `socket.on('endOfGame', endOfGame => { ... })`  
