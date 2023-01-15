@@ -1,3 +1,0 @@
-- Add socket event when a new round is starting
-- Highlight the opponent when it is their turn (kind of done, needs better colors)
-- Add toasts/alerts for reconnecting and end of rounds
