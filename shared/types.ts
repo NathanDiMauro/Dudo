@@ -1,8 +1,9 @@
 export type Player = {
+  id: string;
   playerName: string;
   disconnected: boolean;
-  dicCount: number;
-  dice?: number[];
+  diceCount: number;
+  dice: number[];
 };
 
 export type Bid = {
@@ -12,9 +13,12 @@ export type Bid = {
   dice?: number;
 };
 
-export type EndOfRoundDice = {
-  playerName: string;
-  dice: number[];
+export type EndOfRound = {
+  msg: string;
+  players: {
+    playerName: string;
+    dice: number[];
+  }[];
 };
 
 export type Notification = {
@@ -23,6 +27,6 @@ export type Notification = {
 };
 
 export type Error = {
-  ok: boolean;
+  //   ok: boolean;
   msg: string;
 };
