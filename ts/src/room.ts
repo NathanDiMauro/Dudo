@@ -1,9 +1,9 @@
 import type {
-	Bid,
-	EndOfRound,
-	Error,
-	Notification,
-	Player,
+  Bid,
+  EndOfRound,
+  Error,
+  Notification,
+  Player,
 } from "../../shared/types";
 
 export class Room {
@@ -267,20 +267,22 @@ export class Room {
    */
   whoseTurn(): string {
     if (this.playerWhoJustLost) {
-      return this.playerWhoJustLost?.playerName;
+      return this.playerWhoJustLost.id;
     }
 
-    if (this.prevBid === null) {
+    if (this.prevBid === undefined) {
       return this.players[0].id;
     }
-    // Getting the index of the player who last went
+    // Get the index of the player who last went.
     const indexOfLast = this.players.findIndex(
-      (player) => player.id === this.prevBid?.playerId
+      (player) => player.id === this.prevBid!.playerId
     );
-    // If were at the end of the array
+
+    // Check if we are end of the array.
     if (indexOfLast >= this.players.length - 1) {
       return this.players[0].id;
     }
+
     return this.players[indexOfLast + 1].id;
   }
 
@@ -391,7 +393,7 @@ export class Room {
     const dieCount = this.countOfSpecificDie(this.prevBid!.dice!);
     const players = this.getAllDice();
 
-    const prevBidPlayer = this.getPlayer(bid.playerId);
+    const prevBidPlayer = this.getPlayer(this.prevBid!.playerId);
     const bidPlayer = this.getPlayer(bid.playerId);
 
     let return_str = `${bidPlayer!.playerName} called ${
