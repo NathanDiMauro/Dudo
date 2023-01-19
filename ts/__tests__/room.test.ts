@@ -83,8 +83,8 @@ describe("get players brief", () => {
     room.addPlayer(player1);
     room.addPlayer(player2);
     expect(room.getPlayersBrief()).toStrictEqual([
-      { playerName: player1.playerName, diceCount: 5, disconnected: false },
-      { playerName: player2.playerName, diceCount: 3, disconnected: false },
+      { playerName: player1.playerName, diceCount: 5 },
+      { playerName: player2.playerName, diceCount: 3 },
     ]);
   });
 });

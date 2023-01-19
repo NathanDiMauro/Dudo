@@ -6,6 +6,11 @@ export type Player = {
   dice: number[];
 };
 
+export type PlayerBrief = {
+  playerName: string;
+  diceCount: number;
+};
+
 export type Bid = {
   playerId: string;
   action: string;
@@ -15,10 +20,7 @@ export type Bid = {
 
 export type EndOfRound = {
   msg: string;
-  players: {
-    playerName: string;
-    dice: number[];
-  }[];
+  players: { playerName: string; dice: number[] }[];
 };
 
 export type Notification = {

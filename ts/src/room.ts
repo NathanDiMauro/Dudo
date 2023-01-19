@@ -4,6 +4,7 @@ import type {
   Error,
   Notification,
   Player,
+  PlayerBrief,
 } from "../../shared/types";
 
 export class Room {
@@ -73,14 +74,15 @@ export class Room {
 
   /**
    * Get a list of all players not including their dice, but just the amount of their dice
-   * @returns {[{playerName: String, diceCount: Number}]} An array of an object with a playerName and diceCount
+   * @returns {PlayerBrief[]} An array of an object with a playerName and diceCount
    */
-  getPlayersBrief(): { playerName: string; diceCount: number }[] {
-    return this.players.map((player) => ({
-      playerName: player.playerName,
-      diceCount: player.dice.length,
-      disconnected: player.disconnected,
-    }));
+  getPlayersBrief(): PlayerBrief[] {
+    return this.players.map(
+      (player: Player): PlayerBrief => ({
+        playerName: player.playerName,
+        diceCount: player.dice.length,
+      })
+    );
   }
 
   /**
