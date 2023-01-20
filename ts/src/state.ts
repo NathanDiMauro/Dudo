@@ -40,13 +40,13 @@ export const addPlayer = (
     return { msg: "Room does not exist" };
   }
 
-  // Checking if there is a player with the same name in the same room
+  // Check if there is a player with the same name in the same room.
   const existingPlayer = rooms.find(
     (room) => room.roomCode === roomCode && room.playerExistsByName(name)
   );
   if (existingPlayer) return { msg: "Username already exists" };
 
-  // Creating new player
+  // Create a new player.
   const newPlayer: Player = {
     id: id,
     playerName: name,
@@ -54,7 +54,7 @@ export const addPlayer = (
     disconnected: false,
     diceCount: 0,
   };
-  // Adding newPlayer to the room
+  // Add newPlayer to the room.
   room.addPlayer(newPlayer);
 
   return newPlayer;

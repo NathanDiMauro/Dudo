@@ -14,15 +14,15 @@ const player1: Player = {
   id: "0",
   playerName: "name",
   disconnected: false,
-  dice: [1, 2, 3, 4],
-  diceCount: 4,
+  dice: [],
+  diceCount: 0,
 };
 const player2: Player = {
   id: "1",
   playerName: "name2",
   disconnected: false,
-  dice: [1, 2, 3, 4],
-  diceCount: 4,
+  dice: [],
+  diceCount: 0,
 };
 describe("create room", () => {
   test("correct", () => {
@@ -38,43 +38,44 @@ describe("create room", () => {
 
 describe("add player", () => {
   test("correct", () => {
-    const newPlayer = addPlayer(player1.id, player1.playerName, roomCode);
+    let newPlayer = addPlayer(player1.id, player1.playerName, roomCode);
     expect(newPlayer.msg).toBeUndefined;
+    console.log(newPlayer);
     expect(newPlayer.id).toBe(player1.id);
     expect(newPlayer.playerName).toBe(player1.playerName);
     expect(getPlayers(roomCode)).toStrictEqual([
-      { playerName: player1.playerName, diceCount: 5, disconnected: false },
+      { playerName: player1.playerName, diceCount: 0 },
     ]);
   });
 
   describe("incorrect", () => {
     test("duplicate", () => {
       expect(addPlayer(player1.id, player1.playerName, roomCode)).toStrictEqual(
-        { error: "Username already exists" }
+        { msg: "Username already exists" }
       );
     });
 
     test("room does not exists", () => {
       expect(
         addPlayer(player1.id, player1.playerName, "invalid")
-      ).toStrictEqual({ error: "Room does not exist" });
+      ).toStrictEqual({ msg: "Room does not exist" });
     });
 
     test("missing name", () => {
-      expect(addPlayer(player1.id, undefined, roomCode)).toStrictEqual({
-        error: "Username is required",
+      expect(addPlayer(player1.id, "", roomCode)).toStrictEqual({
+        msg: "Username is required",
       });
     });
 
     test("missing room code", () => {
-      expect(
-        addPlayer(player1.id, player1.playerName, undefined)
-      ).toStrictEqual({ error: "Room is required" });
+      expect(addPlayer(player1.id, player1.playerName, "")).toStrictEqual({
+        msg: "Room is required",
+      });
     });
 
     test("missing name and room code", () => {
-      expect(addPlayer(player1.id)).toStrictEqual({
-        error: "Username and room are required",
+      expect(addPlayer(player1.id, "", "")).toStrictEqual({
+        msg: "Username and room are required",
       });
     });
   });
@@ -96,7 +97,7 @@ describe("get players", () => {
     const got = getPlayers(roomCode);
     expect(got).toBeDefined;
     expect(got).toStrictEqual([
-      { playerName: player1.playerName, diceCount: 4 },
+      { playerName: player1.playerName, diceCount: 0 },
     ]);
   });
 
