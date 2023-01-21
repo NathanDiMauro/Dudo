@@ -18,12 +18,15 @@ httpServer.listen(localConfig["port"], localConfig["host"], () => {
 });
 
 // Initial Socket IO server with the
-const io = new Server<ClientToServerEvents, ServerToClientEvents>(httpServer, {
-  cors: {
-    origin: localConfig["corsOrigin"],
-    methods: localConfig["methods"],
-  },
-});
+export const io = new Server<ClientToServerEvents, ServerToClientEvents>(
+  httpServer,
+  {
+    cors: {
+      origin: localConfig["corsOrigin"],
+      methods: localConfig["methods"],
+    },
+  }
+);
 
 // TODO reference this SO post for how to better organize the socket handlers:
 // https://stackoverflow.com/questions/20466129/how-to-organize-socket-handling-in-node-js-and-socket-io-app
