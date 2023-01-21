@@ -1,5 +1,6 @@
 import { describe, expect, test } from "@jest/globals";
 import { Player } from "../../shared/types";
+import { validationError } from "../src/socket/error";
 import {
   addPlayer,
   createRoom,
@@ -30,17 +31,15 @@ describe("create room", () => {
   });
 
   test("incorrect - duplicate", () => {
-    expect(createRoom(roomCode)).toStrictEqual({
-      msg: "Room already exists",
-    });
+    expect(() => createRoom(roomCode)).toThrow(
+      validationError("Room already exists")
+    );
   });
 });
 
 describe("add player", () => {
   test("correct", () => {
     let newPlayer = addPlayer(player1.id, player1.playerName, roomCode);
-    expect(newPlayer.msg).toBeUndefined;
-    console.log(newPlayer);
     expect(newPlayer.id).toBe(player1.id);
     expect(newPlayer.playerName).toBe(player1.playerName);
     expect(getPlayers(roomCode)).toStrictEqual([
@@ -50,33 +49,33 @@ describe("add player", () => {
 
   describe("incorrect", () => {
     test("duplicate", () => {
-      expect(addPlayer(player1.id, player1.playerName, roomCode)).toStrictEqual(
-        { msg: "Username already exists" }
+      expect(() => addPlayer(player1.id, player1.playerName, roomCode)).toThrow(
+        validationError("Username already exists")
       );
     });
 
     test("room does not exists", () => {
-      expect(
+      expect(() =>
         addPlayer(player1.id, player1.playerName, "invalid")
-      ).toStrictEqual({ msg: "Room does not exist" });
+      ).toThrow(validationError("Room does not exist"));
     });
 
     test("missing name", () => {
-      expect(addPlayer(player1.id, "", roomCode)).toStrictEqual({
-        msg: "Username is required",
-      });
+      expect(() => addPlayer(player1.id, "", roomCode)).toThrow(
+        validationError("Username is required")
+      );
     });
 
     test("missing room code", () => {
-      expect(addPlayer(player1.id, player1.playerName, "")).toStrictEqual({
-        msg: "Room is required",
-      });
+      expect(() => addPlayer(player1.id, player1.playerName, "")).toThrow(
+        validationError("Room is required")
+      );
     });
 
     test("missing name and room code", () => {
-      expect(addPlayer(player1.id, "", "")).toStrictEqual({
-        msg: "Username and room are required",
-      });
+      expect(() => addPlayer(player1.id, "", "")).toThrow(
+        validationError("Username and room are required")
+      );
     });
   });
 });

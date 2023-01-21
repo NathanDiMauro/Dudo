@@ -1,11 +1,11 @@
 import type {
   Bid,
   EndOfRound,
-  Error,
   Notification,
   Player,
   PlayerBrief,
 } from "../../shared/types";
+import { validationError } from "./socket/error";
 
 export class Room {
   /** @type {['raise', 'aces', 'call', 'spot']} */
@@ -36,7 +36,7 @@ export class Room {
   /**
    * Get a plyer based on their id
    * @param {string} playerId     The id of the player
-   * @returns {Player}            The player with id of playerId
+   * @returns {Player | undefined}            The player with id of playerId
    */
   getPlayer(playerId: string): Player | undefined {
     return this.players.find((p) => p.id === playerId);
@@ -193,42 +193,43 @@ export class Room {
    * Validating that the bid sent from the client is valid
    * Checking the playerId, action, amount, and dice
    * @param {{playerId: String, action: String, amount: Number, dice: Number}} bid The new bid object
-   * @returns {{error: String} | undefined}   If the bid passed is not valid, it returns an error, else undefined
+   * If the bid passed is not valid, it will throw an error.
    */
-  validateBid(bid: Bid): Error | undefined {
+  validateBid(bid: Bid): void {
     // Checking if the same player has bid 2 times in a row
     if (this.prevBid) {
-      const error = this.checkTurn(bid.playerId);
-      if (error) return error;
+      this.checkTurn(bid.playerId);
     }
 
     // Checking if player exists
     if (!this.playerExistsById(bid.playerId)) {
-      return { msg: `Player with id of ${bid.playerId} does not exist` };
+      throw validationError(`Player with id of ${bid.playerId} does not exist`);
     }
 
     // Checking if it is a valid bid action
     if (!Room.validBidActions.includes(bid.action)) {
-      return { msg: `Invalid bid action: ${bid.action}` };
+      throw validationError(`Invalid bid action: ${bid.action}`);
     }
 
     // Checking if the amount if dice is actually in the game
     if (bid.amount && bid.amount > this.countOfDice()) {
-      return {
-        msg: `There are only ${this.countOfDice()} dice left in the game. ${
+      throw validationError(
+        `There are only ${this.countOfDice()} dice left in the game. ${
           bid.amount
-        } is too high`,
-      };
+        } is too high`
+      );
     }
 
     // Checking if the dice # if valid (1-6)
     if (bid.action === "raise" || bid.action === "aces") {
       if (bid.amount === undefined || bid.amount === null)
-        return { msg: "Bid amount cannot be undefined on raises" };
+        throw validationError("Bid amount cannot be undefined on raises");
       if (bid.dice === undefined || bid.dice === null)
-        return { msg: "Bid dice cannot be undefined on raises" };
+        throw validationError("Bid dice cannot be undefined on raises");
       if (1 > bid.dice || bid.dice > 7)
-        return { msg: `Dice must be 1, 2, 3, 4, 5 , or 6. Not ${bid.dice}` };
+        throw validationError(
+          `Dice must be 1, 2, 3, 4, 5 , or 6. Not ${bid.dice}`
+        );
     }
 
     // Can only call spot in the first half of the game
@@ -236,7 +237,7 @@ export class Room {
       bid.action === "spot" &&
       Math.floor((this.players.length * 5) / 2) > this.countOfDice()
     ) {
-      return { msg: "Cannot call spot in the second half of a game" };
+      throw validationError("Cannot call spot in the second half of a game");
     }
 
     // Only ned to check aces if they are bidding aces or raising
@@ -245,21 +246,22 @@ export class Room {
       this.prevBid != undefined
     ) {
       // Checking for the aces rule
-      const error = this.checkAces(bid);
-      if (error) return error;
+      this.checkAces(bid);
     }
   }
 
   /**
    * Check whose turn it is to bet, passing in the id of the player who is betting
    * @param {string} playerId     id of the player who is making a bet
-   * @returns {Error | undefined} If it is not the player with id of playerId's turn, then error, else undefined
+   * If it is not the player with id of playerId's turn, then an error will be thrown.
    */
-  checkTurn(playerId: string): Error | undefined {
+  checkTurn(playerId: string): void {
     // Getting the id of the player whose turn it is
     const nextPlayerId = this.whoseTurn();
     if (nextPlayerId !== playerId) {
-      return { msg: `It is not ${this.getPlayer(playerId)?.playerName}s turn` };
+      throw validationError(
+        `It is not ${this.getPlayer(playerId)?.playerName}s turn`
+      );
     }
   }
 
@@ -293,9 +295,9 @@ export class Room {
    * If the prev. bid was aces, then we have to make sure the new bid is valid
    * This function should be called before raises and aces
    * @param {{playerId: String, action: String, amount: Number, dice: Number}} bid The bid object
-   * @returns {{error: String} | undefined}   If the new bid is not valid, it returns an error, else undefined
+   * If the new bid is not valid, it will throw an error.
    */
-  checkAces(bid: Bid): Error | undefined {
+  checkAces(bid: Bid): void {
     if (
       this.prevBid === undefined ||
       this.prevBid.amount === undefined ||
@@ -311,16 +313,16 @@ export class Room {
       if (bid.dice !== 1 && bid.amount < this.prevBid.amount * 2 + 1) {
         // Bid amount has to be >= this.prevBid.amount * 2 + 1
         // If the new bid amount is not valid
-        return {
-          msg: `Since the last bid was ${this.prevBid.amount} ${
+        throw validationError(
+          `Since the last bid was ${this.prevBid.amount} ${
             this.prevBid.dice
           }s, the next bid must be at least ${
             this.prevBid.amount * 2 + 1
-          } of any dice`,
-        };
+          } of any dice`
+        );
       } else if (bid.amount <= this.prevBid.amount) {
         // New bid is 1s, but is not the correct amount
-        return { msg: "Cannot bid same amount or less of ones" };
+        throw validationError("Cannot bid same amount or less of ones");
       }
     }
   }
@@ -328,9 +330,9 @@ export class Room {
   /**
    * Bid action of raising
    * @param {{playerId: String, action: String, amount: Number, dice: Number}} bid The bid object
-   * @returns {{error: String} | bid: {playerId: String, action: String, amount: Number, dice: Number}}   If the new bid is not valid, it returns an error, else it returns the new bid
+   * @returns {Bid}   If the new bid is not valid, it will throw an error, else it returns the new bid
    */
-  bidRaise(bid: Bid): Error | Bid {
+  bidRaise(bid: Bid): Bid {
     if (
       bid.amount! > this.prevBid!.amount! ||
       bid.dice! > this.prevBid!.dice!
@@ -348,28 +350,28 @@ export class Room {
         this.prevBid
       );
     }
-    return { msg: "Raise must raise the amount of dice or the dice" };
+    throw validationError("Raise must raise the amount of dice or the dice");
   }
 
   /**
    * Bid action of bidding aces
    * @param {{playerId: String, action: String, amount: Number, dice: Number}} bid The bid object
-   * @returns {{error: String} | bid: {playerId: String, playerName: String, action: String, amount: Number, dice: Number}}   If the new bid is not valid, it returns an error, else it returns the new bid
+   * @returns {Bid}   If the new bid is not valid, it will throw an error, else it returns the new bid
    */
-  bidAces(bid: Bid): Error | Bid {
+  bidAces(bid: Bid): Bid {
     // check if bid is at least half of the last bid
     // ceil just rounds up the division to the next num\
 
     // We prob do not nee this check because validate bid takes care of this. Keeping it for now tho
     if (this.prevBid!.dice == 1 && bid.amount! <= this.prevBid!.amount!) {
-      return { msg: "Cannot bid same amount or less of 1s" };
+      throw validationError("Cannot bid same amount or less of 1s");
     } else if (
       this.prevBid!.dice != 1 &&
       bid.amount! < Math.ceil(this.prevBid!.amount! / 2)
     ) {
-      return {
-        msg: "Your bid needs to be at least half(rounded up) of the last bid",
-      };
+      throw validationError(
+        "Your bid needs to be at least half(rounded up) of the last bid"
+      );
     }
 
     this.prevBid = {
@@ -427,7 +429,7 @@ export class Room {
   /**
    * Bid action of calling the previous bid
    * @param {{playerId: String, action: String, amount: Number, dice: Number}} bid The bid object
-   * @returns {{endOfRound: String,  dice: [{playerName: String, dice: [Number]}]}}   An endOfRound object that states who lost a dice and what the spot call was,  and a dice array that contains all dice in the round
+   * @returns {EndOfRound}   An endOfRound object that states who lost a dice and what the spot call was,  and a dice array that contains all dice in the round
    */
   bidSpot(bid: Bid): EndOfRound {
     //player claims that the previous bidder's bid is exactly right
@@ -467,20 +469,18 @@ export class Room {
    * Handles all incoming bids
    * When a new bid needs to be made, this function should be called
    * @param {{playerId: String, action: String, amount: Number, dice: Number}} bid The bid object
-   * @returns {{error: String} | bid: {playerId: String, playerName: String, action: String, amount: Number, dice: Number}}   If the new bid is not valid, it returns an error, else it returns the new bid
+   * @returns {bid: Bid | eor: EndOfRound}   If the new bid is not valid, it will throw an error.
+   * If the new bid ends the round, it will return an EndOfROund object, else returns the new bid
    */
-  bid(bid: Bid): Error | Bid | EndOfRound {
+  bid(bid: Bid): { bid: Bid } | { eor: EndOfRound } {
     if (!this.roundStarted) {
-      return { msg: "Game has not been started yet." };
+      throw validationError("Game has not been started yet.");
     }
-    const error = this.validateBid(bid);
-    if (error) {
-      return error;
-    }
+    this.validateBid(bid);
     // initial round bet
     if (this.prevBid == null) {
       if (bid.action === "call" || bid.action === "spot") {
-        return { msg: `Cannot call ${bid.action} on initial bet.` };
+        throw validationError(`Cannot call ${bid.action} on initial bet.`);
       }
       this.betsInRound++;
       this.playerWhoJustLost = undefined;
@@ -490,25 +490,27 @@ export class Room {
         amount: bid.amount,
         dice: bid.dice,
       };
-      return Object.assign(
-        { playerName: this.getPlayer(bid.playerId)!.playerName },
-        this.prevBid
-      );
+      return {
+        bid: Object.assign(
+          { playerName: this.getPlayer(bid.playerId)!.playerName },
+          this.prevBid
+        ),
+      };
     }
 
     switch (bid.action) {
       case "raise":
-        return this.bidRaise(bid);
+        return { bid: this.bidRaise(bid) };
       case "aces":
-        return this.bidAces(bid);
+        return { bid: this.bidAces(bid) };
       case "call":
         this.roundStarted = false;
-        return this.bidCall(bid);
+        return { eor: this.bidCall(bid) };
       case "spot":
         this.roundStarted = false;
-        return this.bidSpot(bid);
+        return { eor: this.bidSpot(bid) };
       default:
-        return { msg: "Invalid bid action" };
+        throw validationError("Invalid bid action");
     }
   }
 

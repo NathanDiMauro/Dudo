@@ -1,19 +1,19 @@
-import { Error, Player, PlayerBrief } from "../../shared/types";
+import { Player, PlayerBrief } from "../../shared/types";
 import { Room } from "./room";
+import { validationError } from "./socket/error";
 
 const rooms: Array<Room> = [];
 
 /**
  * Creates a new room with roomCode of roomCode
- * @param {string}      roomCode    Room code for new new room to create
- * @returns {Error | undefined}       If there is an error, it will return an error, else undefined
+ * @param {string}		roomCode	Room code for new new room to create
+ * If there is an error, it will throw an error.
  */
-export const createRoom = (roomCode: string): Error | undefined => {
+export const createRoom = (roomCode: string) => {
   if (rooms.find((room) => room.roomCode === roomCode)) {
-    return { msg: "Room already exists" };
+    throw validationError("Room already exists");
   }
   rooms.push(new Room(roomCode));
-  return;
 };
 
 /**
@@ -21,30 +21,38 @@ export const createRoom = (roomCode: string): Error | undefined => {
  * @param {string} id           id of the socket of the new player
  * @param {string} name         name of the new player
  * @param {string} roomCode     roomCode of the room that the player is joining
- * @returns {Error | Player} If there is an error, it will return an error, else it will return the new player
+ * @returns {Player} If there is an error, it will throw an error, else it will return the new player
  */
 export const addPlayer = (
   id: string,
   name: string,
   roomCode: string
-): Error | Player => {
-  // Validating the name and roomCode were provided
-  if (!name && !roomCode) return { msg: "Username and room are required" };
-  if (!name) return { msg: "Username is required" };
-  if (!roomCode) return { msg: "Room is required" };
+): Player => {
+  // Validate the provided name and roomCode.
+  if (!name && !roomCode) {
+    throw validationError("Username and room are required");
+  }
+  if (!name) {
+    throw validationError("Username is required");
+  }
+  if (!roomCode) {
+    throw validationError("Room is required");
+  }
 
-  // Getting the room associated with roomCode
+  // Get the room associated with roomCode
   let room = rooms.find((room) => room.roomCode === roomCode);
 
   if (!room) {
-    return { msg: "Room does not exist" };
+    throw validationError("Room does not exist");
   }
 
   // Check if there is a player with the same name in the same room.
   const existingPlayer = rooms.find(
     (room) => room.roomCode === roomCode && room.playerExistsByName(name)
   );
-  if (existingPlayer) return { msg: "Username already exists" };
+  if (existingPlayer) {
+    throw validationError("Username already exists");
+  }
 
   // Create a new player.
   const newPlayer: Player = {
