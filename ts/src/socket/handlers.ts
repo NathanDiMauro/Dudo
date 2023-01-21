@@ -1,26 +1,40 @@
 import type { Bid, Error } from "../../../shared/types";
+import { Socket } from "../index";
+import { createRoom as stateCreateRoom } from "../state";
 
-export const createRoom = (
-  name: string,
-  callback: (name: string, roomCode: string, error: Error) => void
-) => void {};
+export const registerHandlers = (socket: Socket) => {
+  const createRoom = (
+    name: string,
+    callback: (name: string, roomCode: string, error: Error) => void
+  ) => {
+    const res = stateCreateRoom(name);
+    if (res) {
+      callback(name, "", res);
+    }
+  };
 
-export const joinRoom = (
-  name: string,
-  roomCode: string,
-  callback: (name: string, roomCode: string, error: Error) => void
-) => void {};
+  const joinRoom = (
+    name: string,
+    roomCode: string,
+    callback: (name: string, roomCode: string, error: Error) => void
+  ) => {};
 
-export const startGame = (callback: (error: Error) => void) => void {};
+  const startGame = (callback: (error: Error) => void) => {};
 
-export const bid = (bid: Bid, callback: (error: Error) => void) => void {};
+  const bid = (bid: Bid, callback: (error: Error) => void) => {};
 
-export const sendMessage = (
-  message: string,
-  callback: (error: Error) => void
-) => void {};
+  const sendMessage = (message: string, callback: (error: Error) => void) => {};
 
-export const reconnect = (socketId: string, callback: (error: Error) => void) =>
-  void {};
+  const reconnect = (socketId: string, callback: (error: Error) => void) => {};
 
-export const disconnect = () => void {};
+  const disconnect = () => void {};
+
+  socket.on("createRoom", createRoom);
+  socket.on("joinRoom", joinRoom);
+  socket.on("startGame", startGame);
+  socket.on("bid", bid);
+  socket.on("sendMessage", sendMessage);
+
+  socket.on("reconnect", reconnect);
+  socket.on("disconnect", disconnect);
+};

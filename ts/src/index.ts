@@ -5,15 +5,7 @@ import {
   ServerToClientEvents,
 } from "../../shared/socket";
 import { localConfig } from "../config/local";
-import {
-  bid,
-  createRoom,
-  disconnect,
-  joinRoom,
-  reconnect,
-  sendMessage,
-  startGame,
-} from "./socket/handlers";
+import { registerHandlers } from "./socket/handlers";
 
 // Define our own Socket type for simplicity.
 export type Socket = ioSocket<ClientToServerEvents, ServerToClientEvents>;
@@ -38,13 +30,5 @@ const io = new Server<ClientToServerEvents, ServerToClientEvents>(httpServer, {
 
 io.on("connection", (socket: Socket) => {
   // Set up the handlers for incoming socket events
-  //   socket.on("createRoom", createRoom);
-  socket.on("createRoom", createRoom);
-  socket.on("joinRoom", joinRoom);
-  socket.on("startGame", startGame);
-  socket.on("bid", bid);
-  socket.on("sendMessage", sendMessage);
-
-  socket.on("reconnect", reconnect);
-  socket.on("disconnect", disconnect);
+  registerHandlers(socket);
 });
