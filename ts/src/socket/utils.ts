@@ -1,7 +1,9 @@
 import { Socket } from "socket.io";
 import { Notification } from "../../../shared/types";
 import { io } from "../index";
+import { Room } from "../room";
 import { getPlayers, addPlayer as stateAddPlayer } from "../state";
+import { validationError } from "./error";
 
 /**
  * Add a new player to the room with roomCode
@@ -32,7 +34,7 @@ export const addPlayer = (socket: Socket, name: string, roomCode: string) => {
  * @param {String}                                  roomCode        The room code of the room to sent the notification to
  * @param {{title: String, description: String}}    notification    The notification Object to to sent
  */
-const sendNotificationWithoutSender = (
+export const sendNotificationWithoutSender = (
   socket: Socket,
   roomCode: string,
   notification: Notification
@@ -41,10 +43,57 @@ const sendNotificationWithoutSender = (
 };
 
 /**
+ * Sending a notification to everyone in the room
+ * This will usually be called to alter the client about game events
+ * EX: round starting, round ending...
+ * @param {Notification}    notification    The notification Object to to sent
+ * @param {string}			roomCode        The room code of the room to sent the notification to
+ */
+export const sendNotification = (
+  notification: Notification,
+  roomCode: string
+) => {
+  io.in(roomCode).emit("notification", notification);
+};
+
+/**
+ * Will notify all players that a round is starting, and provide each payer with their new hand
+ * @param {Room} room     The room object to start the round for
+ */
+export const startRound = (room: Room) => {
+  // Updating client with list of players
+  sendPlayers(room.roomCode);
+  // Starting a new round
+  room.players.forEach((player) => {
+    // Letting each player know what dice they have
+    io.to(player.id).emit("diceForRound", player.dice);
+  });
+  notifyWhoseTurn(room);
+};
+
+/**
+ * Let the players know whose turn it is
+ * @param {Room} room   The room to let the players know whose turn it is
+ */
+export const notifyWhoseTurn = (room: Room) => {
+  const player = room.getPlayer(room.whoseTurn());
+  if (player === undefined) {
+    // TODO this probably shouldn't be a validation error
+    throw validationError("Unable to find player.");
+  }
+
+  io.in(room.roomCode).emit("turn", player.playerName);
+  sendNotification(
+    { title: `It is ${player.playerName}'s turn`, description: "" },
+    room.roomCode
+  );
+};
+
+/**
  * Send a list of players to everyone in the room
  * @param {String} roomCode     The room code of the room to send the list of players to
  */
-const sendPlayers = (roomCode: string) => {
+export const sendPlayers = (roomCode: string) => {
   const players = getPlayers(roomCode);
   if (players) {
     io.in(roomCode).emit("players", players);

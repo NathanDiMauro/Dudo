@@ -519,7 +519,7 @@ export class Room {
    * @param {{playerId: String, playerName: String, action: String, amount: Number, dice: Number}}    bid The bid object
    * @returns {{title: String, description: String}}  The notification
    */
-  bidToString(bid: Bid): Notification {
+  bidToNotification(bid: Bid): Notification {
     return {
       title: "A new bid has been made",
       description: `${this.getPlayer(bid.playerId)!.playerName} bet ${
