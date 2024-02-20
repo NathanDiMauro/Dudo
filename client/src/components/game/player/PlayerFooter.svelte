@@ -28,7 +28,7 @@
   };
 </script>
 
-<div class="flex flex-row items-center justify-between bg-felt p-2 text-white">
+<div class="bg-felt flex flex-row items-center justify-between p-2 text-white">
   <div class="flex flex-row">
     <div class="ml-2 mr-10 flex flex-col items-center justify-center">
       <h3 class="text-lg font-bold">{$SocketStore.roomCode}</h3>
@@ -42,7 +42,7 @@
   <div class="mr-3 flex flex-row">
     <div class="flex flex-row content-start items-center">
       <button
-        class="mx-2 rounded border-4 border-light-felt bg-light-felt p-2 font-semibold hover:border-cue active:bg-dark-felt"
+        class="border-light-felt bg-light-felt hover:border-cue active:bg-dark-felt mx-2 rounded border-4 p-2 font-semibold"
         on:click={() => startRound()}
       >
         {#if canStartGame === true}

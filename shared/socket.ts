@@ -10,7 +10,10 @@ export interface ServerToClientEvents {
 }
 
 export interface ClientToServerEvents {
-  createRoom: (name: string, callback: (error: Error) => void) => void;
+  createRoom: (
+    name: string,
+    callback: (roomCode: string, error: Error) => void
+  ) => void;
   joinRoom: (
     name: string,
     roomCode: string,

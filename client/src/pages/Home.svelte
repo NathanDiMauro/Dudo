@@ -1,7 +1,7 @@
 <script lang="ts">
-  import SocketStore from "../stores/socketStore";
-  import Lobby from "../components/pregame/Lobby.svelte";
   import Game from "../components/game/Game.svelte";
+  import Lobby from "../components/pregame/Lobby.svelte";
+  import SocketStore from "../stores/socketStore";
 </script>
 
 <div class="flex basis-11/12">

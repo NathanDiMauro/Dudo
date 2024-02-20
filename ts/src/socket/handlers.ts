@@ -14,22 +14,34 @@ import {
   startRound,
 } from "./utils";
 
-export const registerHandlers = (socket: Socket) => {
-  // TODO generate this room code.
-  const roomCode = "1234";
+/**
+ * Generate a random three character string.
+ * @returns {string} The random room code
+ */
+const generateRoomCode = (): string => {
+  // https://www.programiz.com/javascript/examples/generate-random-strings
+  return Math.random().toString(36).substring(3, 6);
+};
 
-  const createRoom = (name: string, callback: (error: _error) => void) => {
+export const registerHandlers = (socket: Socket) => {
+  const roomCode = generateRoomCode();
+
+  const createRoom = (
+    name: string,
+    callback: (roomCode: string, error: _error) => void
+  ) => {
     try {
-      stateCreateRoom(name);
+      stateCreateRoom(roomCode);
       addPlayer(socket, name, roomCode);
     } catch (e: any) {
       if (e.name === ValidationErrorName) {
-        callback(e.message);
+        callback("", e.message);
       } else {
         console.error(e);
       }
       return;
     }
+    callback(roomCode, { msg: "" });
   };
 
   const joinRoom = (

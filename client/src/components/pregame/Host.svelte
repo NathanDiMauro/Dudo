@@ -1,4 +1,5 @@
 <script lang="ts">
+  import type { Error as _error } from "../../../../shared/types";
   import SocketStore from "../../stores/socketStore";
 
   let name: string;
@@ -7,14 +8,12 @@
     if (!name) {
       return;
     }
-    const roomCode = Math.floor(Math.random() * 9999);
-
     // Emit socket event to create a new room.
     $SocketStore.socket.emit(
       "createRoom",
-      { name: name, roomCode: roomCode },
-      (error) => {
-        if (error) {
+      { name: name },
+      (roomCode: string, error: _error) => {
+        if (error.msg != "") {
           console.log(error);
           alert(error);
           return;
@@ -39,7 +38,7 @@
       bind:value={name}
     />
     <button
-      class="rounded border-2 border-felt bg-felt px-2 py-1 hover:border-cue active:bg-dark-felt"
+      class="border-felt bg-felt hover:border-cue active:bg-dark-felt rounded border-2 px-2 py-1"
       on:click={handleClick}
     >
       Host

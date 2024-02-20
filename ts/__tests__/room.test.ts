@@ -1154,7 +1154,6 @@ describe("whose turn", () => {
       amount: 1,
       dice: 2,
     });
-    console.log(res);
     expect(room.whoseTurn()).toBe(player2.id);
   });
 

@@ -28,6 +28,10 @@ const player2: Player = {
 describe("create room", () => {
   test("correct", () => {
     expect(createRoom(roomCode)).toBeUndefined;
+    // Make sure the room got created.
+    addPlayer(player1.id, player1.playerName, roomCode);
+    // Remove the play for the next test.
+    removePlayer(player1.id);
   });
 
   test("incorrect - duplicate", () => {
