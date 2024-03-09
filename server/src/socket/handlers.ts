@@ -1,4 +1,5 @@
-import type { Bid, Error as _error, EndOfRound } from "../../../shared/types";
+import { CreateRoomResponse, ReconnectResponse, Response } from "../../../shared/socket";
+import type { Bid, Error as _error, EndOfRound, Player } from "../../../shared/types";
 import { Socket, io } from "../index";
 import { getRoom, createRoom as stateCreateRoom, getRoom as stateGetRoom } from "../state";
 import { ValidationErrorName, validationError } from "./error";
@@ -14,28 +15,28 @@ const generateRoomCode = (): string => {
 };
 
 export const registerHandlers = (socket: Socket) => {
-  const createRoom = (name: string, callback: (roomCode: string, error: _error) => void) => {
+  const createRoom = (name: string, callback: (resp: CreateRoomResponse) => void) => {
     const roomCode = generateRoomCode();
     try {
       stateCreateRoom(roomCode);
       addPlayer(socket, name, roomCode);
     } catch (e: any) {
       if (e.name === ValidationErrorName) {
-        callback("", e.message);
+        callback({ Error: e });
       } else {
-        console.error(e);
+        callback;
       }
       return;
     }
-    callback(roomCode, { msg: "Room created" });
+    callback({ RoomCode: roomCode, Message: "Room created" });
   };
 
-  const joinRoom = (name: string, roomCode: string, callback: (error: _error) => void) => {
+  const joinRoom = (name: string, roomCode: string, callback: (resp: Response) => void) => {
     try {
       addPlayer(socket, name, roomCode);
     } catch (e: any) {
       if (e.name === ValidationErrorName) {
-        callback(e.message);
+        callback({ Error: e });
       } else {
         console.error(e);
       }
@@ -44,16 +45,16 @@ export const registerHandlers = (socket: Socket) => {
   };
 
   // TODO simplify this handler. Put most of the login in the Room class.
-  const startGame = (callback: (error: _error) => void) => {
+  const startGame = (callback: (resp: Response) => void) => {
     try {
       const room = stateGetRoom(socket.id);
       if (room === undefined) {
-        callback({ msg: "Room does not exist." });
+        callback({ Message: "Room does not exist." });
         return;
       }
 
       if (room.roundStarted) {
-        callback({ msg: "Round is in progress." });
+        callback({ Message: "Round is in progress." });
         return;
       }
 
@@ -75,7 +76,7 @@ export const registerHandlers = (socket: Socket) => {
       startRound(room);
     } catch (e: any) {
       if (e.name === ValidationErrorName) {
-        callback(e.message);
+        callback({ Error: e.message });
       } else {
         console.error(e);
       }
@@ -83,16 +84,16 @@ export const registerHandlers = (socket: Socket) => {
     }
   };
 
-  const bid = (bid: Bid, callback: (error: _error) => void) => {
+  const bid = (bid: Bid, callback: (resp: Response) => void) => {
     try {
       const room = getRoom(socket.id);
       if (room === undefined) {
-        callback({ msg: "Room does not exist" });
+        callback({ Message: "Room does not exist" });
         return;
       }
       const player = room.getPlayer(socket.id);
       if (player === undefined) {
-        callback({ msg: "Unable to find player" });
+        callback({ Message: "Unable to find player" });
         return;
       }
 
@@ -108,7 +109,7 @@ export const registerHandlers = (socket: Socket) => {
       // TODO send bid? Is this handled somewhere else?
     } catch (e: any) {
       if (e.name === ValidationErrorName) {
-        callback(e.message);
+        callback({ Error: e.message });
       } else {
         console.error(e);
       }
@@ -116,22 +117,22 @@ export const registerHandlers = (socket: Socket) => {
     }
   };
 
-  const sendMessage = (message: string, callback: (error: _error) => void) => {
+  const sendMessage = (message: string, callback: (resp: Response) => void) => {
     try {
       const room = getRoom(socket.id);
       if (room === undefined) {
-        callback({ msg: "Unable to find room" });
+        callback({ Message: "Unable to find room" });
         return;
       }
       const player = room.getPlayer(socket.id);
       if (player === undefined) {
-        callback({ msg: "Unable to find player" });
+        callback({ Message: "Unable to find player" });
         return;
       }
       sendNotification({ title: player.playerName, description: message }, room.roomCode);
     } catch (e: any) {
       if (e.name === validationError) {
-        callback(e.msg);
+        callback({ Message: e.msg });
       } else {
         console.error(e);
       }
@@ -139,16 +140,16 @@ export const registerHandlers = (socket: Socket) => {
     }
   };
 
-  const reconnect = (socketId: string, callback: (error: _error) => void) => {
+  const reconnect = (socketId: string, callback: (resp: ReconnectResponse) => void) => {
     try {
       const room = getRoom(socketId);
       if (room === undefined) {
-        callback({ msg: "Unable to find room" });
+        callback({ Error: { msg: "Unable to find room" } });
         return;
       }
       const player = room.getPlayer(socketId);
       if (player === undefined) {
-        callback({ msg: "Unable to find player" });
+        callback({ Error: { msg: "Unable to find player" } });
         return;
       }
       player.id = socket.id;
@@ -159,10 +160,11 @@ export const registerHandlers = (socket: Socket) => {
         { title: `${player.playerName} reconnected`, description: "" },
         room.roomCode
       );
+      callback({ RoomCode: room.roomCode, PlayerName: player.playerName });
       // TODO update this callback to reflect to js version. (? what ?)
     } catch (e: any) {
       if (e.name === validationError) {
-        callback(e.msg);
+        callback({ Error: e });
       } else {
         console.error(e);
       }

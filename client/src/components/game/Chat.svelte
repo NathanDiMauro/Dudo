@@ -7,9 +7,9 @@
     if (message === "") {
       return;
     }
-    $SocketStore.socket.emit("sendMessage", { message: message }, (error) => {
-      if (error) {
-        console.log(error);
+    $SocketStore.socket.emit("sendMessage", message, (resp) => {
+      if (resp.Error) {
+        console.log(resp.Error.msg);
       } else {
         message = "";
       }
@@ -53,7 +53,7 @@
       bind:value={message}
     />
     <button
-      class="m-1 basis-1/12 rounded border-2 p-0.5 hover:bg-billiards-wood"
+      class="hover:bg-billiards-wood m-1 basis-1/12 rounded border-2 p-0.5"
       type="submit"
     >
       <img src={sendIcon} alt="Send" />

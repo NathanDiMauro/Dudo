@@ -1,5 +1,19 @@
 import type { Bid, Error, Notification, Player, PlayerBrief, PlayerEndOfRound } from "./types";
 
+export type Response = {
+  Error?: Error;
+  Message?: string;
+};
+
+export type CreateRoomResponse = Response & {
+  RoomCode?: string;
+};
+
+export type ReconnectResponse = Response & {
+  RoomCode?: string;
+  PlayerName?: string;
+};
+
 export interface ServerToClientEvents {
   diceForRound: (dice: number[]) => void;
   turn: (playerName: string) => void;
@@ -10,11 +24,11 @@ export interface ServerToClientEvents {
 }
 
 export interface ClientToServerEvents {
-  createRoom: (name: string, callback: (roomCode: string, error: Error) => void) => void;
-  joinRoom: (name: string, roomCode: string, callback: (error: Error) => void) => void;
-  startGame: (callback: (error: Error) => void) => void;
-  bid: (bid: Bid, callback: (error: Error) => void) => void;
-  sendMessage: (message: string, callback: (error: Error) => void) => void;
-  reconnect: (socketId: string, callback: (error: Error) => void) => void;
+  createRoom: (name: string, callback: (resp: CreateRoomResponse) => void) => void;
+  joinRoom: (name: string, roomCode: string, callback: (resp: Response) => void) => void;
+  startGame: (callback: (resp: Response) => void) => void;
+  bid: (bid: Bid, callback: (resp: Response) => void) => void;
+  sendMessage: (message: string, callback: (resp: Response) => void) => void;
+  reconnect: (socketId: string, callback: (resp: ReconnectResponse) => void) => void;
   disconnect: () => void;
 }

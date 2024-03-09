@@ -1,4 +1,5 @@
 <script lang="ts">
+  import type { CreateRoomResponse } from "../../../../shared/socket";
   import type { Error as _error } from "../../../../shared/types";
   import SocketStore from "../../stores/socketStore";
 
@@ -9,20 +10,20 @@
       return;
     }
     // Emit socket event to create a new room.
-    $SocketStore.socket.emit(
-      "createRoom",
-      { name: name },
-      (roomCode: string, error: _error) => {
-        if (error.msg != "") {
-          console.log(error);
-          alert(error);
-          return;
-        }
-
-        // On success, update the name and room code in context.
-        SocketStore.setPlayerInfo(name, roomCode.toString());
+    $SocketStore.socket.emit("createRoom", name, (resp: CreateRoomResponse) => {
+      if (resp.Error) {
+        console.log(resp.Error.msg);
+        alert(resp.Error.msg);
+        return;
       }
-    );
+      if (!resp.RoomCode) {
+        console.error("No error but no room code.");
+        return;
+      }
+
+      // On success, update the name and room code in context.
+      SocketStore.setPlayerInfo(name, resp.RoomCode);
+    });
   };
 </script>
 

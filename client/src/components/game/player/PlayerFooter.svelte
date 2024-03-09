@@ -8,8 +8,11 @@
       return;
     }
 
-    $SocketStore.socket.emit("startGame", (error) => {
-      if (error) canStartGame = false;
+    $SocketStore.socket.emit("startGame", (resp) => {
+      if (resp.Error) {
+        canStartGame = false;
+        console.error(resp.Error.msg);
+      }
     });
   };
 

@@ -2,11 +2,11 @@ import { writable } from "svelte/store";
 import { newSocket } from "../socket";
 import type {
   Bid,
-  EndOfRoundDice,
+  PlayerEndOfRound,
   Notification,
   Player,
-  Socket,
-} from "../types/types";
+} from "../../../shared/types";
+import type { Socket } from "../types/types";
 
 const socketStore = writable<Socket>({
   socket: newSocket(),
@@ -23,6 +23,19 @@ const SocketStore = {
   subscribe: socketStore.subscribe,
   set: socketStore.set,
   update: socketStore.update,
+
+  reset: () => {
+    socketStore.update((self) => {
+      self.name = "";
+      self.roomCode = "";
+      self.players = [];
+      self.notificationLog = [];
+      self.playersTurn = "";
+      self.canBid = false;
+      self.latestBid = undefined;
+      return self;
+    });
+  },
 
   setPlayerInfo: (name: string, roomCode: string) => {
     socketStore.update((self) => {
@@ -61,7 +74,7 @@ const SocketStore = {
     });
   },
 
-  endOfRound: (dice: EndOfRoundDice[]) => {
+  endOfRound: (dice: PlayerEndOfRound[]) => {
     socketStore.update((self) => {
       self.players.map((player) => {
         const _player = dice.find(

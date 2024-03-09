@@ -1,5 +1,6 @@
 <script lang="ts">
   import SocketStore from "../../stores/socketStore";
+  import type { Response } from "../../../../shared/socket";
 
   let name: string, roomCode: string;
 
@@ -10,12 +11,13 @@
 
     // Emit socket event to join a room.
     $SocketStore.socket.emit(
-      "join",
-      { name: name, roomCode: parseInt(roomCode) },
-      (error) => {
-        if (error) {
-          console.log(error);
-          alert(error);
+      "joinRoom",
+      name,
+      parseInt(roomCode).toString(),
+      (resp: Response) => {
+        if (resp.Error) {
+          console.log(resp.Error.msg);
+          alert(resp.Error.msg);
           return;
         }
 
@@ -46,7 +48,7 @@
       bind:value={roomCode}
     />
     <button
-      class="rounded border-2 border-felt bg-felt px-2 py-1 hover:border-cue active:bg-dark-felt"
+      class="border-felt bg-felt hover:border-cue active:bg-dark-felt rounded border-2 px-2 py-1"
       on:click={handleClick}
     >
       Join

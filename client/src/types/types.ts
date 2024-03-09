@@ -1,31 +1,12 @@
 import type { Socket as ioSocket } from "socket.io-client";
-
-export type Bid = {
-  playerId: string;
-  action: string;
-  amount?: number;
-  dice?: number;
-};
-
-export type Player = {
-  playerName: string;
-  dice?: number[];
-  diceCount: number;
-  disconnected: boolean;
-};
-
-export type EndOfRoundDice = {
-  playerName: string;
-  dice: number[];
-};
-
-export type Notification = {
-  title: string;
-  description: string;
-};
+import type { Bid, Notification, Player } from "../../../shared/types";
+import type {
+  ServerToClientEvents,
+  ClientToServerEvents,
+} from "../../../shared/socket";
 
 export type Socket = {
-  socket: ioSocket;
+  socket: ioSocket<ServerToClientEvents, ClientToServerEvents>;
   name: string;
   roomCode: string;
   players: Player[];

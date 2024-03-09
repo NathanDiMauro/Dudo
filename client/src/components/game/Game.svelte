@@ -1,8 +1,11 @@
 <script lang="ts">
   import SocketStore from "../../stores/socketStore";
   import type {
-      Bid, EndOfRoundDice, Notification, Player as PlayerType
-  } from "../../types/types";
+    Bid,
+    PlayerEndOfRound,
+    Notification,
+    Player as PlayerType,
+  } from "../../../../shared/types";
   import Chat from "./Chat.svelte";
   import Opponents from "./opponent/Opponents.svelte";
   import Player from "./player/Player.svelte";
@@ -22,7 +25,7 @@
 
   $SocketStore.socket.on(
     "endOfRound",
-    (eor: { msg: string; dice: EndOfRoundDice[] }) => {
+    (eor: { msg: string; dice: PlayerEndOfRound[] }) => {
       SocketStore.endOfRound(eor.dice);
     }
   );
@@ -42,7 +45,7 @@
     <Opponents />
     <PlayerFooter />
   </div>
-  <div class="flex basis-1/4 flex-col items-stretch justify-end bg-felt">
+  <div class="bg-felt flex basis-1/4 flex-col items-stretch justify-end">
     <Chat />
   </div>
 </div>

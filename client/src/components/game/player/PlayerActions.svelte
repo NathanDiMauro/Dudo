@@ -1,7 +1,7 @@
 <script lang="ts">
   import SocketStore from "../../../stores/socketStore";
   import { ALL_DICE } from "../../../main";
-  import type { Bid } from "../../../types/types";
+  import type { Bid } from "../../../../../shared/types";
 
   const defaultBidMsg: string = "It's your turn to bid!";
 
@@ -40,13 +40,13 @@
     }
 
     if (bid.action !== "") {
-      $SocketStore.socket.emit("bid", { newBid: bid }, (error) => {
-        if (error) {
-          bidMsg = error;
+      $SocketStore.socket.emit("bid", bid, (resp) => {
+        if (resp.Error) {
+          bidMsg = resp.Error.msg;
           return;
         }
 
-        error = defaultBidMsg;
+        // TODO what's going on here?
         action = "";
         amount = 0;
         dice = 0;
@@ -55,19 +55,19 @@
   };
 </script>
 
-<div class="ml-2 flex basis-1/2 flex-col justify-between rounded bg-felt">
+<div class="bg-felt ml-2 flex basis-1/2 flex-col justify-between rounded">
   {#if !$SocketStore.canBid}
-    <strong class="m-auto self-center	text-2xl font-bold text-cue"
+    <strong class="text-cue m-auto	self-center text-2xl font-bold"
       >Not your turn to bid</strong
     >
   {:else}
     <div class="mb-2 flex flex-col items-stretch">
       <div
-        class="flex flex-row items-center justify-between rounded-t bg-light-felt text-white"
+        class="bg-light-felt flex flex-row items-center justify-between rounded-t text-white"
       >
         {#each ["raise", "call", "spot"] as a}
           <button
-            class={`r-5 text- m-1 ml-5 rounded bg-dark-felt p-3 text-lg font-bold capitalize transition-all hover:bg-cue
+            class={`r-5 text- bg-dark-felt hover:bg-cue m-1 ml-5 rounded p-3 text-lg font-bold capitalize transition-all
           ${action === a ? "bg-billiards-wood" : ""}`}
             on:click={() => (action = a)}>{a}</button
           >
@@ -79,8 +79,8 @@
     </div>
     {#if action === "raise"}
       <div class="flex flex-col items-center ">
-        <div class="mb-5 flex flex-row items-center rounded bg-cue">
-          <p class="basis-2/3 p-2 font-bold text-felt ">
+        <div class="bg-cue mb-5 flex flex-row items-center rounded">
+          <p class="text-felt basis-2/3 p-2 font-bold ">
             <label for="amountInput">Amount</label>
           </p>
           <input
@@ -112,7 +112,7 @@
       </div>
     {/if}
 
-    <div class="flex flex-row justify-between rounded-b bg-light-felt p-1">
+    <div class="bg-light-felt flex flex-row justify-between rounded-b p-1">
       <div class="flex flex-row items-center">
         {#if action !== ""}
           <p>Your bet:</p>
@@ -128,7 +128,7 @@
         {/if}
       </div>
       <button
-        class="rounded border-4 border-dark-felt bg-dark-felt p-2 font-bold text-white hover:border-cue active:bg-billiards-wood"
+        class="border-dark-felt bg-dark-felt hover:border-cue active:bg-billiards-wood rounded border-4 p-2 font-bold text-white"
         on:click={() => bid()}>Make Bet</button
       >
     </div>
