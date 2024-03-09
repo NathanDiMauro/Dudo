@@ -7,7 +7,7 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: ./ts
+        working-directory: ./server
 
     strategy:
       matrix:
