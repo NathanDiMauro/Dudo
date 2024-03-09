@@ -1,18 +1,8 @@
-import type { Bid, Error as _error } from "../../../shared/types";
-import { Socket } from "../index";
-import {
-  getRoom,
-  createRoom as stateCreateRoom,
-  getRoom as stateGetRoom,
-} from "../state";
+import type { Bid, Error as _error, EndOfRound } from "../../../shared/types";
+import { Socket, io } from "../index";
+import { getRoom, createRoom as stateCreateRoom, getRoom as stateGetRoom } from "../state";
 import { ValidationErrorName, validationError } from "./error";
-import {
-  addPlayer,
-  notifyWhoseTurn,
-  sendNotification,
-  sendPlayers,
-  startRound,
-} from "./utils";
+import { addPlayer, notifyWhoseTurn, sendNotification, sendPlayers, startRound } from "./utils";
 
 /**
  * Generate a random three character string.
@@ -24,12 +14,8 @@ const generateRoomCode = (): string => {
 };
 
 export const registerHandlers = (socket: Socket) => {
-  const roomCode = generateRoomCode();
-
-  const createRoom = (
-    name: string,
-    callback: (roomCode: string, error: _error) => void
-  ) => {
+  const createRoom = (name: string, callback: (roomCode: string, error: _error) => void) => {
+    const roomCode = generateRoomCode();
     try {
       stateCreateRoom(roomCode);
       addPlayer(socket, name, roomCode);
@@ -41,14 +27,10 @@ export const registerHandlers = (socket: Socket) => {
       }
       return;
     }
-    callback(roomCode, { msg: "" });
+    callback(roomCode, { msg: "Room created" });
   };
 
-  const joinRoom = (
-    name: string,
-    roomCode: string,
-    callback: (error: _error) => void
-  ) => {
+  const joinRoom = (name: string, roomCode: string, callback: (error: _error) => void) => {
     try {
       addPlayer(socket, name, roomCode);
     } catch (e: any) {
@@ -75,11 +57,12 @@ export const registerHandlers = (socket: Socket) => {
         return;
       }
 
-      // Letting players know the game is starting
+      // Let players know the game is starting
       let notif = {
         title: "New Round is Starting",
         description: "A new round is starting",
       };
+      // If playerWhoJustLost is undefined, the game is starting.
       if (!room.playerWhoJustLost) {
         notif = {
           title: "Game is starting",
@@ -116,27 +99,13 @@ export const registerHandlers = (socket: Socket) => {
       const res = room.bid(bid);
 
       // Check if the bid ended the round.
-
-      if (res.hasOwnProperty("players")) {
-        // io.in(room.roomCode).emit("endOfRound", res.eor.msg, res.players);
-        sendNotification(
-          { title: "Round is over", description: "res.eor.msg" },
-          room.roomCode
-        );
+      if ((res as EndOfRound).players) {
+        const eor = res as EndOfRound;
+        io.in(room.roomCode).emit("endOfRound", eor.msg, eor.players);
+        sendNotification({ title: "Round is over", description: "res.eor.msg" }, room.roomCode);
         return;
       }
-
-      if (res.hasOwnProperty("bid")) {
-        // io.in(room.roomCode).emit("newBid", res.bid)
-        // sendNotification(room.bidToNotification(res.bid), room.roomCode);
-        notifyWhoseTurn(room);
-        return;
-      }
-
-      // TODO add support for the end of game
-      if (res.hasOwnProperty("endOfGame")) {
-        return;
-      }
+      // TODO send bid? Is this handled somewhere else?
     } catch (e: any) {
       if (e.name === ValidationErrorName) {
         callback(e.message);
@@ -159,10 +128,7 @@ export const registerHandlers = (socket: Socket) => {
         callback({ msg: "Unable to find player" });
         return;
       }
-      sendNotification(
-        { title: player.playerName, description: message },
-        room.roomCode
-      );
+      sendNotification({ title: player.playerName, description: message }, room.roomCode);
     } catch (e: any) {
       if (e.name === validationError) {
         callback(e.msg);
@@ -193,7 +159,7 @@ export const registerHandlers = (socket: Socket) => {
         { title: `${player.playerName} reconnected`, description: "" },
         room.roomCode
       );
-      // TODO update this callback to reflect to js version.
+      // TODO update this callback to reflect to js version. (? what ?)
     } catch (e: any) {
       if (e.name === validationError) {
         callback(e.msg);

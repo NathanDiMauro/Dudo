@@ -3,7 +3,6 @@
     "target": "es2016",
     "lib": ["es6"],
     "module": "commonjs",
-    "rootDir": ".",
     "resolveJsonModule": true,
     // "allowJs": true,
     "outDir": "build",

@@ -23,11 +23,7 @@ export const createRoom = (roomCode: string) => {
  * @param {string} roomCode     roomCode of the room that the player is joining
  * @returns {Player} If there is an error, it will throw an error, else it will return the new player
  */
-export const addPlayer = (
-  id: string,
-  name: string,
-  roomCode: string
-): Player => {
+export const addPlayer = (id: string, name: string, roomCode: string): Player => {
   // Validate the provided name and roomCode.
   if (!name && !roomCode) {
     throw validationError("Username and room are required");
@@ -46,12 +42,12 @@ export const addPlayer = (
     throw validationError("Room does not exist");
   }
 
-  // Check if there is a player with the same name in the same room.
+  // Check if there is a player with the same name in the room.
   const existingPlayer = rooms.find(
     (room) => room.roomCode === roomCode && room.playerExistsByName(name)
   );
   if (existingPlayer) {
-    throw validationError("Username already exists");
+    throw validationError("Username already exists in room");
   }
 
   // Create a new player.
@@ -87,9 +83,7 @@ export const getPlayer = (id: string): Player | undefined => {
  * @param {string} id           id of the player
  * @returns {{player: Player, roomCode: String} | undefined}  If the player exists, it will return that removed player and the roomCode of the room that the player was in, else undefined
  */
-export const removePlayer = (
-  id: string
-): { player: Player; roomCode: string } | undefined => {
+export const removePlayer = (id: string): { player: Player; roomCode: string } | undefined => {
   // First we have to get the room
   const room = getRoom(id);
   if (room) {
@@ -117,5 +111,4 @@ export const getPlayers = (roomCode: string): PlayerBrief[] | undefined => {
  * @param {string} playerId     id of the player
  * @returns {Room | undefined}  The room that has the player with id of id, if no room ha a player with an id of playerId, then undefined
  */
-export const getRoom = (playerId: string) =>
-  rooms.find((r) => r.getPlayer(playerId));
+export const getRoom = (playerId: string) => rooms.find((r) => r.getPlayer(playerId));

@@ -351,9 +351,7 @@ describe("validate bid", () => {
 
   test("validate bid with invalid bid action", () => {
     const bid = { playerId: player1.id, action: "invalid", amount: 4, dice: 4 };
-    expect(() => room.validateBid(bid)).toThrow(
-      validationError("Invalid bid action: invalid")
-    );
+    expect(() => room.validateBid(bid)).toThrow(validationError("Invalid bid action: invalid"));
   });
 });
 
@@ -372,9 +370,7 @@ describe("check aces", () => {
     const bid = { playerId: player1.id, action: "aces", amount: 2, dice: 2 };
     room.prevBid = { playerId: player1.id, action: "aces", amount: 1, dice: 1 };
     expect(() => room.checkAces(bid)).toThrow(
-      validationError(
-        "Since the last bid was 1 1s, the next bid must be at least 3 of any dice"
-      )
+      validationError("Since the last bid was 1 1s, the next bid must be at least 3 of any dice")
     );
   });
 
@@ -536,9 +532,7 @@ describe("bid aces", () => {
       dice: 1,
     };
     expect(() => room.bidAces(new_bid)).toThrow(
-      validationError(
-        "Your bid needs to be at least half(rounded up) of the last bid"
-      )
+      validationError("Your bid needs to be at least half(rounded up) of the last bid")
     );
   });
 
@@ -858,7 +852,7 @@ describe("bid", () => {
         amount: 4,
         dice: 4,
       };
-      expect(actual).toStrictEqual({ bid: expectedBid });
+      expect(actual).toStrictEqual(expectedBid);
     });
 
     test("not initial", () => {
@@ -882,7 +876,7 @@ describe("bid", () => {
         dice: 3,
       };
       room.bid(first_bid);
-      expect(room.bid(second_bid)).toStrictEqual({ bid: second_bid_result });
+      expect(room.bid(second_bid)).toStrictEqual(second_bid_result);
     });
 
     test("invalid", () => {
@@ -924,7 +918,7 @@ describe("bid", () => {
         amount: 4,
         dice: 1,
       };
-      expect(room.bid(second_bid)).toStrictEqual({ bid: second_bid_result });
+      expect(room.bid(second_bid)).toStrictEqual(second_bid_result);
     });
 
     test("bid aces - invalid", () => {
@@ -935,9 +929,7 @@ describe("bid", () => {
         dice: 1,
       };
       expect(() => room.bid(second_bid)).toThrow(
-        validationError(
-          "Your bid needs to be at least half(rounded up) of the last bid"
-        )
+        validationError("Your bid needs to be at least half(rounded up) of the last bid")
       );
     });
   });
@@ -950,9 +942,7 @@ describe("bid", () => {
         amount: undefined,
         dice: undefined,
       };
-      expect(() => room.bid(bid)).toThrow(
-        validationError("Cannot call call on initial bet.")
-      );
+      expect(() => room.bid(bid)).toThrow(validationError("Cannot call call on initial bet."));
     });
 
     test("person who is called loses dice - endOfRound", () => {
@@ -979,7 +969,7 @@ describe("bid", () => {
           { playerName: player2.playerName, dice: [2, 1, 5, 2, 3] },
         ],
       };
-      expect(room.bid(second_bid)).toStrictEqual({ eor: expected });
+      expect(room.bid(second_bid)).toStrictEqual(expected);
     });
 
     test("person who is called loses dice - endOfGame", () => {
@@ -1005,7 +995,7 @@ describe("bid", () => {
           { playerName: player2.playerName, dice: [2] },
         ],
       };
-      expect(room.bid(second_bid)).toStrictEqual({ eor: expected });
+      expect(room.bid(second_bid)).toStrictEqual(expected);
     });
   });
 
@@ -1017,9 +1007,7 @@ describe("bid", () => {
         amount: undefined,
         dice: undefined,
       };
-      expect(() => room.bid(bid)).toThrow(
-        validationError("Cannot call spot on initial bet.")
-      );
+      expect(() => room.bid(bid)).toThrow(validationError("Cannot call spot on initial bet."));
     });
 
     test("correct - endOfRound", () => {
@@ -1046,7 +1034,7 @@ describe("bid", () => {
           { playerName: player2.playerName, dice: [2, 1, 5, 2] },
         ],
       };
-      expect(room.bid(second_bid)).toStrictEqual({ eor: expected });
+      expect(room.bid(second_bid)).toStrictEqual(expected);
     });
 
     test("correct - first half of game", () => {
@@ -1073,7 +1061,7 @@ describe("bid", () => {
           { playerName: player2.playerName, dice: [2, 1] },
         ],
       };
-      expect(room.bid(second_bid)).toStrictEqual({ eor: expected });
+      expect(room.bid(second_bid)).toStrictEqual(expected);
     });
 
     test("correct - second bid (not counting 1s)", () => {
@@ -1099,7 +1087,7 @@ describe("bid", () => {
           { playerName: player2.playerName, dice: [2, 1] },
         ],
       };
-      expect(room.bid(second_bid)).toStrictEqual({ eor: expected });
+      expect(room.bid(second_bid)).toStrictEqual(expected);
     });
 
     test("incorrect- second half of game", () => {
@@ -1260,7 +1248,7 @@ describe("turn taking", () => {
 
     room.bid(first_bid);
     room.bid(second_bid);
-    expect(room.bid(third_bid)).toStrictEqual({ bid: third_bid_result });
+    expect(room.bid(third_bid)).toStrictEqual(third_bid_result);
   });
 
   test("turn taking - 2 rounds", () => {
@@ -1313,7 +1301,7 @@ describe("turn taking", () => {
     room.bid(third_bid);
     room.bid(fourth_bid);
     room.bid(fifth_bid);
-    expect(room.bid(sixth_bid)).toStrictEqual({ bid: sixth_bid_result });
+    expect(room.bid(sixth_bid)).toStrictEqual(sixth_bid_result);
   });
 
   test("turn taking - player 1 goes before player 3", () => {

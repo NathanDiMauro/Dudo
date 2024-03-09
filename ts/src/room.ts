@@ -1,10 +1,4 @@
-import type {
-  Bid,
-  EndOfRound,
-  Notification,
-  Player,
-  PlayerBrief,
-} from "../../shared/types";
+import type { Bid, EndOfRound, Notification, Player, PlayerBrief } from "../../shared/types";
 import { validationError } from "./socket/error";
 
 export class Room {
@@ -106,10 +100,7 @@ export class Room {
    * @returns {number}    A count of the remaining players
    */
   getRemainingPlayers(): number {
-    return this.players.reduce(
-      (prev, curr) => (curr.dice.length > 0 ? prev + 1 : prev),
-      0
-    );
+    return this.players.reduce((prev, curr) => (curr.dice.length > 0 ? prev + 1 : prev), 0);
   }
 
   /**
@@ -214,9 +205,7 @@ export class Room {
     // Checking if the amount if dice is actually in the game
     if (bid.amount && bid.amount > this.countOfDice()) {
       throw validationError(
-        `There are only ${this.countOfDice()} dice left in the game. ${
-          bid.amount
-        } is too high`
+        `There are only ${this.countOfDice()} dice left in the game. ${bid.amount} is too high`
       );
     }
 
@@ -227,24 +216,16 @@ export class Room {
       if (bid.dice === undefined || bid.dice === null)
         throw validationError("Bid dice cannot be undefined on raises");
       if (1 > bid.dice || bid.dice > 7)
-        throw validationError(
-          `Dice must be 1, 2, 3, 4, 5 , or 6. Not ${bid.dice}`
-        );
+        throw validationError(`Dice must be 1, 2, 3, 4, 5 , or 6. Not ${bid.dice}`);
     }
 
     // Can only call spot in the first half of the game
-    if (
-      bid.action === "spot" &&
-      Math.floor((this.players.length * 5) / 2) > this.countOfDice()
-    ) {
+    if (bid.action === "spot" && Math.floor((this.players.length * 5) / 2) > this.countOfDice()) {
       throw validationError("Cannot call spot in the second half of a game");
     }
 
     // Only ned to check aces if they are bidding aces or raising
-    if (
-      (bid.action === "raise" || bid.action === "aces") &&
-      this.prevBid != undefined
-    ) {
+    if ((bid.action === "raise" || bid.action === "aces") && this.prevBid != undefined) {
       // Checking for the aces rule
       this.checkAces(bid);
     }
@@ -259,9 +240,7 @@ export class Room {
     // Getting the id of the player whose turn it is
     const nextPlayerId = this.whoseTurn();
     if (nextPlayerId !== playerId) {
-      throw validationError(
-        `It is not ${this.getPlayer(playerId)?.playerName}s turn`
-      );
+      throw validationError(`It is not ${this.getPlayer(playerId)?.playerName}s turn`);
     }
   }
 
@@ -278,9 +257,7 @@ export class Room {
       return this.players[0].id;
     }
     // Get the index of the player who last went.
-    const indexOfLast = this.players.findIndex(
-      (player) => player.id === this.prevBid!.playerId
-    );
+    const indexOfLast = this.players.findIndex((player) => player.id === this.prevBid!.playerId);
 
     // Check if we are end of the array.
     if (indexOfLast >= this.players.length - 1) {
@@ -316,9 +293,7 @@ export class Room {
         throw validationError(
           `Since the last bid was ${this.prevBid.amount} ${
             this.prevBid.dice
-          }s, the next bid must be at least ${
-            this.prevBid.amount * 2 + 1
-          } of any dice`
+          }s, the next bid must be at least ${this.prevBid.amount * 2 + 1} of any dice`
         );
       } else if (bid.amount <= this.prevBid.amount) {
         // New bid is 1s, but is not the correct amount
@@ -333,10 +308,7 @@ export class Room {
    * @returns {Bid}   If the new bid is not valid, it will throw an error, else it returns the new bid
    */
   bidRaise(bid: Bid): Bid {
-    if (
-      bid.amount! > this.prevBid!.amount! ||
-      bid.dice! > this.prevBid!.dice!
-    ) {
+    if (bid.amount! > this.prevBid!.amount! || bid.dice! > this.prevBid!.dice!) {
       this.prevBid = {
         playerId: bid.playerId,
         action: bid.action,
@@ -345,10 +317,7 @@ export class Room {
       };
       this.betsInRound++;
       // Appending the player name to the return object
-      return Object.assign(
-        { playerName: this.getPlayer(bid.playerId)!.playerName },
-        this.prevBid
-      );
+      return Object.assign({ playerName: this.getPlayer(bid.playerId)!.playerName }, this.prevBid);
     }
     throw validationError("Raise must raise the amount of dice or the dice");
   }
@@ -365,13 +334,8 @@ export class Room {
     // We prob do not nee this check because validate bid takes care of this. Keeping it for now tho
     if (this.prevBid!.dice == 1 && bid.amount! <= this.prevBid!.amount!) {
       throw validationError("Cannot bid same amount or less of 1s");
-    } else if (
-      this.prevBid!.dice != 1 &&
-      bid.amount! < Math.ceil(this.prevBid!.amount! / 2)
-    ) {
-      throw validationError(
-        "Your bid needs to be at least half(rounded up) of the last bid"
-      );
+    } else if (this.prevBid!.dice != 1 && bid.amount! < Math.ceil(this.prevBid!.amount! / 2)) {
+      throw validationError("Your bid needs to be at least half(rounded up) of the last bid");
     }
 
     this.prevBid = {
@@ -382,10 +346,7 @@ export class Room {
     };
     this.betsInRound++;
     // Appending the playerName to the return object
-    return Object.assign(
-      { playerName: this.getPlayer(bid.playerId)!.playerName },
-      this.prevBid
-    );
+    return Object.assign({ playerName: this.getPlayer(bid.playerId)!.playerName }, this.prevBid);
   }
 
   /**
@@ -442,9 +403,9 @@ export class Room {
 
     const bidPlayer = this.getPlayer(bid.playerId);
 
-    let return_str = `${bidPlayer!.playerName} called spot on ${
-      this.prevBid!.amount
-    } ${this.prevBid!.dice}s. ${bidPlayer!.playerName} `;
+    let return_str = `${bidPlayer!.playerName} called spot on ${this.prevBid!.amount} ${
+      this.prevBid!.dice
+    }s. ${bidPlayer!.playerName} `;
 
     if (dieCount === this.prevBid!.amount) {
       // If they do not have 5 dice in hand, ive them dice
@@ -452,8 +413,7 @@ export class Room {
         bidPlayer!.dice.push(1);
         return_str += "called spot correctly and gets 1 dice back.";
       } else {
-        return_str +=
-          "called spot correctly, however, they already have 5 dice.";
+        return_str += "called spot correctly, however, they already have 5 dice.";
       }
     } else {
       bidPlayer!.dice.pop();
@@ -472,7 +432,7 @@ export class Room {
    * @returns {bid: Bid | eor: EndOfRound}   If the new bid is not valid, it will throw an error.
    * If the new bid ends the round, it will return an EndOfROund object, else returns the new bid
    */
-  bid(bid: Bid): { bid: Bid } | { eor: EndOfRound } {
+  bid(bid: Bid): Bid | EndOfRound {
     if (!this.roundStarted) {
       throw validationError("Game has not been started yet.");
     }
@@ -490,25 +450,20 @@ export class Room {
         amount: bid.amount,
         dice: bid.dice,
       };
-      return {
-        bid: Object.assign(
-          { playerName: this.getPlayer(bid.playerId)!.playerName },
-          this.prevBid
-        ),
-      };
+      return Object.assign({ playerName: this.getPlayer(bid.playerId)!.playerName }, this.prevBid);
     }
 
     switch (bid.action) {
       case "raise":
-        return { bid: this.bidRaise(bid) };
+        return this.bidRaise(bid);
       case "aces":
-        return { bid: this.bidAces(bid) };
+        return this.bidAces(bid);
       case "call":
         this.roundStarted = false;
-        return { eor: this.bidCall(bid) };
+        return this.bidCall(bid);
       case "spot":
         this.roundStarted = false;
-        return { eor: this.bidSpot(bid) };
+        return this.bidSpot(bid);
       default:
         throw validationError("Invalid bid action");
     }
@@ -522,9 +477,7 @@ export class Room {
   bidToNotification(bid: Bid): Notification {
     return {
       title: "A new bid has been made",
-      description: `${this.getPlayer(bid.playerId)!.playerName} bet ${
-        bid.amount
-      } ${bid.amount}s`,
+      description: `${this.getPlayer(bid.playerId)!.playerName} bet ${bid.amount} ${bid.amount}s`,
     };
   }
 }

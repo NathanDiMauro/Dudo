@@ -1,14 +1,7 @@
 import { describe, expect, test } from "@jest/globals";
 import { Player } from "../../shared/types";
 import { validationError } from "../src/socket/error";
-import {
-  addPlayer,
-  createRoom,
-  getPlayer,
-  getPlayers,
-  getRoom,
-  removePlayer,
-} from "../src/state";
+import { addPlayer, createRoom, getPlayer, getPlayers, getRoom, removePlayer } from "../src/state";
 
 const roomCode = "room";
 const player1: Player = {
@@ -35,9 +28,7 @@ describe("create room", () => {
   });
 
   test("incorrect - duplicate", () => {
-    expect(() => createRoom(roomCode)).toThrow(
-      validationError("Room already exists")
-    );
+    expect(() => createRoom(roomCode)).toThrow(validationError("Room already exists"));
   });
 });
 
@@ -46,22 +37,20 @@ describe("add player", () => {
     let newPlayer = addPlayer(player1.id, player1.playerName, roomCode);
     expect(newPlayer.id).toBe(player1.id);
     expect(newPlayer.playerName).toBe(player1.playerName);
-    expect(getPlayers(roomCode)).toStrictEqual([
-      { playerName: player1.playerName, diceCount: 0 },
-    ]);
+    expect(getPlayers(roomCode)).toStrictEqual([{ playerName: player1.playerName, diceCount: 0 }]);
   });
 
   describe("incorrect", () => {
     test("duplicate", () => {
       expect(() => addPlayer(player1.id, player1.playerName, roomCode)).toThrow(
-        validationError("Username already exists")
+        validationError("Username already exists in room")
       );
     });
 
     test("room does not exists", () => {
-      expect(() =>
-        addPlayer(player1.id, player1.playerName, "invalid")
-      ).toThrow(validationError("Room does not exist"));
+      expect(() => addPlayer(player1.id, player1.playerName, "invalid")).toThrow(
+        validationError("Room does not exist")
+      );
     });
 
     test("missing name", () => {
@@ -99,9 +88,7 @@ describe("get players", () => {
   test("correct", () => {
     const got = getPlayers(roomCode);
     expect(got).toBeDefined;
-    expect(got).toStrictEqual([
-      { playerName: player1.playerName, diceCount: 0 },
-    ]);
+    expect(got).toStrictEqual([{ playerName: player1.playerName, diceCount: 0 }]);
   });
 
   test("invalid room code", () => {
