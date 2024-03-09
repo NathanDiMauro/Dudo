@@ -6,11 +6,11 @@ jobs:
   build:
     runs-on: ubuntu-latest
     defaults:
-        run:
-          working-directory: ./server
+      run:
+        working-directory: ./ts
 
-    strategy: 
-      matrix: 
+    strategy:
+      matrix:
         node-version: [15.x, 16.x]
 
     steps:
